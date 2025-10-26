@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import "../styles/Header.css";
 import logo from "../../assets/logo.png";
+import ThemeToggle from "../common/ThemeToggle";
 
 function Header() {
+    const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
 
@@ -43,7 +45,20 @@ function Header() {
             {/* Left: Logo */}
             <div className="header-left">
                 <NavLink to="/" onClick={closeMenu}>
-                    <img src={logo} alt="Service Hub Logo" className="logo-img" />
+                    <img
+                        src={logo}
+                        alt="Service Hub Logo"
+                        className="logo-img"
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                            // ensure we always navigate home and close the mobile menu
+                            // prevent double handling from NavLink by stopping propagation
+                            e.stopPropagation();
+                            closeMenu();
+                            navigate("/");
+                            window.scrollTo(0, 0);
+                        }}
+                    />
                 </NavLink>
             </div>
 
@@ -58,11 +73,11 @@ function Header() {
                     Home
                 </NavLink>
                 <NavLink
-                    to="/services"
+                    to="/products"
                     className={({ isActive }) => (isActive ? "active-link" : "")}
                     onClick={closeMenu}
                 >
-                    Services
+                    Products
                 </NavLink>
                 <NavLink
                     to="/about"
@@ -92,6 +107,7 @@ function Header() {
 
             {/* Right Buttons (Desktop) */}
             <div className="header-right">
+                <ThemeToggle />
                 <NavLink to="/login" className="nav-btn">
                     <button className="btn-login">Login</button>
                 </NavLink>

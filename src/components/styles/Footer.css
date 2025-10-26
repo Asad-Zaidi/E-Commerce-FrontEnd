@@ -1,6 +1,6 @@
 .footer {
-    background-color: #0a0f1c;
-    color: #d3d3d3;
+    background-color: var(--footer-bg);
+    color: #fff;
     padding: 50px 80px 20px;
 }
 
@@ -57,10 +57,6 @@
     transition: color 0.3s ease;
 }
 
-.footer-links a:hover {
-    color: #135bec;
-}
-
 /* Right Section */
 .footer-contact {
     flex: 1;
@@ -84,8 +80,9 @@
     text-decoration: none;
 }
 
+.footer-links a:hover,
 .footer-contact a:hover {
-    color: #135bec;
+    color: var(--primary-color);
 }
 
 /* Social Icons */

@@ -1,46 +1,53 @@
 .admin-contact {
-  max-width: 600px;
+  max-width: 700px;
   margin: 40px auto;
-  background: #fff;
+  background: var(--card-bg);
   padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px var(--shadow-color);
 }
 
-.admin-contact h1 {
-  color: #135bec;
-  margin-bottom: 20px;
-  text-align: center;
+.admin-contact h2 {
+  color: var(--primary-color);
+  margin-bottom: 25px;
 }
 
-.contact-form-admin label {
-  font-weight: 500;
-  margin-top: 12px;
-  display: block;
-  color: #333;
+.admin-contact form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.contact-form-admin input,
-.contact-form-admin textarea {
-  width: 100%;
+.admin-contact input,
+.admin-contact textarea {
   padding: 10px;
-  margin-top: 5px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-color);
 }
 
-.contact-form-admin button {
-  margin-top: 20px;
-  background: #135bec;
-  color: white;
+.add-social {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.add-social input {
+  flex: 1;
+}
+
+.save-btn {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 10px 15px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 6px;
   font-weight: 600;
+  cursor: pointer;
+  align-self: flex-end;
 }
 
-.contact-form-admin button:hover {
-  background: #0f4bb3;
+.save-btn:hover {
+  background: var(--primary-color-dark);
 }

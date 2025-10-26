@@ -1,0 +1,83 @@
+.admin-banners {
+    padding: 30px;
+    font-family: "Poppins", sans-serif;
+}
+
+.add-banner-btn {
+    background: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.banner-form {
+    background: var(--bg-primary);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.banner-form input {
+    display: block;
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.preview-img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+.banner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.banner-card {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.banner-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.banner-actions button {
+    margin: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.active {
+    background: #00b894;
+    color: white;
+}
+
+.inactive {
+    background: #ccc;
+    color: black;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+}

@@ -1,91 +1,120 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../styles/Home.css";
+import api from "../../api/api";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-import logo from "../../assets/logo.png";
-import netflixLogo from "../../assets/netflix.png";
-import primeLogo from "../../assets/prime.png";
-import adobeLogo from "../../assets/adobe.png";
-import officeLogo from "../../assets/365.png";
+const Home = () => {
+    const [banners, setBanners] = useState([]);
+    const [popularProducts, setPopularProducts] = useState([]);
+    const productsRef = useRef(null); // Reference to scroll target
 
-function Home() {
+    // 🖼️ Fetch active banners
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+                const res = await api.get("/banners/active");
+                setBanners(res.data);
+            } catch (err) {
+                console.error("Error fetching banners:", err);
+            }
+        };
+        fetchBanners();
+    }, []);
+
+    // 💎 Fetch popular products
+    useEffect(() => {
+        const fetchPopular = async () => {
+            try {
+                const res = await api.get("/products/popular");
+                setPopularProducts(res.data);
+            } catch (err) {
+                console.error("Error fetching popular products:", err);
+            }
+        };
+        fetchPopular();
+    }, []);
+
+    // 📜 Smooth scroll function
+    const scrollToProducts = () => {
+        productsRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    const sliderSettings = {
+        dots: true,
+        infinite: true,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+        pauseOnHover: true,
+    };
+
     return (
-        <div className="home">
-            {/* Hero Section */}
-            <section className="hero">
-                <div className="hero-content">
-                    <h1 className="fade-in-up">All Your Subscriptions in One Place</h1>
-                    <p className="fade-in-up delay-1">
-                        Manage, share, and save on premium subscriptions like Netflix, Prime,
-                        Adobe CC, and AWS — all through Service Hub. Get access at affordable
-                        prices with one simple platform.
-                    </p>
-                    <button className="hero-btn fade-in-up delay-2">Get Started</button>
-                </div>
-                <div className="hero-image float">
-                    <img src={logo} alt="Service Hub" />
-                </div>
+        <div className="home-page">
+            {/* 🖼️ Banner Slider */}
+            <div className="banner-slider">
+                <Slider {...sliderSettings}>
+                    {banners.length > 0 ? (
+                        banners.map((banner) => (
+                            <div key={banner._id} className="banner-slide">
+                                <img src={banner.imageUrl} alt={banner.title} />
+                                <div className="banner-text">
+                                    <h2>{banner.title}</h2>
+                                    <p>{banner.subtitle}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="banner-placeholder">
+                            <h3>No banners available</h3>
+                        </div>
+                    )}
+                </Slider>
+            </div>
+
+            {/* 👋 Intro Section */}
+            <section className="intro-section">
+                <h1>Welcome to Our Digital Services</h1>
+                <p>Explore trending subscriptions and tools tailored for you!</p>
             </section>
 
-            {/* About Section */}
-            <section className="about">
-                <h2>Why Choose Service Hub?</h2>
-                <p>
-                    We simplify your digital experience by providing access to top-tier
-                    services under one roof. Our goal is to make premium digital products
-                    accessible and affordable for everyone.
-                </p>
-            </section>
-
-            {/* Services Section */}
-            <section className="services">
-                <h2>Popular Services</h2>
-                <div className="service-cards">
-                    <div className="card">
-                        <img src={netflixLogo} alt="Netflix" className="service-icon" />
-                        <h3>Netflix</h3>
-                        <p>
-                            Enjoy your favorite shows and movies with premium shared plans at
-                            affordable prices.
-                        </p>
-                    </div>
-                    <div className="card">
-                        <img src={primeLogo} alt="Prime Video" className="service-icon" />
-                        <h3>Prime Video</h3>
-                        <p>
-                            Stream exclusive Amazon Originals and hit series anytime, anywhere.
-                        </p>
-                    </div>
-                    <div className="card">
-                        <img src={adobeLogo} alt="Adobe CC" className="service-icon" />
-                        <h3>Adobe Creative Cloud</h3>
-                        <p>
-                            Access tools like Photoshop, Illustrator, and Premiere Pro — all in
-                            one affordable subscription.
-                        </p>
-                    </div>
-                    <div className="card">
-                        <img src={officeLogo} alt="Microsoft 365" className="service-icon" />
-                        <h3>Microsoft 365</h3>
-                        <p>
-                            Access essential productivity tools like Word, Excel, PowerPoint, and OneDrive —
-                            all in one subscription to boost your personal and business efficiency.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Pricing / Subscription CTA */}
+            {/* 💸 CTA Section */}
             <section className="pricing-cta">
                 <h2>Affordable Plans for Everyone</h2>
-                <p>
-                    Whether you’re a student, professional, or small business — Service Hub
-                    gives you the flexibility to choose the services you need, without the
-                    heavy cost.
-                </p>
-                <button className="cta-btn">View Plans</button>
+                <p>Choose from our wide range of digital services.</p>
+                <button className="cta-btn" onClick={scrollToProducts}>
+                    View Plans
+                </button>
+            </section>
+
+            {/* 🛍 Popular Products Section */}
+            <section className="popular-products" ref={productsRef}>
+                <h2>Popular Products</h2>
+                <p>Our most viewed and loved digital services.</p>
+
+                <div className="product-grid">
+                    {popularProducts.length > 0 ? (
+                        popularProducts.map((p) => (
+                            <div className="product-card" key={p._id}>
+                                <img src={p.imageUrl} alt={p.name} />
+                                <h3>{p.name}</h3>
+                                <p>{p.description?.substring(0, 60)}...</p>
+                                <span className="price">Rs {p.priceMonthly}</span>
+                                <a href={`/products/${p._id}`} className="detail-btn">
+                                    View Details →
+                                </a>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="no-products">No popular products found.</p>
+                    )}
+                </div>
             </section>
         </div>
     );
-}
+};
 
 export default Home;

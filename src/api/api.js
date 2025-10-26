@@ -6,9 +6,17 @@ import axios from "axios";
 const API_BASE = "https://edm-website-backend-production.up.railway.app";
 
 
+// const api = axios.create({
+//     baseURL: `${API_BASE}/api`,
+// });
+
 const api = axios.create({
-    baseURL: `${API_BASE}/api`,
-});
+    baseURL: API_BASE + "/api",
+    withCredentials: false,
+    headers: {
+        "Content-Type": "application/json",
+    },
+})
 
 // helper to set/remove token globally
 export const setAuthToken = (token) => {

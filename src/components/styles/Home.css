@@ -1,271 +1,303 @@
-/* ===== Hero Section ===== */
-.hero {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 80px 100px;
-    background: linear-gradient(90deg, #f5f8ff 0%, #eef3ff 100%);
+.home-page {
+    color: var(--text-color);
+    background-color: var(--bg-primary);
+    overflow-x: hidden;
+}
+
+/* 🖼️ Banner Slider Section */
+.banner-slider {
+    position: relative;
+    padding: 30px;
+    width: 100%;
+    height: 80vh;
     overflow: hidden;
+
 }
 
-.hero-content {
-    max-width: 550px;
+.banner-slide {
+    position: relative;
+    width: 100%;
+    height: 75vh;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 15px;
 }
 
-/* Hero Text Animations */
-.fade-in-up {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: fadeInUp 1s ease forwards;
+.banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(70%);
 }
 
-.delay-1 {
-    animation-delay: 0.3s;
+/* 📜 Banner Text Overlay */
+.banner-text {
+    position: absolute;
+    bottom: 20%;
+    left: 10%;
+    color: var(--text-color);
+    text-align: left;
+    z-index: 2;
+    max-width: 600px;
 }
 
-.delay-2 {
-    animation-delay: 0.6s;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Floating animation for hero image */
-.float img {
-    width: 320px;
-    animation: floatAnim 4s ease-in-out infinite;
-}
-
-@keyframes floatAnim {
-    0% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-
-    100% {
-        transform: translateY(0px);
-    }
-}
-
-/* Hero Text Styling */
-.hero-content h1 {
-    font-size: 40px;
-    color: #0a0f1c;
+.banner-text h2 {
+    font-size: 3rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 8px var(--shadow-color);
+    color: var(--text-color);
 }
 
-.hero-content p {
-    color: #4b4b4b;
-    font-size: 16px;
-    line-height: 1.6;
-    margin-bottom: 25px;
+.banner-text p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    text-shadow: 0 2px 5px var(--shadow-color);
+    color: var(--text-color);
 }
 
-.hero-btn {
-    background-color: #135bec;
-    color: #fff;
-    border: none;
-    padding: 12px 28px;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
+/* 🎠 Slider Dots and Arrows */
+.slick-dots li button:before {
+    font-size: 12px;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.slick-dots li.slick-active button:before {
+    color: #135bec;
+    opacity: 1;
+}
+
+.slick-prev,
+.slick-next {
+    z-index: 5;
+    width: 45px;
+    height: 45px;
+    background-color: rgba(19, 91, 236, 0.7);
+    border-radius: 50%;
     transition: all 0.3s ease;
 }
 
-.hero-btn:hover {
-    background-color: #0d47b3;
-    transform: translateY(-2px);
+.slick-prev:hover,
+.slick-next:hover {
+    background-color: rgba(19, 91, 236, 1);
 }
 
-/* ===== About Section ===== */
-.about {
+.slick-prev:before,
+.slick-next:before {
+    font-size: 20px;
+    color: white;
+}
+
+/* 🧾 Intro Section */
+.intro-section {
     text-align: center;
-    padding: 60px 100px;
-    background-color: #ffffff;
+    padding: 80px 20px 40px;
+    background-color: var(--bg-primary);
 }
 
-.about h2 {
-    color: #135bec;
-    font-size: 28px;
-    margin-bottom: 16px;
-    animation: fadeInUp 1s ease forwards;
-}
-
-.about p {
-    color: #555;
-    font-size: 16px;
-    max-width: 700px;
-    margin: 0 auto;
-    line-height: 1.7;
-    animation: fadeInUp 1.3s ease forwards;
-}
-
-/* ===== Services Section ===== */
-.services {
-    padding: 60px 100px;
-    text-align: center;
-}
-
-.services h2 {
-    color: #135bec;
-    font-size: 28px;
-    margin-bottom: 30px;
-    animation: fadeInUp 1s ease forwards;
-}
-
-/* Container for cards */
-.service-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-}
-
-/* Individual Card */
-.card {
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 25px 20px;
-    width: 240px;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
-/* ===== Fix PNG Logo Sizes ===== */
-.service-icon {
-    width: 200px;
-    height: 200px;
-    object-fit: contain;
-    /* keeps proportions */
-    background-color: #fff;
-    /* keeps clean look */
-    border-radius: 14px;
-    /* soft edges */
-    padding: 10px;
-    /* space around logos */
-    margin-bottom: 15px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-}
-
-.card:hover .service-icon {
-    transform: scale(1.08);
-}
-
-/* Card Titles and Text */
-.card h3 {
+.intro-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--text-color);
     margin-bottom: 10px;
-    font-size: 18px;
-    color: #0a0f1c;
 }
 
-.card p {
-    font-size: 14px;
+.intro-section p {
     color: #555;
-    line-height: 1.6;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-/* ===== Pricing CTA Section ===== */
+/* 💸 Pricing CTA */
 .pricing-cta {
+    background-color: var(--primary-color);
+    color: var(--text-color);
     text-align: center;
-    padding: 80px 100px;
-    background-color: #135bec;
-    color: #fff;
+    padding: 80px 20px;
 }
 
 .pricing-cta h2 {
-    font-size: 30px;
-    margin-bottom: 16px;
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-color);
 }
 
 .pricing-cta p {
-    max-width: 650px;
-    margin: 0 auto 24px;
-    line-height: 1.6;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .cta-btn {
-    background-color: #fff;
+    background-color: var(--bg-primary);
     color: #135bec;
-    font-weight: 600;
     border: none;
-    padding: 12px 28px;
-    border-radius: 6px;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .cta-btn:hover {
-    background-color: #e6edff;
-    transform: translateY(-2px);
+    background-color: #f3f3f3;
+    transform: translateY(-3px);
 }
 
-/* ===== Responsive Layout ===== */
-@media (max-width: 900px) {
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 60px 40px;
+/* 📱 Responsive Design */
+@media (max-width: 992px) {
+    .banner-text h2 {
+        font-size: 2.4rem;
     }
 
-    .hero-content h1 {
-        font-size: 32px;
+    .banner-text p {
+        font-size: 1rem;
     }
 
-    .float img {
-        margin-top: 30px;
-        width: 250px;
+    .intro-section h1 {
+        font-size: 2.2rem;
     }
 
-    .about,
-    .services,
-    .pricing-cta {
-        padding: 50px 30px;
+    .pricing-cta h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .banner-text {
+        bottom: 15%;
+        left: 5%;
+        max-width: 90%;
     }
 
-    .service-cards {
-        flex-direction: column;
-        align-items: center;
+    .banner-text h2 {
+        font-size: 1.8rem;
     }
 
-    .card {
-        width: 85%;
-        min-height: 280px;
-    }
-
-    .service-icon {
-        width: 80px;
-        height: 80px;
+    .banner-text p {
+        font-size: 0.9rem;
     }
 
     .cta-btn {
-        padding: 10px 22px;
+        padding: 10px 25px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-slider {
+        height: 60vh;
+    }
+
+    .banner-slide {
+        height: 60vh;
+    }
+
+    .banner-text h2 {
+        font-size: 1.5rem;
+    }
+
+    .banner-text p {
+        font-size: 0.85rem;
+    }
+}
+
+/* 🔥 Popular Products Section */
+.popular-products {
+    padding: 80px 40px;
+    background-color: var(--bg-secondary);
+    text-align: center;
+}
+
+.popular-products h2 {
+    font-size: 2.2rem;
+    color: var(--text-color);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.popular-products p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 50px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    justify-items: center;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    box-shadow: 0 6px 20px var(--shadow-color);
+    transition: all 0.3s ease;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.product-card h3 {
+    color: var(--text-color);
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.product-card p {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.product-card .price {
+    display: block;
+    font-weight: 600;
+    color: #135bec;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.detail-btn {
+    display: inline-block;
+    color: var(--text-color);
+    background-color: #135bec;
+    padding: 8px 16px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.detail-btn:hover {
+    background-color: #0f49b3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .popular-products {
+        padding: 50px 20px;
     }
 }

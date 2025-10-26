@@ -3,12 +3,10 @@
     justify-content: center;
     align-items: center;
     height: 89vh;
-    background: linear-gradient(135deg, #e9f0ff, #f9fbff);
-    font-family: "Poppins", sans-serif;
 }
 
 .auth-box {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     padding: 40px 50px;
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);

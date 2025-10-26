@@ -1,30 +1,28 @@
-.services-page {
-    background: #f8faff;
-    padding: 60px;
-    font-family: "Poppins", sans-serif;
+.product-page {
+    background: var(--bg-secondary);
+    padding: 50px 30px;
 }
 
-/* Header */
-.services-header {
+.product-header {
     text-align: center;
     padding: 80px 20px 40px;
-    background: linear-gradient(135deg, #e9f0ff, #f9fbff);
+    background: var(--bg-secondary);
 }
 
-.services-header h1 {
-    color: #135bec;
+.product-header h1 {
+    color: var(--primary-color);
     font-size: 36px;
     margin-bottom: 10px;
 }
 
-.services-header p {
-    color: #555;
+.product-header p {
+    color: var(--text-secondary);
     max-width: 700px;
     margin: 0 auto;
     font-size: 16px;
 }
 
-/* Filter */
+
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -34,9 +32,9 @@
 }
 
 .filter-btn {
-    background-color: #f0f4ff;
-    color: #0a0f1c;
-    border: 1px solid #dbe2ff;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
     padding: 10px 18px;
     border-radius: 25px;
     font-size: 15px;
@@ -52,50 +50,51 @@
     box-shadow: 0 4px 10px rgba(19, 91, 236, 0.2);
 }
 
-/* Grid */
-.service-grid {
+
+.product-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 25px;
+    gap: 35px;
+    margin-bottom: 60px;
 }
 
-/* Card */
-.modern-service-card {
-    background: #fff;
+
+.modern-product-card {
+    background: var(--card-bg);
     border-radius: 18px;
-    width: 280px;
-    min-height: 440px;
+    width: 320px;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--border-color);
 }
 
-.modern-service-card:hover {
+.modern-product-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 8px 18px rgba(19, 91, 236, 0.15);
 }
 
-/* Image */
 .card-top {
-    background: #f5f8ff;
+    border: 1px solid var(--border-color);
+    background: var(--product-img-bg);
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 160px;
-    margin: 20px;
+    height: 250px;
+    margin: 25px;
 }
 
 .card-top img {
-    width: 100px;
-    height: 100px;
+    width: 180px;
+    height: 180px;
     object-fit: contain;
 }
 
-/* Content */
+
 .card-content {
     padding: 0 20px 20px;
     display: flex;
@@ -112,7 +111,7 @@
 .card-header h3 {
     font-size: 17px;
     font-weight: 600;
-    color: #0a0f1c;
+    color: var(--product-name);
 }
 
 .price-tags {
@@ -121,13 +120,13 @@
 
 .price {
     display: block;
-    color: #135bec;
+    color: var(--product-price);
     font-weight: 600;
     font-size: 15px;
     margin-bottom: 6px;
 }
 
-/* Tags */
+
 .tag-group {
     display: flex;
     flex-wrap: wrap;
@@ -139,7 +138,7 @@
     font-size: 12px;
     padding: 4px 10px;
     border-radius: 15px;
-    background: #e9f0ff;
+    background: #e3e3e3;
     color: #333;
     font-weight: 500;
     cursor: pointer;
@@ -150,15 +149,15 @@
     color: #fff;
 }
 
-/* Description */
+
 .desc {
-    color: #555;
+    color: var(--text-secondary)!important;
     font-size: 14px;
     margin: 12px 0;
     flex-grow: 1;
 }
 
-/* More detail link */
+
 .more-detail {
     color: #135bec;
     font-size: 14px;
@@ -170,7 +169,7 @@
     text-decoration: underline;
 }
 
-/* Buy button center */
+
 .buy-center {
     display: flex;
     justify-content: center;
@@ -193,13 +192,13 @@
     transform: translateY(-2px);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .services-page {
+
+@media (max-width: 767px) {
+    .product-page {
         padding: 30px 15px;
     }
 
-    .modern-service-card {
+    .modern-product-card {
         width: 90%;
     }
 }

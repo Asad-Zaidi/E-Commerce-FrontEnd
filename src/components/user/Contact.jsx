@@ -1,144 +1,103 @@
-// import React from "react";
-// import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
-// import { FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn } from "react-icons/fa";
-// import "../styles/Contact.css";
+// src/components/ContactUs.jsx
+import React from 'react';
+import '../styles/Contact.css';
+import {
+  FaLinkedin,
+  FaTwitterSquare,
+  FaFacebookSquare,
+  FaInstagramSquare,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaWhatsapp,
+  FaTelegram,
 
-// function Contact() {
-//   return (
-//     <div className="contact-container">
-//       {/* Hero Section */}
-//       <section className="contact-hero">
-//         <h1>Contact Us</h1>
-//         <p>
-//           Have a question or need help with your subscription?
-//           We’d love to hear from you!
-//         </p>
-//       </section>
+} from 'react-icons/fa';
 
-//       {/* Contact Content */}
-//       <div className="contact-content">
-//         {/* Left: Contact Info */}
-//         <div className="contact-info">
-//           <h2>Get in Touch</h2>
-//           <p>
-//             Reach out to our team for assistance with plans, payments, or any
-//             other inquiries.
-//           </p>
+const Contact = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert('Thank you for your message! We will be in touch shortly.');
+    e.target.reset();
+  };
 
-//           <div className="info-item">
-//             <FiMail className="icon" />
-//             <span>support@servicehub.com</span>
-//           </div>
+  const socialLinks = [
+    { icon: <FaLinkedin />, url: 'https://linkedin.com/yourcompany', label: 'LinkedIn' },
+    { icon: <FaTwitterSquare />, url: 'https://twitter.com/yourcompany', label: 'Twitter' },
+    { icon: <FaFacebookSquare />, url: 'https://facebook.com/yourcompany', label: 'Facebook' },
+    { icon: <FaInstagramSquare />, url: 'https://instagram.com/yourcompany', label: 'Instagram' },
+    { icon: <FaWhatsapp />, url: 'https://wa.me/15551234567', label: 'WhatsApp' },
+    { icon: <FaTelegram />, url: 'https://t.me/yourcompany', label: 'Telegram' },
+  ];
 
-//           <div className="info-item">
-//             <FiPhone className="icon" />
-//             <span>+92 300 1234567</span>
-//           </div>
-
-//           <div className="info-item">
-//             <FiMapPin className="icon" />
-//             <span>Lahore, Pakistan</span>
-//           </div>
-
-//           {/* Social Media Section */}
-//           <div className="social-links">
-//             <h3>Follow Us</h3>
-//             <div className="social-icons">
-//               <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook">
-//                 <FaFacebookF />
-//               </a>
-//               <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
-//                 <FaInstagram />
-//               </a>
-//               <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter">
-//                 <FaTwitter />
-//               </a>
-//               <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-//                 <FaLinkedinIn />
-//               </a>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Right: Contact Form */}
-//         <form className="contact-form">
-//           <h2>Send Us a Message</h2>
-//           <div className="form-group">
-//             <label htmlFor="name">Full Name</label>
-//             <input type="text" id="name" placeholder="Enter your full name" required />
-//           </div>
-
-//           <div className="form-group">
-//             <label htmlFor="email">Email Address</label>
-//             <input type="email" id="email" placeholder="Enter your email" required />
-//           </div>
-
-//           <div className="form-group">
-//             <label htmlFor="message">Message</label>
-//             <textarea id="message" rows="4" placeholder="Type your message..." required></textarea>
-//           </div>
-
-//           <button type="submit" className="send-btn">Send Message</button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Contact;
-
-import React, { useEffect, useState } from "react";
-import api from "../../api/api";
-import "../styles/Contact.css";
-
-function Contact() {
-  const [contact, setContact] = useState(null);
-
-  useEffect(() => {
-    const fetchContact = async () => {
-      try {
-        const res = await api.get("/contact");
-        setContact(res.data);
-      } catch (err) {
-        console.error("Error loading contact:", err);
-      }
-    };
-    fetchContact();
-  }, []);
-
-  if (!contact) return <h2>Loading...</h2>;
+  const contactInfo = [
+    { icon: <FaEnvelope />, detail: 'info@yourcompany.com', type: 'mailto' },
+    { icon: <FaPhoneAlt />, detail: '+1 (555) 123-4567', type: 'tel' },
+  ];
 
   return (
-    <div className="contact-page">
-      <h1>Contact Us</h1>
-      <p>{contact.message}</p>
+    <div className="contact-page-wrapper">
+      <div className="contact-container">
 
-      <div className="contact-info">
-        <p><strong>Company:</strong> {contact.companyName}</p>
-        <p><strong>Email:</strong> {contact.email}</p>
-        <p><strong>Phone:</strong> {contact.phone}</p>
-        <p><strong>Address:</strong> {contact.address}</p>
+        {/* Left Column: Contact Form */}
+        <div className="contact-form-side">
+          <h1>Get in Touch</h1>
+          <p>We're here to help and answer any question you might have. We look forward to hearing from you.</p>
+
+          <form className="contact-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="name">Name</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="message">Message</label>
+              <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" className="submit-button">Send Message</button>
+          </form>
+        </div>
+
+        {/* Right Column: Info and Social Media */}
+        <div className="contact-info-side">
+          <div className="info-block">
+            <h2>Contact Information</h2>
+            {contactInfo.map((item, index) => (
+              <div className="info-item" key={index}>
+                <span className="icon">{item.icon}</span>
+                {item.type === 'text' ? (
+                  <p>{item.detail}</p>
+                ) : (
+                  <p><a href={`${item.type}:${item.detail}`}>{item.detail}</a></p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="social-block">
+            <h2>Connect With Us</h2>
+            <div className="social-links">
+              {socialLinks.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.label}
+                  className="social-icon"
+                >
+                  {link.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
       </div>
-
-      <div className="social-links">
-        {contact.facebook && <a href={contact.facebook}>Facebook</a>}
-        {contact.instagram && <a href={contact.instagram}>Instagram</a>}
-        {contact.twitter && <a href={contact.twitter}>Twitter</a>}
-      </div>
-
-      {contact.mapEmbedUrl && (
-        <iframe
-          src={contact.mapEmbedUrl}
-          width="100%"
-          height="350"
-          style={{ border: 0 }}
-          allowFullScreen=""
-          loading="lazy"
-          title="Map"
-        ></iframe>
-      )}
     </div>
   );
-}
+};
 
 export default Contact;

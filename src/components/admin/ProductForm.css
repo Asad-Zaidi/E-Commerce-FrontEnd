@@ -1,14 +1,14 @@
 .admin-form-container {
-    background: #fff;
+    background: var(--card-bg);
     border-radius: 12px;
     padding: 30px;
-    max-width: 600px;
+    max-width: 700px;
     margin: 30px auto;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 10px var(--shadow-color);
 }
 
 .admin-form-container h2 {
-    color: #135bec;
+    color: var(--primary-color);
     margin-bottom: 20px;
     text-align: center;
 }
@@ -21,7 +21,7 @@
     display: block;
     font-weight: 500;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--text-color);
 }
 
 .product-form input,
@@ -29,7 +29,7 @@
 .product-form select {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border);
     border-radius: 8px;
     font-size: 14px;
     outline: none;
@@ -60,6 +60,6 @@
 .image-preview img {
     max-width: 180px;
     border-radius: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }

@@ -1,57 +1,73 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Services.css";
-import api from "../../api/api"; // ✅ Import our axios instance
+import "../styles/Product.css";
+import api from "../../api/api";
 
-const Services = () => {
+const Product = () => {
     const [selectedCategory, setSelectedCategory] = useState("All");
-    const [services, setServices] = useState([]);
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [whatsappNumber, setWhatsappNumber] = useState("");
 
     const categories = ["All", "Entertainment", "AI Tools", "Education", "Social Media"];
 
     // ✅ Fetch products from backend
     useEffect(() => {
-        const fetchServices = async () => {
+        const fetchProducts = async () => {
             try {
                 const res = await api.get("/products");
-                setServices(res.data);
+                setProducts(res.data);
                 setLoading(false);
             } catch (err) {
                 console.error("Error fetching products:", err);
-                setError("Failed to load services. Please try again later.");
+                setError("Failed to load products. Please try again later.");
                 setLoading(false);
             }
         };
-        fetchServices();
+        fetchProducts();
+    }, []);
+
+    // ✅ Fetch WhatsApp number from DB (contact info)
+    useEffect(() => {
+        const fetchWhatsApp = async () => {
+            try {
+                const res = await api.get("/contact");
+                if (res.data?.whatsappNumber) {
+                    setWhatsappNumber(res.data.whatsappNumber);
+                }
+            } catch (err) {
+                console.error("Error fetching WhatsApp number:", err);
+            }
+        };
+        fetchWhatsApp();
     }, []);
 
     // ✅ Filter by category
-    const filteredServices =
+    const filteredProducts =
         selectedCategory === "All"
-            ? services
-            : services.filter((s) => s.category === selectedCategory);
+            ? products
+            : products.filter((p) => p.category === selectedCategory);
 
     if (loading) {
         return (
-            <div className="services-page">
-                <h2 style={{ textAlign: "center", color: "#135bec" }}>Loading services...</h2>
+            <div className="product-page">
+                <h2 style={{ textAlign: "center", color: "#135bec" }}>Loading products...</h2>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="services-page">
+            <div className="product-page">
                 <h2 style={{ textAlign: "center", color: "red" }}>{error}</h2>
             </div>
         );
     }
 
     return (
-        <div className="services-page">
-            <header className="services-header">
-                <h1>Our Services</h1>
+        <div className="product-page">
+            <header className="product-header">
+                <h1>Our Products</h1>
                 <p>
                     Explore our wide range of digital subscriptions — from entertainment to
                     AI tools, education, and social media.
@@ -71,13 +87,17 @@ const Services = () => {
                 ))}
             </div>
 
-            {/* Cards */}
-            <div className="service-grid">
-                {filteredServices.length === 0 ? (
+            {/* Product Cards */}
+            <div className="product-grid">
+                {filteredProducts.length === 0 ? (
                     <p style={{ textAlign: "center", color: "#666" }}>No products found.</p>
                 ) : (
-                    filteredServices.map((service) => (
-                        <ServiceCard key={service._id} service={service} />
+                    filteredProducts.map((product) => (
+                        <ProductCard
+                            key={product._id}
+                            product={product}
+                            whatsappNumber={whatsappNumber}
+                        />
                     ))
                 )}
             </div>
@@ -85,27 +105,40 @@ const Services = () => {
     );
 };
 
-// ✅ Card Component (same design)
-const ServiceCard = ({ service }) => {
+// ✅ Individual Product Card
+const ProductCard = ({ product, whatsappNumber }) => {
     const [plan, setPlan] = useState("Monthly");
     const [type, setType] = useState("Private");
 
+    // ✅ Price logic
     const getPrice = () => {
-        let price = plan === "Yearly" ? service.priceYearly : service.priceMonthly;
+        let price = plan === "Yearly" ? product.priceYearly : product.priceMonthly;
+        if (!price) return "N/A"; // if price not set
         if (type === "Shared") price *= 0.8;
         return Math.round(price);
     };
 
+    // ✅ WhatsApp integration
+    const handleBuyNow = () => {
+        if (!whatsappNumber) {
+            alert("WhatsApp number not available yet.");
+            return;
+        }
+
+        const message = `Hello! I'm interested in buying *${product.name}* (${plan}, ${type}) plan. Could you please share more details?`;
+        const encodedMsg = encodeURIComponent(message);
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMsg}`, "_blank");
+    };
 
     return (
-        <div className="modern-service-card">
+        <div className="modern-product-card">
             <div className="card-top">
-                <img src={service.imageUrl} alt={service.name} />
+                <img src={product.imageUrl} alt={product.name} />
             </div>
 
             <div className="card-content">
                 <div className="card-header">
-                    <h3>{service.name}</h3>
+                    <h3>{product.name}</h3>
                     <div className="price-tags">
                         <span className="price">Rs: {getPrice()}</span>
 
@@ -139,18 +172,20 @@ const ServiceCard = ({ service }) => {
                     </div>
                 </div>
 
-                <p className="desc">{service.description}</p>
+                <p className="desc">{product.description}</p>
 
-                <a href={`/services/${service._id}`} className="more-detail">
+                <a href={`/products/${product._id}`} className="more-detail">
                     More Detail →
                 </a>
 
                 <div className="buy-center">
-                    <button className="buy-now">Buy Now</button>
+                    <button className="buy-now" onClick={handleBuyNow}>
+                        Buy Now
+                    </button>
                 </div>
             </div>
         </div>
     );
 };
 
-export default Services;
+export default Product;

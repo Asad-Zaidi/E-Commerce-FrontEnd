@@ -1,27 +1,31 @@
-/* ====== HEADER / NAVBAR ====== */
 .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #ffffff;
+    background-color: var(--header-bg);
     padding: 10px 50px;
-    border-bottom: 1px solid #e0e0e0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 6px var(--shadow-color);
     position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
-/* ====== LOGO ====== */
+
 .logo-img {
     height: 45px;
     width: auto;
     object-fit: contain;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/* ====== NAV LINKS ====== */
+.logo-img:hover {
+    transform: scale(1.05);
+}
+
+
 .nav-links {
     display: flex;
     align-items: center;
@@ -31,38 +35,38 @@
 .nav-links a {
     position: relative;
     text-decoration: none;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 500;
     padding: 8px 14px;
     border-radius: 6px;
     transition: all 0.3s ease;
 }
 
-/* Hover effect (background highlight) */
+
 .nav-links a:hover {
     background-color: rgba(19, 91, 236, 0.08);
     color: #135bec;
 }
 
-/* Active link (persistent background highlight) */
+
 .nav-links a.active-link {
     background-color: #135bec;
-    color: #fff !important;
+    color: var(--text-primary);
     font-weight: 600;
     border-radius: 6px;
     box-shadow: 0 4px 8px rgba(19, 91, 236, 0.15);
 }
 
-/* Keep highlight active always, even on click elsewhere */
+
 .nav-links a.active-link:focus,
 .nav-links a.active-link:active {
     background-color: #135bec;
-    color: #fff;
+    color: var(--text-primary);
     outline: none;
     box-shadow: 0 4px 8px rgba(19, 91, 236, 0.15);
 }
 
-/* Remove unwanted focus outlines */
+
 .nav-links a:focus,
 .nav-links a:active {
     outline: none;
@@ -70,7 +74,7 @@
     box-shadow: none;
 }
 
-/* ====== RIGHT BUTTONS ====== */
+
 .header-right {
     display: flex;
     align-items: center;
@@ -91,7 +95,7 @@
     transition: all 0.3s ease;
 }
 
-/* Login button */
+
 .btn-login {
     background-color: #f0f4ff;
     color: #135bec;
@@ -102,7 +106,7 @@
     background-color: #e3ecff;
 }
 
-/* Get Started button */
+
 .btn-start {
     background-color: #135bec;
     color: #fff;
@@ -114,7 +118,7 @@
     transform: translateY(-1px);
 }
 
-/* ====== HAMBURGER MENU ====== */
+
 .menu-toggle {
     display: none;
     cursor: pointer;
@@ -122,7 +126,7 @@
 
 .menu-icon {
     font-size: 26px;
-    color: #333;
+    color: var(--text-primary);
     transition: color 0.3s ease;
 }
 
@@ -130,7 +134,7 @@
     color: #135bec;
 }
 
-/* ====== MOBILE MENU ====== */
+
 .mobile-buttons {
     display: none;
 }
@@ -141,7 +145,7 @@
         top: 70px;
         left: 0;
         right: 0;
-        background: white;
+        background: var(--bg-primary);
         flex-direction: column;
         align-items: center;
         gap: 20px;
@@ -152,7 +156,8 @@
 
     .nav-links.open {
         display: flex;
-        animation: slideDown 0.3s ease;
+        background: var(--bg-primary) !important    ;
+        animation: slideDown 6s ease;
     }
 
     .header-right {
@@ -174,7 +179,7 @@
     }
 }
 
-/* ====== SLIDE ANIMATION ====== */
+
 @keyframes slideDown {
     from {
         opacity: 0;
