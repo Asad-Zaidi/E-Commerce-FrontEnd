@@ -1,82 +1,76 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Product.css";
+import { Link } from "react-router-dom";
 import api from "../../api/api";
+import "../styles/Product.css";
+import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+
+const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+        if (rating >= i) stars.push(<FaStar key={i} color="#ffc107" />);
+        else if (rating >= i - 0.5) stars.push(<FaStarHalfAlt key={i} color="#ffc107" />);
+        else stars.push(<FaRegStar key={i} color="#ccc" />);
+    }
+    return stars;
+};
 
 const Product = () => {
+    const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [whatsappNumber, setWhatsappNumber] = useState("");
+    const [categories, setCategories] = useState([]);
 
-    const categories = ["All", "Entertainment", "AI Tools", "Education", "Social Media"];
+    // Fetch products and categories from DB
+    const fetchProductsAndCategories = async () => {
+        try {
+            const res = await api.get("/products");
+            setProducts(res.data);
 
-    // ✅ Fetch products from backend
+            const catRes = await api.get("/categories");
+            const categoryNames = ["All", ...catRes.data.map(cat => cat.name)];
+            setCategories(categoryNames);
+        } catch (err) {
+            console.error("Error fetching products or categories:", err);
+        }
+    };
+
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const res = await api.get("/products");
-                setProducts(res.data);
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching products:", err);
-                setError("Failed to load products. Please try again later.");
-                setLoading(false);
-            }
-        };
-        fetchProducts();
+        fetchProductsAndCategories();
+
+        // Optional: Polling for new categories every 10 seconds
+        const interval = setInterval(fetchProductsAndCategories, 10000);
+        return () => clearInterval(interval);
     }, []);
 
-    // ✅ Fetch WhatsApp number from DB (contact info)
-    useEffect(() => {
-        const fetchWhatsApp = async () => {
-            try {
-                const res = await api.get("/contact");
-                if (res.data?.whatsappNumber) {
-                    setWhatsappNumber(res.data.whatsappNumber);
-                }
-            } catch (err) {
-                console.error("Error fetching WhatsApp number:", err);
-            }
-        };
-        fetchWhatsApp();
-    }, []);
-
-    // ✅ Filter by category
-    const filteredProducts =
-        selectedCategory === "All"
-            ? products
-            : products.filter((p) => p.category === selectedCategory);
-
-    if (loading) {
-        return (
-            <div className="product-page">
-                <h2 style={{ textAlign: "center", color: "#135bec" }}>Loading products...</h2>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="product-page">
-                <h2 style={{ textAlign: "center", color: "red" }}>{error}</h2>
-            </div>
-        );
-    }
+    const filteredProducts = products
+        .filter(p => selectedCategory === "All" || p.category === selectedCategory)
+        .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
         <div className="product-page">
-            <header className="product-header">
-                <h1>Our Products</h1>
-                <p>
-                    Explore our wide range of digital subscriptions — from entertainment to
-                    AI tools, education, and social media.
-                </p>
-            </header>
+            {/* Search Bar */}
+            <div className="search-bar">
+                <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && console.log("Searching for:", searchTerm)}
+                />
+                <FaSearch
+                    className="search-icon"
+                    onClick={() => console.log("Searching for:", searchTerm)}
+                />
+            </div>
 
-            {/* Category Filter */}
+            <div className="product-header">
+                <h1>Our Products</h1>
+                <p>Explore the best services and packages tailored to your needs.</p>
+            </div>
+
+            {/* Filter Buttons */}
             <div className="filter-bar">
-                {categories.map((cat) => (
+                {categories.map(cat => (
                     <button
                         key={cat}
                         className={`filter-btn ${selectedCategory === cat ? "active" : ""}`}
@@ -88,102 +82,56 @@ const Product = () => {
             </div>
 
             {/* Product Cards */}
+            {/* Product Cards */}
             <div className="product-grid">
                 {filteredProducts.length === 0 ? (
-                    <p style={{ textAlign: "center", color: "#666" }}>No products found.</p>
+                    <p className="no-products">⚠️ No products available in this category.</p>
                 ) : (
-                    filteredProducts.map((product) => (
-                        <ProductCard
-                            key={product._id}
-                            product={product}
-                            whatsappNumber={whatsappNumber}
-                        />
+                    filteredProducts.map(product => (
+                        <div className="modern-product-card" key={product._id}>
+                            <div className="card-top">
+                                <Link to={`/products/${product._id}`}>
+                                    <img src={product.imageUrl} alt={product.name} />
+                                </Link>
+                            </div>
+
+                            <div className="card-content">
+                                <div className="card-header">
+                                    <h3>
+                                        {searchTerm ? (
+                                            <>
+                                                {product.name.split(new RegExp(`(${searchTerm})`, "gi")).map((part, i) =>
+                                                    part.toLowerCase() === searchTerm.toLowerCase() ? (
+                                                        <span key={i} style={{ backgroundColor: "#fffa91" }}>{part}</span>
+                                                    ) : (
+                                                        part
+                                                    )
+                                                )}
+                                            </>
+                                        ) : (
+                                            product.name
+                                        )}
+                                    </h3>
+
+                                    <div className="price-tags">
+                                        <span className="price">Rs. {product.priceMonthly || 0}</span>
+                                    </div>
+                                </div>
+
+                                <div className="rating-section">
+                                    {renderStars(product.avgRating || 0)}
+                                    <span className="review-count">({product.totalReviews || 0})</span>
+                                </div>
+
+                                <Link to={`/products/${product._id}`} className="more-detail">
+                                    Show Details →
+                                </Link>
+                            </div>
+                        </div>
                     ))
                 )}
             </div>
-        </div>
-    );
-};
 
-// ✅ Individual Product Card
-const ProductCard = ({ product, whatsappNumber }) => {
-    const [plan, setPlan] = useState("Monthly");
-    const [type, setType] = useState("Private");
-
-    // ✅ Price logic
-    const getPrice = () => {
-        let price = plan === "Yearly" ? product.priceYearly : product.priceMonthly;
-        if (!price) return "N/A"; // if price not set
-        if (type === "Shared") price *= 0.8;
-        return Math.round(price);
-    };
-
-    // ✅ WhatsApp integration
-    const handleBuyNow = () => {
-        if (!whatsappNumber) {
-            alert("WhatsApp number not available yet.");
-            return;
-        }
-
-        const message = `Hello! I'm interested in buying *${product.name}* (${plan}, ${type}) plan. Could you please share more details?`;
-        const encodedMsg = encodeURIComponent(message);
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMsg}`, "_blank");
-    };
-
-    return (
-        <div className="modern-product-card">
-            <div className="card-top">
-                <img src={product.imageUrl} alt={product.name} />
-            </div>
-
-            <div className="card-content">
-                <div className="card-header">
-                    <h3>{product.name}</h3>
-                    <div className="price-tags">
-                        <span className="price">Rs: {getPrice()}</span>
-
-                        <div className="tag-group">
-                            <span
-                                className={`tag ${plan === "Monthly" ? "active" : ""}`}
-                                onClick={() => setPlan("Monthly")}
-                            >
-                                Monthly
-                            </span>
-                            <span
-                                className={`tag ${plan === "Yearly" ? "active" : ""}`}
-                                onClick={() => setPlan("Yearly")}
-                            >
-                                Yearly
-                            </span>
-
-                            <span
-                                className={`tag ${type === "Private" ? "active" : ""}`}
-                                onClick={() => setType("Private")}
-                            >
-                                Private
-                            </span>
-                            <span
-                                className={`tag ${type === "Shared" ? "active" : ""}`}
-                                onClick={() => setType("Shared")}
-                            >
-                                Shared
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <p className="desc">{product.description}</p>
-
-                <a href={`/products/${product._id}`} className="more-detail">
-                    More Detail →
-                </a>
-
-                <div className="buy-center">
-                    <button className="buy-now" onClick={handleBuyNow}>
-                        Buy Now
-                    </button>
-                </div>
-            </div>
         </div>
     );
 };

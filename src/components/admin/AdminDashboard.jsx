@@ -45,8 +45,32 @@ const AdminDashboard = () => {
                 ]);
                 setStats(adminRes.data);
                 setReviewStats(reviewRes.data);
+                setStats(adminRes.data);
+
+                // setReviewStats({
+                //     productStats: Array.isArray(reviewRes.data) ? reviewRes.data.map(r => ({
+                //         productName: r.name || "Unknown",
+                //         avgRating: r.avgRating || 0,
+                //         totalReviews: r.totalReviews || 0,
+                //     })) : [],
+                //     distribution: [], // no distribution data in backend
+                // });
 
                 // 🔹 Show only last 7 days of visits
+
+                setReviewStats({
+                    productStats: Array.isArray(reviewRes.data.productStats)
+                        ? reviewRes.data.productStats.map(r => ({
+                            productName: r.name || "Unknown",
+                            avgRating: r.avgRating || 0,
+                            totalReviews: r.totalReviews || 0,
+                        }))
+                        : [],
+                    distribution: Array.isArray(reviewRes.data.distribution)
+                        ? reviewRes.data.distribution
+                        : [],
+                });
+
                 const recentVisits = visitRes.data.slice(-7);
                 setDailyVisits(recentVisits);
             } catch (err) {

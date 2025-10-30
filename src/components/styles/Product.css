@@ -3,9 +3,42 @@
     padding: 50px 30px;
 }
 
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.search-bar input {
+    width: 100%;
+    border-radius: 25px;
+    border: 1px solid var(--border-color);
+    font-size: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: #135bec;
+    box-shadow: 0 4px 10px rgba(19, 91, 236, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 16px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #135bec;
+    cursor: pointer;
+}
+
 .product-header {
     text-align: center;
-    padding: 80px 20px 40px;
+    padding: 20px 40px;
     background: var(--bg-secondary);
 }
 
@@ -21,7 +54,6 @@
     margin: 0 auto;
     font-size: 16px;
 }
-
 
 .filter-bar {
     display: flex;
@@ -49,7 +81,6 @@
     color: #fff;
     box-shadow: 0 4px 10px rgba(19, 91, 236, 0.2);
 }
-
 
 .product-grid {
     display: flex;
@@ -79,7 +110,8 @@
 
 .card-top {
     border: 1px solid var(--border-color);
-    background: var(--product-img-bg);
+
+    background: #fafafa;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -151,7 +183,7 @@
 
 
 .desc {
-    color: var(--text-secondary)!important;
+    color: var(--text-secondary) !important;
     font-size: 14px;
     margin: 12px 0;
     flex-grow: 1;

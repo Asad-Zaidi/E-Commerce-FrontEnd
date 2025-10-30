@@ -25,7 +25,7 @@
 /* 🌑 Dark mode */
 [data-theme='dark'] {
     --bg-primary: #1a1a1a;
-    --bg-secondary: #141414;
+    --bg-secondary: rgb(32, 32, 32);
     --text-color: #ffffff;
     --text-secondary: #e0e0e0;
     --primary-color: #4d8ef7;
@@ -58,7 +58,7 @@ body {
 }
 
 /* Buttons */
-button {
+/* button {
     background: var(--btn-bg);
     color: var(--btn-text);
     border: none;
@@ -71,7 +71,7 @@ button {
 button:hover {
     background: var(--btn-bg-hover);
     transform: translateY(-1px);
-}
+} */
 
 /* Inputs */
 input,

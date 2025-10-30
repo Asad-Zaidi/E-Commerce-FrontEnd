@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../api/api";
 import "./AdminContact.css";
 
+
 const AdminContact = () => {
     const [contact, setContact] = useState(null);
     const [loading, setLoading] = useState(true);

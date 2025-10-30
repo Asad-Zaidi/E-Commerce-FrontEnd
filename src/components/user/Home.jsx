@@ -4,13 +4,15 @@ import api from "../../api/api";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const Home = () => {
     const [banners, setBanners] = useState([]);
     const [popularProducts, setPopularProducts] = useState([]);
-    const productsRef = useRef(null); // Reference to scroll target
+    const productsRef = useRef(null);
+    const scrollRef = useRef(null);
 
-    // 🖼️ Fetch active banners
+
     useEffect(() => {
         const fetchBanners = async () => {
             try {
@@ -23,7 +25,7 @@ const Home = () => {
         fetchBanners();
     }, []);
 
-    // 💎 Fetch popular products
+
     useEffect(() => {
         const fetchPopular = async () => {
             try {
@@ -36,9 +38,17 @@ const Home = () => {
         fetchPopular();
     }, []);
 
-    // 📜 Smooth scroll function
+
     const scrollToProducts = () => {
         productsRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+
+    const scroll = (direction) => {
+        if (scrollRef.current) {
+            const scrollAmount = direction === "left" ? -300 : 300;
+            scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        }
     };
 
     const sliderSettings = {
@@ -95,22 +105,35 @@ const Home = () => {
                 <h2>Popular Products</h2>
                 <p>Our most viewed and loved digital services.</p>
 
-                <div className="product-grid">
-                    {popularProducts.length > 0 ? (
-                        popularProducts.map((p) => (
-                            <div className="product-card" key={p._id}>
-                                <img src={p.imageUrl} alt={p.name} />
-                                <h3>{p.name}</h3>
-                                <p>{p.description?.substring(0, 60)}...</p>
-                                <span className="price">Rs {p.priceMonthly}</span>
-                                <a href={`/products/${p._id}`} className="detail-btn">
-                                    View Details →
-                                </a>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="no-products">No popular products found.</p>
-                    )}
+                <div className="scroll-controls">
+                    <button className="scroll-btn" onClick={() => scroll("left")}>
+                        <FaChevronLeft />
+                    </button>
+
+                    <div className="product-scroll-container" ref={scrollRef}>
+                        {popularProducts.length > 0 ? (
+                            popularProducts.map((p) => (
+                                <div className="product-card small" key={p._id}>
+                                    <img src={p.imageUrl} alt={p.name} />
+                                    <div className="product-info">
+                                        <h3>{p.name}</h3>
+                                        <span className="price">Rs. {p.priceMonthly}</span>
+                                    </div>
+                                    <a href={`/products/${p._id}`} className="detail-btn">
+                                        Detail →
+                                    </a>
+                                </div>
+
+
+                            ))
+                        ) : (
+                            <p className="no-products">No popular products found.</p>
+                        )}
+                    </div>
+
+                    <button className="scroll-btn" onClick={() => scroll("right")}>
+                        <FaChevronRight />
+                    </button>
                 </div>
             </section>
         </div>

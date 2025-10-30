@@ -24,14 +24,21 @@ const ProductForm = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const categories = [
-        "Entertainment",
-        "AI Tools",
-        "Education",
-        "Social Media",
-        "Productivity",
-        "Other",
-    ];
+    // const categories = [
+    //     "Entertainment",
+    //     "AI Tools",
+    //     "Education",
+    //     "Social Media",
+    //     "Productivity",
+    //     "Other",
+    // ];
+
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        api.get("/categories").then((res) => setCategories(res.data));
+    }, []);
+
 
     // ✅ Fetch product if editing
     useEffect(() => {
@@ -70,12 +77,18 @@ const ProductForm = () => {
             reader.onload = (ev) => setImagePreview(ev.target.result);
             reader.readAsDataURL(file);
         }
+        else if (formData.imageUrl) {
+            setImagePreview(formData.imageUrl);
+        }
+
     };
 
     // ✅ Submit form
+    // ✅ Submit form (fixed)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
         try {
             const data = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
@@ -85,21 +98,29 @@ const ProductForm = () => {
             if (!enableMonthly) data.delete("priceMonthly");
             if (!enableYearly) data.delete("priceYearly");
 
+            const config = {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            };
+
             if (isEditing) {
-                await api.put(`/products/${id}`, data);
+                await api.put(`/products/${id}`, data, config);
                 alert("✅ Product updated successfully!");
             } else {
-                await api.post("/products", data);
+                await api.post("/products", data, config);
                 alert("✅ Product added successfully!");
             }
+
             navigate("/admin/products");
         } catch (err) {
-            console.error("Error saving product:", err);
+            console.error("❌ Error saving product:", err);
             alert("❌ Error saving product!");
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="admin-form-container">
@@ -129,14 +150,29 @@ const ProductForm = () => {
 
                 <div className="form-group">
                     <label>Category</label>
-                    <select name="category" value={formData.category} onChange={handleChange} required>
+                    {/* <select name="category" value={formData.category} onChange={handleChange} required>
                         <option value="">-- Select Category --</option>
                         {categories.map((cat) => (
                             <option key={cat} value={cat}>
                                 {cat}
                             </option>
                         ))}
+                    </select> */}
+                    <select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Category</option>
+                        {categories.map((cat) => (
+                            <option key={cat._id} value={cat.name}>
+                                {cat.name}
+                            </option>
+                        ))}
                     </select>
+
+
                 </div>
 
                 <div className="price-section">

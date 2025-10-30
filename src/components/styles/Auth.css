@@ -2,70 +2,115 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 89vh;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9f0ff, #f9fbff);
+    padding: 20px;
 }
 
+
 .auth-box {
-    background-color: var(--card-bg);
+    background-color: var(--bg-primary);
     padding: 40px 50px;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    width: 380px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    width: 400px;
     text-align: center;
     animation: fadeIn 0.6s ease;
 }
 
 .auth-box h2 {
-    margin-bottom: 25px;
+    margin-bottom: 8px;
     color: #135bec;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 600;
 }
 
-/* Form styles */
+.auth-box p {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
 }
 
-.form-group {
-    text-align: left;
+
+.floating-label {
+    position: relative;
 }
 
-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 5px;
-    display: block;
-}
-
-input {
+.floating-label input,
+.floating-label select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px;
     border: 1px solid #d0d0d0;
-    border-radius: 6px;
+    border-radius: 8px;
     outline: none;
     font-size: 14px;
-    transition: border 0.3s ease;
+    background-color: var(--bg-primary);
+    transition: all 0.3s ease;
 }
 
-input:focus {
+.floating-label label {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    color: #777;
+    font-size: 14px;
+    pointer-events: none;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.floating-label input:focus,
+.floating-label select:focus {
     border-color: #135bec;
+    box-shadow: 0 0 5px rgba(19, 91, 236, 0.2);
 }
 
-/* Buttons */
+
+.floating-label input:focus+label,
+.floating-label input:not(:placeholder-shown)+label,
+.floating-label select:focus+label,
+.floating-label select:valid+label {
+    top: -8px;
+    left: 10px;
+    font-size: 12px;
+    background: var(--bg-secondary);
+    padding: 0 4px;
+    color: #135bec;
+}
+
+
+.forgot-password {
+    text-align: right;
+    font-size: 13px;
+    color: #135bec;
+    cursor: pointer;
+    margin-top: -5px;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #0f4bb3;
+    text-decoration: underline;
+}
+
+
 .auth-btn {
     background-color: #135bec;
     color: white;
     border: none;
-    padding: 10px;
-    border-radius: 6px;
+    padding: 12px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
-    transition: background 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .auth-btn:hover {
@@ -73,27 +118,27 @@ input:focus {
     transform: translateY(-2px);
 }
 
-/* Toggle section */
+
 .toggle-text {
     margin-top: 18px;
-    font-size: 14px;
+    font-size: 15px;
     color: #444;
+    text-align: center;
 }
 
-.toggle-btn {
-    background: none;
-    color: #135bec;
-    border: none;
+.auth-toggle-link {
+    color: #007bff;
     font-weight: 600;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
-.toggle-btn:hover {
-    color: #0f4bb3;
+.auth-toggle-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
 }
 
-/* Animation */
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -106,10 +151,14 @@ input:focus {
     }
 }
 
-/* Responsive */
+
 @media (max-width: 480px) {
     .auth-box {
         width: 90%;
-        padding: 30px;
+        padding: 30px 25px;
+    }
+
+    .auth-btn {
+        font-size: 15px;
     }
 }

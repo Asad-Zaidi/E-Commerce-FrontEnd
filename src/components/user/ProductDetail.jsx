@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api/api";
 import "../styles/ProductDetail.css";
@@ -7,54 +7,82 @@ import { FaStar } from "react-icons/fa";
 const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const [priceType, setPriceType] = useState("monthly");
+    const [currentPrice, setCurrentPrice] = useState(0);
     const [reviews, setReviews] = useState([]);
-    const [username, setUsername] = useState("");
-    const [rating, setRating] = useState(0);
-    const [comment, setComment] = useState("");
-    const [loading, setLoading] = useState(true);
+    const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
 
-    // Fetch product + reviews
+    // Fetch Product
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchProduct = async () => {
             try {
-                const prodRes = await api.get(`/products/${id}`);
-                setProduct(prodRes.data);
-
-                const revRes = await api.get(`/reviews/${id}`);
-                setReviews(revRes.data);
+                const res = await api.get(`/products/${id}`);
+                setProduct(res.data);
+                setCurrentPrice(res.data.priceMonthly || 0);
             } catch (err) {
-                console.error("Error fetching product details:", err);
-            } finally {
-                setLoading(false);
+                console.error("Error fetching product:", err);
             }
         };
-        fetchData();
+        fetchProduct();
     }, [id]);
 
-    // Submit new review
+    // Fetch Reviews
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const res = await api.get(`/reviews/${id}`);
+                setReviews(res.data);
+            } catch (err) {
+                console.error("Error fetching reviews:", err);
+            }
+        };
+        fetchReviews();
+    }, [id]);
+
+    // Handle review form submission
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
-        if (!rating) return alert("Please select a rating.");
-
         try {
             const res = await api.post("/reviews", {
                 productId: id,
-                username: username || "Anonymous",
-                rating,
-                comment,
+                ...reviewForm,
             });
+            // setReviews([res.data, ...reviews]); // ✅ Now will include name/comment
+            // setReviewForm({ name: "", comment: "", rating: 0 });
 
-            setReviews([res.data, ...reviews]); // instantly show new review
-            setRating(0);
-            setComment("");
-            setUsername("");
+            // // Optionally refetch product for updated avg rating
+            // const refreshed = await api.get(`/products/${id}`);
+            // setProduct(refreshed.data);
+            setReviews((prev) => [res.data, ...prev]);
+            setReviewForm({ name: "", comment: "", rating: 0 });
+
+            // Refetch updated product stats (avgRating, totalReviews)
+            const updatedProduct = await api.get(`/products/${id}`);
+            setProduct(updatedProduct.data);
+
+            // Optional: trigger a global event to refresh Product.jsx list too
+            window.dispatchEvent(new Event("reviewsUpdated"));
+
+
         } catch (err) {
-            console.error("Error submitting review:", err);
+            console.error("Error posting review:", err);
         }
     };
 
-    if (loading) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
-    if (!product) return <h2 style={{ textAlign: "center" }}>Product not found.</h2>;
+
+    if (!product) return <p style={{ textAlign: "center" }}>Loading...</p>;
+
+    // Handle price type change
+    const handlePriceChange = (type) => {
+        setPriceType(type);
+        const priceMap = {
+            monthly: product.priceMonthly,
+            yearly: product.priceYearly,
+            shared: product.priceShared,
+            private: product.pricePrivate,
+        };
+        setCurrentPrice(priceMap[type] || 0);
+    };
 
     return (
         <div className="product-detail">
@@ -64,71 +92,77 @@ const ProductDetail = () => {
                     <h1>{product.name}</h1>
                     <p className="desc">{product.description}</p>
 
-                    <div className="price-section">
-                        {product.priceMonthly && <p><strong>Monthly:</strong> Rs {product.priceMonthly}</p>}
-                        {product.priceYearly && <p><strong>Yearly:</strong> Rs {product.priceYearly}</p>}
+                    {/* Price Selector */}
+                    <div className="tag-group" style={{ marginBottom: "10px" }}>
+                        {["monthly", "yearly", "shared", "private"].map((type) => (
+                            <span
+                                key={type}
+                                className={`tag ${priceType === type ? "active" : ""}`}
+                                onClick={() => handlePriceChange(type)}
+                            >
+                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </span>
+                        ))}
                     </div>
 
-                    <p><strong>Category:</strong> {product.category}</p>
+                    <h2 style={{ color: "var(--primary-color)" }}>Rs. {currentPrice}</h2>
+
                     <button className="buy-btn">Buy Now</button>
                 </div>
             </div>
 
+            {/* Reviews Section */}
             <div className="review-section">
-                <h2>Customer Reviews</h2>
+                <h3>Customer Reviews</h3>
 
-                {/* Review Form */}
-                <form onSubmit={handleReviewSubmit} className="review-form">
+                <form className="review-form" onSubmit={handleReviewSubmit}>
                     <input
                         type="text"
-                        placeholder="Your name (optional)"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Your name"
+                        value={reviewForm.name}
+                        onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                        required
                     />
+                    <textarea
+                        rows="4"
+                        placeholder="Your review"
+                        value={reviewForm.comment}
+                        onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                        required
+                    />
+
+                    {/* Star Rating */}
                     <div className="star-rating">
                         {[1, 2, 3, 4, 5].map((star) => (
                             <FaStar
                                 key={star}
                                 size={22}
-                                color={star <= rating ? "#ffc107" : "#e4e5e9"}
-                                onClick={() => setRating(star)}
-                                className="star"
+                                color={star <= reviewForm.rating ? "#FFD700" : "#ccc"}
+                                onClick={() => setReviewForm({ ...reviewForm, rating: star })}
                             />
                         ))}
                     </div>
-                    <textarea
-                        placeholder="Write your review..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        rows="4"
-                    ></textarea>
-                    <button type="submit" className="submit-btn">Submit Review</button>
+
+                    <button type="submit" className="submit-btn">
+                        Submit Review
+                    </button>
                 </form>
 
-                {/* Review List */}
+                {/* Reviews List */}
                 <div className="reviews-list">
-                    {reviews.length === 0 ? (
-                        <p>No reviews yet. Be the first to review!</p>
-                    ) : (
-                        reviews.map((r) => (
-                            <div key={r._id} className="review-card">
-                                <div className="review-header">
-                                    <h4>{r.username}</h4>
-                                    <div className="stars">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <FaStar
-                                                key={star}
-                                                size={16}
-                                                color={star <= r.rating ? "#ffc107" : "#e4e5e9"}
-                                            />
-                                        ))}
-                                    </div>
+                    {reviews.map((r) => (
+                        <div key={r._id} className="review-card">
+                            <div className="review-header">
+                                <strong>{r.name}</strong>
+                                <div>
+                                    {[...Array(5)].map((_, i) => (
+                                        <FaStar key={i} size={14} color={i < r.rating ? "#FFD700" : "#ccc"} />
+                                    ))}
                                 </div>
-                                <p className="review-comment">{r.comment}</p>
-                                <small>{new Date(r.createdAt).toLocaleDateString()}</small>
                             </div>
-                        ))
-                    )}
+                            <p className="review-comment">{r.comment}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
