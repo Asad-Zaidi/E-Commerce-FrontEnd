@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import api from "../../api/api";
 import "../styles/Product.css";
 import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { Helmet } from "react-helmet-async";
 
 const renderStars = (rating) => {
     const stars = [];
@@ -20,7 +21,7 @@ const Product = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    // Fetch products and categories from DB
+    
     const fetchProductsAndCategories = async () => {
         try {
             const res = await api.get("/products");
@@ -37,7 +38,7 @@ const Product = () => {
     useEffect(() => {
         fetchProductsAndCategories();
 
-        // Optional: Polling for new categories every 10 seconds
+        
         const interval = setInterval(fetchProductsAndCategories, 10000);
         return () => clearInterval(interval);
     }, []);
@@ -47,92 +48,99 @@ const Product = () => {
         .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
     return (
-        <div className="product-page">
-            {/* Search Bar */}
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && console.log("Searching for:", searchTerm)}
-                />
-                <FaSearch
-                    className="search-icon"
-                    onClick={() => console.log("Searching for:", searchTerm)}
-                />
-            </div>
+        <>
+            <Helmet>
+                <title>Products - Social Media Services</title>
+                <meta name="description" content="Browse our range of powerful digital tools and flexible subscription plans tailored to your business and your needs." />
+            </Helmet>
 
-            <div className="product-header">
-                <h1>Our Products</h1>
-                <p>Explore the best services and packages tailored to your needs.</p>
-            </div>
+            <div className="product-page">
+                {/* Search Bar */}
+                <div className="search-bar">
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && console.log("Searching for:", searchTerm)}
+                    />
+                    <FaSearch
+                        className="search-icon"
+                        onClick={() => console.log("Searching for:", searchTerm)}
+                    />
+                </div>
 
-            {/* Filter Buttons */}
-            <div className="filter-bar">
-                {categories.map(cat => (
-                    <button
-                        key={cat}
-                        className={`filter-btn ${selectedCategory === cat ? "active" : ""}`}
-                        onClick={() => setSelectedCategory(cat)}
-                    >
-                        {cat}
-                    </button>
-                ))}
-            </div>
+                <div className="product-header">
+                    <h1>Our Products</h1>
+                    <p>Explore the best services and packages tailored to your needs.</p>
+                </div>
 
-            {/* Product Cards */}
-            {/* Product Cards */}
-            <div className="product-grid">
-                {filteredProducts.length === 0 ? (
-                    <p className="no-products">⚠️ No products available in this category.</p>
-                ) : (
-                    filteredProducts.map(product => (
-                        <div className="modern-product-card" key={product._id}>
-                            <div className="card-top">
-                                <Link to={`/products/${product._id}`}>
-                                    <img src={product.imageUrl} alt={product.name} />
-                                </Link>
-                            </div>
+                {/* Filter Buttons */}
+                <div className="filter-bar">
+                    {categories.map(cat => (
+                        <button
+                            key={cat}
+                            className={`filter-btn ${selectedCategory === cat ? "active" : ""}`}
+                            onClick={() => setSelectedCategory(cat)}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
 
-                            <div className="card-content">
-                                <div className="card-header">
-                                    <h3>
-                                        {searchTerm ? (
-                                            <>
-                                                {product.name.split(new RegExp(`(${searchTerm})`, "gi")).map((part, i) =>
-                                                    part.toLowerCase() === searchTerm.toLowerCase() ? (
-                                                        <span key={i} style={{ backgroundColor: "#fffa91" }}>{part}</span>
-                                                    ) : (
-                                                        part
-                                                    )
-                                                )}
-                                            </>
-                                        ) : (
-                                            product.name
-                                        )}
-                                    </h3>
+                {/* Product Cards */}
+                {/* Product Cards */}
+                <div className="product-grid">
+                    {filteredProducts.length === 0 ? (
+                        <p className="no-products">⚠️ No products available in this category.</p>
+                    ) : (
+                        filteredProducts.map(product => (
+                            <div className="modern-product-card" key={product._id}>
+                                <div className="card-top">
+                                    <Link to={`/products/${product._id}`}>
+                                        <img src={product.imageUrl} alt={product.name} />
+                                    </Link>
+                                </div>
 
-                                    <div className="price-tags">
-                                        <span className="price">Rs. {product.priceMonthly || 0}</span>
+                                <div className="card-content">
+                                    <div className="card-header">
+                                        <h3>
+                                            {searchTerm ? (
+                                                <>
+                                                    {product.name.split(new RegExp(`(${searchTerm})`, "gi")).map((part, i) =>
+                                                        part.toLowerCase() === searchTerm.toLowerCase() ? (
+                                                            <span key={i} style={{ backgroundColor: "#fffa91" }}>{part}</span>
+                                                        ) : (
+                                                            part
+                                                        )
+                                                    )}
+                                                </>
+                                            ) : (
+                                                product.name
+                                            )}
+                                        </h3>
+
+                                        <div className="price-tags">
+                                            <span className="price">Rs. {product.priceMonthly || 0}</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="rating-section">
-                                    {renderStars(product.avgRating || 0)}
-                                    <span className="review-count">({product.totalReviews || 0})</span>
-                                </div>
+                                    <div className="rating-section">
+                                        {renderStars(product.avgRating || 0)}
+                                        <span className="review-count">({product.totalReviews || 0})</span>
+                                    </div>
 
-                                <Link to={`/products/${product._id}`} className="more-detail">
-                                    Show Details →
-                                </Link>
+                                    <Link to={`/products/${product._id}`} className="more-detail">
+                                        Show Details →
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    ))
-                )}
-            </div>
+                        ))
+                    )}
+                </div>
 
-        </div>
+            </div>
+        </>
     );
 };
 
