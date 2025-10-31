@@ -1,3 +1,151 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/api";
@@ -21,7 +169,6 @@ const Product = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    
     const fetchProductsAndCategories = async () => {
         try {
             const res = await api.get("/products");
@@ -37,8 +184,6 @@ const Product = () => {
 
     useEffect(() => {
         fetchProductsAndCategories();
-
-        
         const interval = setInterval(fetchProductsAndCategories, 10000);
         return () => clearInterval(interval);
     }, []);
@@ -89,7 +234,6 @@ const Product = () => {
                 </div>
 
                 {/* Product Cards */}
-                {/* Product Cards */}
                 <div className="product-grid">
                     {filteredProducts.length === 0 ? (
                         <p className="no-products">⚠️ No products available in this category.</p>
@@ -97,7 +241,7 @@ const Product = () => {
                         filteredProducts.map(product => (
                             <div className="modern-product-card" key={product._id}>
                                 <div className="card-top">
-                                    <Link to={`/products/${product._id}`}>
+                                    <Link to={`/products/${product.slug}`}>
                                         <img src={product.imageUrl} alt={product.name} />
                                     </Link>
                                 </div>
@@ -130,7 +274,7 @@ const Product = () => {
                                         <span className="review-count">({product.totalReviews || 0})</span>
                                     </div>
 
-                                    <Link to={`/products/${product._id}`} className="more-detail">
+                                    <Link to={`/products/${product.slug}`} className="more-detail">
                                         Show Details →
                                     </Link>
                                 </div>
@@ -138,7 +282,6 @@ const Product = () => {
                         ))
                     )}
                 </div>
-
             </div>
         </>
     );

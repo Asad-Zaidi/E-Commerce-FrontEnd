@@ -1,0 +1,122 @@
+API Endpoints for EDM-Website Backend
+
+Base mount paths (from server.js):
+- /api/auth -> authRoutes
+- /api/products -> productRoutes
+- /api/admin -> adminRoutes
+- /api/contact -> contactRoutes
+- /api/messages -> messageRoutes
+- /api/reviews -> reviewRoutes
+- /api/banners -> bannerRoutes
+- /api/categories -> categoryRoutes
+
+---
+
+/ API: Authentication
+
+POST /api/auth/register
+- Description: Register first admin (call once).
+- Notes: Creates an admin user. Likely protected in production (only used once).
+
+POST /api/auth/login
+- Description: Login for admin (returns token/session).
+
+---
+
+/ API: Products
+
+GET /api/products/
+- Description: List all products (public)
+
+GET /api/products/popular
+- Description: Get popular products (sorted by viewCount)
+
+GET /api/products/:id
+- Description: Get product detail by ID (increments viewCount)
+
+POST /api/products/
+- Description: Create a new product (expects multipart image field "image")
+- Notes: Comment in route indicates this is an admin-protected route.
+
+PUT /api/products/:id
+- Description: Update product by ID (can upload image)
+- Notes: Admin-protected (per route comments)
+
+DELETE /api/products/:id
+- Description: Delete a product by ID
+- Notes: Admin-protected (per route comments)
+
+---
+
+/ API: Admin (dashboard & analytics)
+
+GET /api/admin/stats
+- Description: Returns dashboard summary (totalProducts, totalUsers, totalVisits, totalReviews, averageRating, recentProducts, recentActivities)
+
+GET /api/admin/daily-visits
+- Description: Returns daily visit aggregation (date, count)
+
+---
+
+/ API: Contact & Messages
+
+GET /api/contact/
+- Description: Get site contact information (public)
+
+PUT /api/contact/
+- Description: Update contact information (admin-editable)
+
+POST /api/messages/
+- Description: Submit a contact form message (public). Fields: name, email, message
+
+---
+
+/ API: Reviews
+
+POST /api/reviews/
+- Description: Add a new review for a product (public)
+
+GET /api/reviews/admin/stats
+- Description: Get review statistics (admin view)
+
+GET /api/reviews/:productId
+- Description: Get reviews for a specific product
+
+---
+
+/ API: Banners
+
+GET /api/banners/active
+- Description: List active banners for frontend
+
+GET /api/banners/all
+- Description: Admin: List all banners (requires auth + admin)
+
+POST /api/banners/
+- Description: Admin: Create a banner (multipart image field "image")
+
+DELETE /api/banners/:id
+- Description: Admin: Delete a banner by ID
+
+PUT /api/banners/:id/toggle
+- Description: Admin: Toggle banner active status by ID
+
+---
+
+/ API: Categories
+
+GET /api/categories/
+- Description: List categories
+
+POST /api/categories/add
+- Description: Add a new category
+
+DELETE /api/categories/:id
+- Description: Delete a category by ID
+
+---
+
+Notes & caveats
+- Some route files still use mixed module syntax (ESM vs CommonJS). This file lists endpoints only and does not change code.
+- Authentication & admin protection are indicated where evident from code (e.g., banner admin routes use `auth` and `adminOnly`). Product admin routes have comments indicating protection, but do not show auth middleware in the route file — verify in code or apply middleware globally if required.
+- If you want, I can also generate a Markdown version (API.md) with example requests and required request bodies for each endpoint.

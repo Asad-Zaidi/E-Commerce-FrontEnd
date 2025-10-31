@@ -1,11 +1,27 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import "../styles/Home.css";
 import api from "../../api/api";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Helmet } from "react-helmet-async";
+
+const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+        if (rating >= i) {
+            stars.push(<FaStar key={i} color="#FFD700" />);
+        } else if (rating >= i - 0.5) {
+            stars.push(<FaStarHalfAlt key={i} color="#FFD700" />);
+        } else {
+            stars.push(<FaRegStar key={i} color="#FFD700" />);
+        }
+    }
+    return stars;
+};
+
 
 const Home = () => {
     const [banners, setBanners] = useState([]);
@@ -26,12 +42,22 @@ const Home = () => {
         fetchBanners();
     }, []);
 
-
+    //     const fetchPopular = async () => {
+    //         try {
+    //             const res = await api.get("/products/popular");
+    //             setPopularProducts(res.data);
+    //         } catch (err) {
+    //             console.error("Error fetching popular products:", err);
+    //         }
+    //     };
+    //     fetchPopular();
+    // }, []);
     useEffect(() => {
         const fetchPopular = async () => {
             try {
                 const res = await api.get("/products/popular");
-                setPopularProducts(res.data);
+                const sorted = res.data.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+                setPopularProducts(sorted);
             } catch (err) {
                 console.error("Error fetching popular products:", err);
             }
@@ -43,7 +69,6 @@ const Home = () => {
     const scrollToProducts = () => {
         productsRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
 
     const scroll = (direction) => {
         if (scrollRef.current) {
@@ -82,7 +107,7 @@ const Home = () => {
                     content="Explore powerful digital tools and flexible subscription plans to simplify your workflow and grow your business."
                 />
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://yourwebsite.com/" />
+                <meta property="og:url" content="https://subscription-service-mu.vercel.app/" />
                 <meta property="og:image" content="https://subscription-service-mu.vercel.app/assets/preview-image.png" />
                 <meta property="og:site_name" content="ServiceHub" />
 
@@ -97,7 +122,6 @@ const Home = () => {
             </Helmet>
 
             <div className="home-page">
-                {/* 🖼️ Banner Slider */}
                 <div className="banner-slider">
                     <Slider {...sliderSettings}>
                         {banners.length > 0 ? (
@@ -118,13 +142,11 @@ const Home = () => {
                     </Slider>
                 </div>
 
-                {/* 👋 Intro Section */}
                 <section className="intro-section">
-                    <h1>Welcome to Our Digital Services</h1>
+                    <h1>ServiceHub - Smart Digital Tools & Subscription Services</h1>
                     <p>Explore trending subscriptions and tools tailored for you!</p>
                 </section>
 
-                {/* 💸 CTA Section */}
                 <section className="pricing-cta">
                     <h2>Affordable Plans for Everyone</h2>
                     <p>Choose from our wide range of digital services.</p>
@@ -133,7 +155,6 @@ const Home = () => {
                     </button>
                 </section>
 
-                {/* 🛍 Popular Products Section */}
                 <section className="popular-products" ref={productsRef}>
                     <h2>Popular Products</h2>
                     <p>Our most viewed and loved digital services.</p>
@@ -146,15 +167,20 @@ const Home = () => {
                         <div className="product-scroll-container" ref={scrollRef}>
                             {popularProducts.length > 0 ? (
                                 popularProducts.map((p) => (
-                                    <div className="product-card small" key={p._id}>
+                                    <div className="product-card" key={p._id}>
                                         <img src={p.imageUrl} alt={p.name} />
                                         <div className="product-info">
                                             <h3>{p.name}</h3>
-                                            <span className="price">Rs. {p.priceMonthly}</span>
                                         </div>
-                                        <a href={`/products/${p._id}`} className="detail-btn">
+                                        <div className="product-rating">
+                                            {renderStars(p.avgRating || 0)}
+                                            <span className="rating-value">{p.avgRating?.toFixed(1) || "0.0"}</span>
+                                        </div>
+                                        <Link to={`/products/${p.slug}`} className="detail-btn">
                                             Detail →
-                                        </a>
+                                        </Link>
+
+
                                     </div>
 
 
