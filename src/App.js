@@ -9,6 +9,7 @@ import Footer from "./components/user/Footer";
 import Home from "./components/user/Home";
 import Product from "./components/user/Product";
 import ProductDetail from "./components/user/ProductDetail";
+import Checkout from "./components/user/Checkout";
 import About from "./components/user/About";
 import Contact from "./components/user/Contact";
 import Auth from "./components/user/Auth";
@@ -51,6 +52,7 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Product />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Auth />} />
