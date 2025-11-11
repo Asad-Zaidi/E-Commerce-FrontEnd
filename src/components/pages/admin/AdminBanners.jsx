@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import api from "../../api/api";
-import "./AdminBanners.css";
+import api from "../../../api/api";
+import "../../../styles/AdminBanners.css"
 
 const AdminBanners = () => {
     const [banners, setBanners] = useState([]);

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import "../styles/Header.css";
-import logo from "../../assets/logo.png";
-import ThemeToggle from "../common/ThemeToggle";
+import "../../../styles/Header.css";
+import logo from "../../../assets/logo.png";
+import ThemeToggle from "../../common/ThemeToggle";
 
 function Header() {
     const navigate = useNavigate();

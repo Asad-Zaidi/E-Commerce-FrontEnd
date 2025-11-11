@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "../../context/ThemeContext";
 import { FaSun, FaMoon } from "react-icons/fa";
-import "./ThemeToggle.css";
+import '../../styles/ThemeToggle.css';
 
 const ThemeToggle = () => {
     const { darkMode, toggleTheme } = useTheme();

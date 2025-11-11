@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import "../styles/Home.css";
-import api from "../../api/api";
+import "../../../styles/Home.css";
+// import api from "../../api/api";
+import api from "../../../api/api";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -176,7 +177,7 @@ const Home = () => {
                                             {renderStars(p.avgRating || 0)}
                                             <span className="rating-value">{p.avgRating?.toFixed(1) || "0.0"}</span>
                                         </div>
-                                        <Link to={`/products/${p.slug}`} className="detail-btn">
+                                        <Link to={`/products/${p.category.toLowerCase().replace(/[\s\W-]+/g, '-')}/${p.name.toLowerCase().replace(/[\s\W-]+/g, '-')}`} className="detail-btn">
                                             Detail →
                                         </Link>
 

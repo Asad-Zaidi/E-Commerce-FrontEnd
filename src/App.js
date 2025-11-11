@@ -3,41 +3,34 @@ import { ThemeProvider } from "./context/ThemeContext";
 import "./styles/theme.css";
 import "./styles/darkMode.css";
 
-// 🧭 Public Routes
-import Header from "./components/user/Header";
-import Footer from "./components/user/Footer";
-import Home from "./components/user/Home";
-import Product from "./components/user/Product";
-import ProductDetail from "./components/user/ProductDetail";
-import Checkout from "./components/user/Checkout";
-import About from "./components/user/About";
-import Contact from "./components/user/Contact";
-import Auth from "./components/user/Auth";
+import Header from "./components/pages/user/Header";
+import Footer from "./components/pages/user/Footer";
+import Home from "./components/pages/user/Home";
+import Product from "./components/pages/user/Product";
+import ProductDetail from "./components/pages/user/ProductDetail";
+import Checkout from "./components/pages/user/Checkout";
+import About from "./components/pages/user/About";
+import Contact from "./components/pages/user/Contact";
+import Auth from "./components/pages/user/Auth";
 
-// 🧑‍💼 Admin Routes
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminLogin from "./components/admin/AdminLogin";
-import AdminDashboard from "./components/admin/AdminDashboard";
-import ProductList from "./components/admin/ProductList";
-import ProductForm from "./components/admin/ProductForm";
-import AdminCategories from "./components/admin/AdminCategories";
-import RequireAdmin from "./components/admin/RequireAdmin";
-import AdminContact from "./components/admin/AdminContact";
-import AdminBanners from "./components/admin/AdminBanners";
+import AdminLayout from "./components/pages/admin/AdminLayout";
+import AdminLogin from "./components/pages/admin/AdminLogin";
+import AdminDashboard from "./components/pages/admin/AdminDashboard";
+import ProductList from "./components/pages/admin/ProductList";
+import ProductForm from "./components/pages/admin/ProductForm";
+import AdminCategories from "./components/pages/admin/AdminCategories";
+import RequireAdmin from "./components/pages/admin/RequireAdmin";
+import AdminContact from "./components/pages/admin/AdminContact";
+import AdminBanners from "./components/pages/admin/AdminBanners";
 
-
-
-// 🛠️ API Config
 import { setAuthToken } from "./api/api";
 
 function AppContent() {
   const location = useLocation();
 
-  // Hide Header/Footer on admin routes
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isHomePage = location.pathname === "/";
 
-  // Set admin token if available
   const token = localStorage.getItem("adminToken");
   if (token) setAuthToken(token);
 
@@ -50,8 +43,9 @@ function AppContent() {
         <Routes>
           {/* 🌍 Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/products" element={<Product />} />
-          <Route path="/products/:slug" element={<ProductDetail />} />
+          <Route path="/products/:category/:slug" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
@@ -70,6 +64,7 @@ function AppContent() {
               </RequireAdmin>
             }
           >
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="products" element={<ProductList />} />
             <Route path="products/new" element={<ProductForm />} />

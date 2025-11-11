@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import api from "../../api/api";
-import "./AdminCategories.css";
+import api from "../../../api/api";
+import "../../../styles/AdminCategories.css"
 
 const AdminCategories = () => {
     const [categories, setCategories] = useState([]);

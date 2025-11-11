@@ -1,7 +1,7 @@
 // src/components/admin/RequireAdmin.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { setAuthToken } from "../../api/api";
+import { setAuthToken } from "../../../api/api";
 
 export default function RequireAdmin({ children }) {
     const token = localStorage.getItem("adminToken");

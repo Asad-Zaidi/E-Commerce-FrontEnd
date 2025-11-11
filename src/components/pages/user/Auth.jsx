@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../styles/Auth.css";
+import "../../../styles/Auth.css";
 
 function Auth() {
     const location = useLocation();

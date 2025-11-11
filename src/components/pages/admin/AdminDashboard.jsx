@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "./AdminDashboard.css";
-import api from "../../api/api";
+import "../../../styles/AdminDashboard.css";
+import api from "../../../api/api";
 import {
     FaUsers,
     FaBox,

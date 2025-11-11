@@ -1,8 +1,8 @@
 // src/components/admin/AdminLogin.jsx
 import React, { useState } from "react";
-import api, { setAuthToken } from "../../api/api";
+import api, { setAuthToken } from "../../../api/api";
 import { useNavigate } from "react-router-dom";
-import "./AdminLogin.css";
+import "../../../styles/AdminLogin.css";
 
 export default function AdminLogin() {
     const [email, setEmail] = useState("");

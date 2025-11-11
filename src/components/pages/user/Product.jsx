@@ -1,155 +1,7 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import api from "../../api/api";
-import "../styles/Product.css";
+import api from "../../../api/api";
+import "../../../styles/Product.css";
 import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Helmet } from "react-helmet-async";
 
@@ -241,7 +93,7 @@ const Product = () => {
                         filteredProducts.map(product => (
                             <div className="modern-product-card" key={product._id}>
                                 <div className="card-top">
-                                    <Link to={`/products/${product.slug}`}>
+                                    <Link to={`/products/${product.category.toLowerCase().replace(/[\s\W-]+/g, '-')}/${product.name.toLowerCase().replace(/[\s\W-]+/g, '-')}`}>
                                         <img src={product.imageUrl} alt={product.name} />
                                     </Link>
                                 </div>
@@ -274,7 +126,7 @@ const Product = () => {
                                         <span className="review-count">({product.totalReviews || 0})</span>
                                     </div>
 
-                                    <Link to={`/products/${product.slug}`} className="more-detail">
+                                    <Link to={`/products/${product.category.toLowerCase().replace(/[\s\W-]+/g, '-')}/${product.name.toLowerCase().replace(/[\s\W-]+/g, '-')}`} className="more-detail">
                                         Show Details →
                                     </Link>
                                 </div>

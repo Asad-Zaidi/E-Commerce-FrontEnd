@@ -1,7 +1,8 @@
 import React from "react";
-import "../styles/About.css";
-import aboutImg from "../../assets/logo.png";
+import "../../../styles/About.css";
+import aboutImg from "../../../assets/logo.png";
 import { Helmet } from "react-helmet-async";
+
 
 function About() {
   return (
