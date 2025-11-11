@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom"; 
+// import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import api from "../../../api/api";
 import "../../../styles/ProductDetail.css";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
@@ -17,7 +18,7 @@ const renderStars = (rating) => {
 
 const ProductDetail = () => {
     const { category, slug } = useParams();
-    const navigate = useNavigate(); 
+    // const navigate = useNavigate(); 
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
