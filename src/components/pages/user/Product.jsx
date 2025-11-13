@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import api from "../../../api/api";
 import "../../../styles/Product.css";
 import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
@@ -16,8 +16,12 @@ const renderStars = (rating) => {
 };
 
 const Product = () => {
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialCategory = queryParams.get("category") || "All";
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All");
+    const [selectedCategory, setSelectedCategory] = useState(initialCategory);
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
 

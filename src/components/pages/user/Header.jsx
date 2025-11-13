@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import "../../../styles/Header.css";
-import logo from "../../../assets/logo.png";
 import ThemeToggle from "../../common/ThemeToggle";
 
 function Header() {
-    const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
 
@@ -20,7 +18,7 @@ function Header() {
         document.body.classList.remove("menu-open");
     };
 
-    // Close menu when clicking outside (mobile only)
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -31,7 +29,7 @@ function Header() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Prevent body scroll when menu is open
+
     useEffect(() => {
         if (menuOpen) {
             document.body.style.overflow = "hidden";
@@ -45,20 +43,7 @@ function Header() {
             {/* Left: Logo */}
             <div className="header-left">
                 <NavLink to="/" onClick={closeMenu}>
-                    <img
-                        src={logo}
-                        alt="Service Hub Logo"
-                        className="logo-img"
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => {
-                            // ensure we always navigate home and close the mobile menu
-                            // prevent double handling from NavLink by stopping propagation
-                            e.stopPropagation();
-                            closeMenu();
-                            navigate("/");
-                            window.scrollTo(0, 0);
-                        }}
-                    />
+                <h2>Service Hub</h2>
                 </NavLink>
             </div>
 

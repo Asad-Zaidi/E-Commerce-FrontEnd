@@ -1,71 +1,281 @@
-# Getting Started with Create React App
+# EDM-Website - E-Commerce Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack e-commerce platform with product management, shopping cart functionality, admin dashboard, and analytics. Built with React and Node.js for a modern, responsive user experience.
 
-## Available Scripts
+## 📋 Table of Contents
 
-In the project directory, you can run:
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Usage Guide](#usage-guide)
+- [Contributing](#contributing)
 
-### `npm start`
+## 🎯 Overview
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+EDM-Website is a comprehensive e-commerce solution designed for seamless shopping experiences and efficient admin management. It features a consumer-facing frontend with product discovery, cart management, and checkout capabilities, along with a powerful admin dashboard for product management, analytics, and customer engagement.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✨ Features
 
-### `npm test`
+### 🛍️ Customer Features
+- **Product Browsing** - Explore products by category with search and filtering
+- **Product Details** - Comprehensive product information, images, and specifications
+- **Shopping Cart** - Add/remove items, manage quantities, persistent cart
+- **Checkout** - Secure checkout process
+- **User Accounts** - Register and login for personalized experience
+- **Reviews & Ratings** - Leave and view product reviews with ratings
+- **Contact Form** - Submit inquiries and feedback
+- **Dark Mode** - Toggle between light and dark themes
+- **Responsive Design** - Mobile-friendly interface
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 🧑‍💼 Admin Features
+- **Product Management** - Create, edit, and delete products
+- **Category Management** - Organize products by categories
+- **Banner Management** - Create and manage promotional banners
+- **Analytics Dashboard** - Comprehensive statistics and insights:
+  - Total products, users, and reviews
+  - Daily visitor tracking
+  - Popular products analytics
+  - Average product ratings
+  - Recent activities log
+- **Review Management** - Monitor and manage customer reviews
+- **Contact Information** - View and update site contact details
+- **Admin Authentication** - Secure login for administrators
 
-### `npm run build`
+## 🛠️ Tech Stack
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Frontend
+- **React** (v19.2.0) - UI library
+- **React Router** (v7.9.4) - Client-side routing
+- **Axios** (v1.12.2) - HTTP client
+- **React Helmet Async** (v2.0.5) - SEO management
+- **Recharts** (v3.3.0) - Analytics charts
+- **React Slick** (v0.31.0) - Carousel component
+- **React Toastify** (v11.0.5) - Notifications
+- **Swiper** (v12.0.3) - Image slider
+- **React Icons** (v5.5.0) - Icon library
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Backend
+- **Node.js** - Server runtime
+- **Express.js** - Web framework
+- **MongoDB** - Database
+- **Mongoose** - MongoDB ODM
+- **Cloudinary** - Image hosting and management
+- **CORS** - Cross-origin resource sharing
+- **Morgan** - HTTP request logger
+- **Dotenv** - Environment configuration
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📁 Project Structure
 
-### `npm run eject`
+```
+EDM-Website/
+├── backend/                    # Node.js Express server
+│   ├── config/                # Database configuration
+│   ├── controllers/           # Business logic
+│   ├── models/               # MongoDB schemas
+│   ├── routes/               # API endpoints
+│   ├── middlewares/          # Custom middleware
+│   ├── utils/                # Helper utilities
+│   ├── server.js             # Express app entry point
+│   └── package.json
+├── src/                        # React frontend
+│   ├── components/           # Reusable components
+│   │   ├── pages/           # Page components
+│   │   │   ├── admin/       # Admin dashboard pages
+│   │   │   └── user/        # Public pages
+│   │   └── common/          # Common components
+│   ├── context/             # React context (Theme, Categories)
+│   ├── routes/              # Route configurations
+│   ├── styles/              # CSS files
+│   ├── api/                 # API service calls
+│   ├── assets/              # Images and static files
+│   ├── App.js              # Main app component
+│   └── index.js            # React entry point
+├── public/                   # Static files
+├── package.json             # Frontend dependencies
+└── README.md               # This file
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 📦 Prerequisites
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Before you begin, ensure you have installed:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
+- **npm** (comes with Node.js)
+- **MongoDB** - [Download](https://www.mongodb.com/try/download/community) or use MongoDB Atlas (cloud)
+- **Cloudinary Account** - [Sign up](https://cloudinary.com/) for image hosting
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🚀 Installation
 
-## Learn More
+### 1. Clone the Repository
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/Asad-Zaidi/EDM-Website.git
+cd EDM-Website
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Install Frontend Dependencies
 
-### Code Splitting
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. Install Backend Dependencies
 
-### Analyzing the Bundle Size
+```bash
+cd backend
+npm install
+cd ..
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## ⚙️ Configuration
 
-### Making a Progressive Web App
+### Backend Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Create a `.env` file in the `backend/` directory:
 
-### Advanced Configuration
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/edm-website
+# Or use MongoDB Atlas:
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/edm-website
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# Port
+PORT=5000
 
-### Deployment
+# Cloudinary
+CLOUDINARY_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+# JWT (if using authentication)
+JWT_SECRET=your_jwt_secret_key
+```
 
-### `npm run build` fails to minify
+### Frontend Environment Variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Subscription-_Service
+Create a `.env` file in the `src/` directory (if needed):
+
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+```
+
+## 🏃 Running the Application
+
+### Option 1: Development Mode (Separate Terminals)
+
+**Terminal 1 - Start Backend:**
+```bash
+cd backend
+npm start
+# Backend runs on http://localhost:5000
+```
+
+**Terminal 2 - Start Frontend:**
+```bash
+npm start
+# Frontend runs on http://localhost:3000
+```
+
+### Option 2: Production Build
+
+**Build Frontend:**
+```bash
+npm run build
+```
+
+**Deploy Backend:**
+```bash
+cd backend
+node server.js
+```
+
+## 📚 API Documentation
+
+### Base URL
+```
+http://localhost:5000/api
+```
+
+### Authentication Routes
+- `POST /auth/register` - Register admin user
+- `POST /auth/login` - Admin login
+
+### Product Routes
+- `GET /products` - Get all products
+- `GET /products/popular` - Get popular products
+- `GET /products/:id` - Get product details
+- `POST /products` - Create product (Admin)
+- `PUT /products/:id` - Update product (Admin)
+- `DELETE /products/:id` - Delete product (Admin)
+
+### Category Routes
+- `GET /categories` - Get all categories
+- `POST /categories` - Create category (Admin)
+
+### Review Routes
+- `POST /reviews` - Add product review
+- `GET /reviews/:productId` - Get product reviews
+- `GET /reviews/admin/stats` - Review statistics (Admin)
+
+### Banner Routes
+- `GET /banners/active` - Get active banners
+- `POST /banners` - Create banner (Admin)
+- `DELETE /banners/:id` - Delete banner (Admin)
+
+### Admin Routes
+- `GET /admin/stats` - Dashboard statistics
+- `GET /admin/daily-visits` - Daily visitor analytics
+
+### Contact Routes
+- `GET /contact` - Get contact information
+- `PUT /contact` - Update contact (Admin)
+- `POST /messages` - Submit contact form
+
+For detailed API documentation, see [API.txt](./API.txt)
+
+## 💡 Usage Guide
+
+### For Customers
+
+1. **Browse Products** - Visit the home page and explore products
+2. **View Details** - Click on a product to see full details and reviews
+3. **Add to Cart** - Add items to your shopping cart
+4. **Checkout** - Proceed to checkout to complete purchase
+5. **Leave Review** - After purchase, leave a review and rating
+6. **Contact** - Use contact form to submit inquiries
+
+### For Administrators
+
+1. **Login** - Navigate to `/admin/login`
+2. **Dashboard** - View analytics and recent activities
+3. **Manage Products** - Add, edit, or delete products
+4. **Manage Categories** - Organize product categories
+5. **Manage Banners** - Create promotional banners
+6. **View Reviews** - Monitor customer reviews
+7. **Check Contact Messages** - View customer inquiries
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is part of an academic assignment. 
+
+## 📞 Support
+
+For support, please open an issue in the repository or contact the project maintainers.
+
+---
+
+**Made with ❤️ by the EDM-Website Team**
