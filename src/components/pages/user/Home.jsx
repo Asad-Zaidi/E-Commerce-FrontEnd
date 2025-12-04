@@ -22,8 +22,6 @@ const renderStars = (rating) => {
 const Home = () => {
     const [banners, setBanners] = useState([]);
     const [popularProducts, setPopularProducts] = useState([]);
-    // const [allProducts, setAllProducts] = useState([]);
-    const [setAllProducts] = useState([]);
     const productsRef = useRef(null);
     const scrollRef = useRef(null);
 
@@ -50,22 +48,10 @@ const Home = () => {
             }
         };
         fetchPopular();
-    }, []);
-
-    useEffect(() => {
-        const fetchAllProducts = async () => {
-            try {
-                const res = await api.get("/products");
-                setAllProducts(res.data);
-            } catch (err) {
-                console.error("Error fetching products:", err);
-            }
-        };
-        fetchAllProducts();
+        fetchPopular();
     }, []);
 
     const scrollToProducts = () => {
-        productsRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const scroll = (direction, ref) => {
