@@ -31,6 +31,17 @@ export default function ProductList() {
         }
     };
 
+    const generateSEO = async (id) => {
+        try {
+            await api.post(`/products/${id}/generate-seo`);
+            alert("SEO description generated successfully");
+            fetchProducts();
+        } catch (err) {
+            console.error("Generate SEO failed:", err);
+            alert("Failed to generate SEO description");
+        }
+    };
+
     return (
         <div style={{ padding: 20 }}>
             <h2>Products</h2>
@@ -47,6 +58,7 @@ export default function ProductList() {
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                                 <button onClick={() => nav(`/admin/products/edit/${p._id}`)}>Edit</button>
+                                <button onClick={() => generateSEO(p._id)}>Generate SEO</button>
                                 <button onClick={() => remove(p._id)} style={{ background: "tomato", color: "#fff" }}>
                                     Delete
                                 </button>

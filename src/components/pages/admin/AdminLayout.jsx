@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
+    FaHome,
     FaTachometerAlt,
     FaBox,
     FaEnvelope,
@@ -39,6 +40,13 @@ const AdminLayout = () => {
                 {/* Navigation */}
                 <div className="sidebar-top">
                     <nav className="sidebar-nav">
+                        <Link
+                            to="/admin/home"
+                            className={`nav-item ${location.pathname === "/admin/home" ? "active" : ""}`}
+                        >
+                            <FaHome className="nav-icon" size={collapsed ? 25 : 22} />
+                            {!collapsed && <span>Home</span>}
+                        </Link>
                         <Link
                             to="/admin/dashboard"
                             className={`nav-item ${location.pathname === "/admin/dashboard" ? "active" : ""}`}

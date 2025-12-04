@@ -11,6 +11,7 @@ const ProductForm = () => {
     const [formData, setFormData] = useState({
         name: "",
         description: "",
+        seoDescription: "",
         category: "",
         priceMonthly: "",
         priceYearly: "",
@@ -23,6 +24,7 @@ const ProductForm = () => {
     const [enableYearly, setEnableYearly] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [seoLoading, setSeoLoading] = useState(false);
 
     // const categories = [
     //     "Entertainment",
@@ -48,6 +50,7 @@ const ProductForm = () => {
                 setFormData({
                     name: data.name,
                     description: data.description,
+                    seoDescription: data.seoDescription || "",
                     category: data.category,
                     priceMonthly: data.priceMonthly || "",
                     priceYearly: data.priceYearly || "",
@@ -66,6 +69,41 @@ const ProductForm = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // ✅ Generate SEO Description
+    const generateSEO = async () => {
+        if (!formData.name || !formData.category) {
+            alert("Please fill in Product Name and Category first");
+            return;
+        }
+
+        setSeoLoading(true);
+        try {
+            // For new products, we'll generate SEO without saving to DB first
+            if (!isEditing) {
+                // Create a temporary product object for SEO generation
+                const tempProduct = {
+                    name: formData.name,
+                    category: formData.category,
+                    description: formData.description
+                };
+
+                const response = await api.post('/products/temp/generate-seo', tempProduct);
+                setFormData((prev) => ({ ...prev, seoDescription: response.data.seoDescription }));
+                alert("✅ SEO description generated successfully!");
+            } else {
+                // For existing products, use the existing endpoint
+                const response = await api.post(`/products/${id}/generate-seo`);
+                setFormData((prev) => ({ ...prev, seoDescription: response.data.seoDescription }));
+                alert("✅ SEO description generated successfully!");
+            }
+        } catch (err) {
+            console.error("❌ SEO Generation failed:", err);
+            alert("❌ Failed to generate SEO description");
+        } finally {
+            setSeoLoading(false);
+        }
     };
 
     // ✅ Handle image upload
@@ -146,6 +184,41 @@ const ProductForm = () => {
                         onChange={handleChange}
                         required
                     ></textarea>
+                </div>
+
+                <div className="form-group">
+                    <label>SEO Description</label>
+                    <div className="seo-description-group">
+                        <textarea
+                            name="seoDescription"
+                            rows="4"
+                            value={formData.seoDescription}
+                            onChange={handleChange}
+                            placeholder="AI-generated SEO optimized description will appear here..."
+                            disabled={seoLoading}
+                        ></textarea>
+                        <button
+    type="button"
+    onClick={generateSEO}
+    className={`generate-seo-btn flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${
+        seoLoading ? "opacity-70 cursor-not-allowed" : ""
+    }`}
+    disabled={!formData.name || !formData.category || seoLoading}
+>
+    {seoLoading ? (
+        <>
+            <span className="loader w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            Generating SEO...
+        </>
+    ) : (
+        "Generate SEO"
+    )}
+</button>
+
+                    </div>
+                    <small className="form-help">
+                        Click "Generate SEO" to create an AI-optimized description for better search engine rankings.
+                    </small>
                 </div>
 
                 <div className="form-group">
@@ -255,3 +328,5 @@ const ProductForm = () => {
 };
 
 export default ProductForm;
+
+

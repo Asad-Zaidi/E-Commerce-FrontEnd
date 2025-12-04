@@ -134,7 +134,7 @@ const ProductDetail = () => {
         <>
             <Helmet>
                 <title>{product.name} - Product Details</title>
-                <meta name="description" content={product.description || "Product details page"} />
+                <meta name="description" content={product.seoDescription || product.description || "Product details page"} />
             </Helmet>
 
             <div className="product-detail-page">
@@ -143,6 +143,12 @@ const ProductDetail = () => {
                     <div className="product-info">
                         <h1>{product.name}</h1>
                         <p>{product.description}</p>
+                        {product.seoDescription && (
+                            <div className="seo-description">
+                                <h3>SEO Optimized Description</h3>
+                                <p>{product.seoDescription}</p>
+                            </div>
+                        )}
 
                         {/* Price Selector */}
                         <div className="price-selector">

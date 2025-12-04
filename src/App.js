@@ -22,6 +22,7 @@ import AdminCategories from "./components/pages/admin/AdminCategories";
 import RequireAdmin from "./components/pages/admin/RequireAdmin";
 import AdminContact from "./components/pages/admin/AdminContact";
 import AdminBanners from "./components/pages/admin/AdminBanners";
+import AdminHome from "./components/pages/admin/AdminHome";
 
 import { setAuthToken } from "./api/api";
 
@@ -65,6 +66,7 @@ function AppContent() {
             }
           >
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="home" element={<AdminHome />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="products" element={<ProductList />} />
             <Route path="products/new" element={<ProductForm />} />
