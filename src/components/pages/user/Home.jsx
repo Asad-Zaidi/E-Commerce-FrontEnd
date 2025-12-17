@@ -256,12 +256,19 @@ export default function Home() {
     const [popularProducts, setPopularProducts] = useState([]);
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [stats, setStats] = useState({ totalProducts: 0, avgRating: 0 });
+    const [intro, setIntro] = useState({
+        title: "One Platform. Unlimited Digital Power.",
+        subtitle: "Discover, subscribe, and manage the best digital tools — all from a single dashboard."
+    });
 
     const scrollRef = useRef(null);
     const bannerRef = useRef(null);
 
     useEffect(() => {
         api.get("/banners/active").then((res) => setBanners(res.data));
+        api.get("/home").then((res) => {
+            if (res.data?.intro) setIntro(res.data.intro);
+        }).catch(() => console.log("Using default intro"));
     }, []);
 
     useEffect(() => {
@@ -360,7 +367,7 @@ export default function Home() {
                                     src={b.imageUrl}
                                     alt={b.title}
                                     loading="lazy"
-                                    className="w-full h-[420px] object-cover rounded-3xl"
+                                    className="w-full h-[450px] object-cover rounded-3xl"
                                 />
                                 <div className="absolute inset-0 bg-black/40 rounded-3xl flex items-center">
                                     <div className="px-8 max-w-xl">
@@ -377,7 +384,7 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* ---------------- CTA Funnel ---------------- */}
+                {/* ---------------- Intro Section ---------------- */}
                 <section className="text-center py-20 px-4">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -385,11 +392,10 @@ export default function Home() {
                         viewport={{ once: true }}
                         className="text-4xl font-extrabold mb-4"
                     >
-                        One Platform. Unlimited Digital Power.
+                        {intro.title}
                     </motion.h2>
                     <p className="max-w-2xl mx-auto text-zinc-600 dark:text-zinc-400 mb-8">
-                        Discover, subscribe, and manage the best digital tools — all from a
-                        single dashboard.
+                        {intro.subtitle}
                     </p>
                     <div className="flex justify-center gap-4">
                         <Link
