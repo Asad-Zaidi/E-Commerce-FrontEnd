@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import api from '../../../api/api';
 import '../../../styles/Contact.css';
+import { Helmet } from 'react-helmet-async';
 import {
   FaLinkedin, FaTwitterSquare, FaFacebookSquare, FaInstagramSquare,
   FaWhatsapp, FaTelegram, FaEnvelope, FaPhoneAlt
@@ -49,6 +50,18 @@ const Contact = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Contact Us | ServiceHub - Get in Touch</title>
+        <meta name="description" content="Contact ServiceHub for inquiries, support, or partnerships. We're here to help with any questions about our digital tools and services." />
+        <meta name="keywords" content="contact, support, customer service, inquiry, ServiceHub" />
+        <meta property="og:title" content="Contact Us | ServiceHub" />
+        <meta property="og:description" content="Get in touch with ServiceHub. Contact us for support, inquiries, or partnership opportunities." />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Contact Us | ServiceHub" />
+        <meta name="twitter:description" content="Contact ServiceHub for support and inquiries." />
+      </Helmet>
       <div className={`contact-page-wrapper ${showPopup ? 'blurred' : ''}`}>
         <div className="contact-container">
           {/* Left Column: Contact Form */}

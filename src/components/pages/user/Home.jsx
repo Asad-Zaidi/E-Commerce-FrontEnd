@@ -8,6 +8,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaChevronLeft, FaChevronRight, FaStar, FaStarHalfAlt, FaRegStar, FaUsers, FaTrophy, FaClock } from "react-icons/fa";
 import { Helmet } from "react-helmet-async";
+import OrganizationSchema from "../../SEO/OrganizationSchema";
 
 const renderStars = (rating) => {
     const stars = [];
@@ -91,6 +92,7 @@ const Home = () => {
 
     return (
         <>
+            <OrganizationSchema />
             <Helmet>
                 <title>ServiceHub | Smart Digital Tools & Subscription Services</title>
                 <meta name="description" content="Discover powerful digital tools and flexible subscription plans at ServiceHub. Simplify your workflow, boost productivity, and manage everything from one smart platform." />
@@ -203,4 +205,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Home;  

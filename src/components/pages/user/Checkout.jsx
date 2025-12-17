@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../../styles/Checkout.css";
+import { Helmet } from "react-helmet-async";
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -31,6 +32,16 @@ const Checkout = () => {
     };
 
     return (
+        <>
+            <Helmet>
+                <title>Checkout | ServiceHub - Secure Payment</title>
+                <meta name="description" content="Complete your purchase on ServiceHub. Secure checkout with multiple payment options." />
+                <meta property="og:title" content="Checkout | ServiceHub" />
+                <meta property="og:description" content="Complete your purchase securely on ServiceHub." />
+                <meta property="og:type" content="website" />
+                <meta property="og:locale" content="en_US" />
+                <meta name="robots" content="noindex" />
+            </Helmet>
         <div className="checkout-page">
             <h1>Checkout</h1>
             <div className="checkout-container">
@@ -83,6 +94,7 @@ const Checkout = () => {
                 </form>
             </div>
         </div>
+        </>
     );
 };
 

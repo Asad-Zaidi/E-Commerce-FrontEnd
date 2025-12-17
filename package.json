@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "ajv": "^8.17.1",
     "axios": "^1.12.2",
     "lucide-react": "^0.555.0",
     "react": "^19.2.0",
@@ -48,10 +49,8 @@
     ]
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.22",
     "html-webpack-plugin": "^5.6.4",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.17"
+    "postcss": "^8.5.6"
   }
 }

@@ -84,13 +84,13 @@ const ProductCard = ({ product, badge }) => {
             <img src={product.imageUrl} alt={product.name} />
             <div className="product-info">
                 <h3>{product.name}</h3>
-                <p className="product-price">{product.priceMonthly?.toFixed(2) || "N/A"} /month</p>
+                <p className="product-price">{product.priceSharedMonthly?.toFixed(2) || "N/A"} /month</p>
                 <div className="product-rating">
                     {renderStars(product.avgRating || 0)}
                     <span className="rating-value">{product.avgRating?.toFixed(1) || "0.0"}</span>
                 </div>
                 <Link
-                    to={`/products/${product.category.toLowerCase().replace(/[\s\W-]+/g, '-')}/${product.name.toLowerCase().replace(/[\s\W-]+/g, '-')}`}
+                    to={`/products/${product.slug}`}
                     className="detail-btn"
                 >
                     Detail →

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../../../styles/Auth.css";
+import { Helmet } from "react-helmet-async";
 
 function Auth() {
     const location = useLocation();
@@ -40,7 +41,22 @@ function Auth() {
     };
 
     return (
-        <div className="auth-container">
+        <>
+            <Helmet>
+                <title>{isLogin ? "Login" : "Register"} | ServiceHub</title>
+                <meta 
+                    name="description" 
+                    content={isLogin 
+                        ? "Log in to your ServiceHub account to access your subscriptions and manage your digital services."
+                        : "Create a new ServiceHub account to start exploring our digital tools and subscription services."
+                    } 
+                />
+                <meta property="og:title" content={`${isLogin ? "Login" : "Register"} | ServiceHub`} />
+                <meta property="og:type" content="website" />
+                <meta property="og:locale" content="en_US" />
+                <meta name="twitter:card" content="summary" />
+            </Helmet>
+            <div className="auth-container">
             <div className="auth-box">
                 <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
                 <p>{isLogin ? "Login to continue" : "Join our platform today!"}</p>
@@ -139,7 +155,8 @@ function Auth() {
                     </span>
                 </p>
             </div>
-        </div>
+            </div>
+        </>
     );
 }
 
