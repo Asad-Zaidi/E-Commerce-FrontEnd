@@ -37,10 +37,10 @@ import { Link } from "react-router-dom";
 const Breadcrumb = ({ category, productName }) => {
     return (
         <nav
-            className=" border-b border-gray-200 dark:border-gray-600 py-3 mb-6"
+            className=" dark:border-gray-600 py-3 "
             aria-label="breadcrumb"
         >
-            <ol className="flex flex-wrap items-center max-w-7xl mx-auto px-4 text-sm sm:text-base">
+            <ol className="flex flex-wrap items-center max-w-7xl mx-auto px-4 text-xs sm:text-sm">
                 {/* Home */}
                 <li className="flex items-center">
                     <Link
@@ -49,7 +49,7 @@ const Breadcrumb = ({ category, productName }) => {
                     >
                         Home
                     </Link>
-                    <span className="mx-2 text-gray-400 dark:text-gray-400">/</span>
+                    <span className="mx-1 text-gray-400 dark:text-gray-400">/</span>
                 </li>
 
                 {/* Products */}
@@ -60,7 +60,7 @@ const Breadcrumb = ({ category, productName }) => {
                     >
                         Products
                     </Link>
-                    {category && <span className="mx-2 text-gray-400 dark:text-gray-400">/</span>}
+                    {category && <span className="mx-1 text-gray-400 dark:text-gray-400">/</span>}
                 </li>
 
                 {/* Category */}
@@ -73,7 +73,7 @@ const Breadcrumb = ({ category, productName }) => {
                             {category}
                         </Link>
                         {productName && (
-                            <span className="mx-2 text-gray-400 dark:text-gray-400">/</span>
+                            <span className="mx-1 text-gray-400 dark:text-gray-400">/</span>
                         )}
                     </li>
                 )}

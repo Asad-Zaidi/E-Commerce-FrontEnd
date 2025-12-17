@@ -1,276 +1,11 @@
-// import React, { useEffect, useState, useCallback } from "react";
-// // import { useParams, useNavigate } from "react-router-dom"; 
-// import { useParams } from "react-router-dom";
-// import api from "../../../api/api";
-// import "../../../styles/ProductDetail.css";
-// import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-// import { Helmet } from "react-helmet-async";
-
-// const renderStars = (rating) => {
-//     const stars = [];
-//     for (let i = 1; i <= 5; i++) {
-//         if (rating >= i) stars.push(<FaStar key={i} color="#ffc107" />);
-//         else if (rating >= i - 0.5) stars.push(<FaStarHalfAlt key={i} color="#ffc107" />);
-//         else stars.push(<FaRegStar key={i} color="#ccc" />);
-//     }
-//     return stars;
-// };
-
-// const ProductDetail = () => {
-//     const { category, slug } = useParams();
-//     // const navigate = useNavigate(); 
-//     const [product, setProduct] = useState(null);
-//     const [reviews, setReviews] = useState([]);
-//     const [loading, setLoading] = useState(true);
-
-//     const [priceType, setPriceType] = useState("privateMonthly");
-//     const [currentPrice, setCurrentPrice] = useState(0);
-
-//     const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
-
-//     const fetchProduct = useCallback(async () => {
-//         try {
-//             const fullSlug = `${category}/${slug}`;
-//             const res = await api.get(`/products/slug/${fullSlug}`);
-//             setProduct(res.data);
-
-//             setPriceType("sharedMonthly");
-//             setCurrentPrice(res.data.privatePriceMonthly || 0);
-
-//             return res.data._id;
-//         } catch (err) {
-//             console.error("Error fetching product:", err);
-//             setProduct(null);
-//             return null;
-//         }
-//     }, [category, slug]);
-
-//     const fetchReviews = useCallback(async (productId) => {
-//         if (!productId) return;
-//         try {
-//             const res = await api.get(`/reviews/product/${productId}`);
-//             setReviews(res.data);
-//         } catch (err) {
-//             console.error("Error fetching reviews:", err);
-//             setReviews([]);
-//         }
-//     }, []);
-
-//     useEffect(() => {
-//         setLoading(true);
-//         const load = async () => {
-//             const productId = await fetchProduct();
-//             await fetchReviews(productId);
-//             setLoading(false);
-//         };
-//         load();
-//     }, [fetchProduct, fetchReviews]);
-
-//     const handlePriceChange = (type) => {
-//         setPriceType(type);
-//         if (!product) return;
-
-//         const priceMap = {
-//             privateMonthly: product.privatePriceMonthly,
-//             privateYearly: product.privatePriceYearly,
-//             sharedMonthly: product.priceSharedMonthly, 
-//             sharedYearly: product.priceSharedYearly, 
-//         };
-
-//         setCurrentPrice(priceMap[type] || 0);
-//     };
-
-    
-//     const handleBuyNow = () => {
-//         if (!product) return;
-
-//         try {
-            
-//             const orderDetails = {
-//                 productId: product._id,
-//                 productName: product.name,
-//                 selectedPlan: priceType,
-//                 price: currentPrice,
-//             };
-
-//             console.log("Order Details:", orderDetails);
-
-            
-            
-
-//         } catch (err) {
-//             console.error("Error during Buy Now:", err);
-//             alert("Something went wrong while processing your order!");
-//         }
-//     };
-
-//     const handleReviewSubmit = async (e) => {
-//         e.preventDefault();
-//         if (!product) return;
-
-//         try {
-//             const res = await api.post("/reviews", {
-//                 productId: product._id,
-//                 ...reviewForm,
-//             });
-
-//             setReviews((prev) => [res.data, ...prev]);
-//             setReviewForm({ name: "", comment: "", rating: 0 });
-
-//             const fullSlug = `${category}/${slug}`;
-//             const updatedProduct = await api.get(`/products/slug/${fullSlug}`);
-//             setProduct(updatedProduct.data);
-
-//             window.dispatchEvent(new Event("reviewsUpdated"));
-//         } catch (err) {
-//             console.error("Error posting review:", err);
-//         }
-//     };
-
-//     if (loading) return <p style={{ textAlign: "center" }}>Loading...</p>;
-//     if (!product) return <p style={{ textAlign: "center" }}>Product not found.</p>;
-
-//     return (
-//         <>
-//             <Helmet>
-//                 <title>{product.name} - Product Details</title>
-//                 <meta name="description" content={product.seoDescription || product.description || "Product details page"} />
-//             </Helmet>
-
-//             <div className="product-detail-page">
-//                 <div className="product-header">
-//                     <img src={product.imageUrl} alt={product.name} className="product-image" />
-//                     <div className="product-info">
-//                         <h1>{product.name}</h1>
-//                         <p>{product.description}</p>
-//                         {product.seoDescription && (
-//                             <div className="seo-description">
-//                                 <h3>SEO Optimized Description</h3>
-//                                 <p>{product.seoDescription}</p>
-//                             </div>
-//                         )}
-
-//                         {/* Price Selector */}
-//                         <div className="price-selector">
-//                             {/* Private */}
-//                             <div className="price-group">
-//                                 <h4>Private</h4>
-//                                 <div className="price-options">
-//                                     <button
-//                                         className={priceType === "privateMonthly" ? "active" : ""}
-//                                         onClick={() => handlePriceChange("privateMonthly")}
-//                                     >
-//                                         Monthly
-//                                     </button>
-//                                     <button
-//                                         className={priceType === "privateYearly" ? "active" : ""}
-//                                         onClick={() => handlePriceChange("privateYearly")}
-//                                     >
-//                                         Yearly
-//                                     </button>
-//                                 </div>
-//                             </div>
-
-//                             {/* Shared */}
-//                             <div className="price-group">
-//                                 <h4>Shared</h4>
-//                                 <div className="price-options">
-//                                     <button
-//                                         className={priceType === "sharedMonthly" ? "active" : ""}
-//                                         onClick={() => handlePriceChange("sharedMonthly")}
-//                                     >
-//                                         Monthly
-//                                     </button>
-//                                     <button
-//                                         className={priceType === "sharedYearly" ? "active" : ""}
-//                                         onClick={() => handlePriceChange("sharedYearly")}
-//                                     >
-//                                         Yearly
-//                                     </button>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         <h2 className="current-price">Rs. {currentPrice}</h2>
-
-//                         <button className="buy-btn" onClick={handleBuyNow}>
-//                             Buy Now
-//                         </button>
-
-//                         {/* Rating */}
-//                         <div className="rating-section">
-//                             {renderStars(product.avgRating || 0)}
-//                             <span className="review-count">({product.totalReviews || 0} Reviews)</span>
-//                         </div>
-//                     </div>
-//                 </div>
-
-//                 {/* Reviews Section */}
-//                 <div className="reviews-section">
-//                     <h2>Customer Reviews</h2>
-
-//                     {/* Review Form */}
-//                     <form className="review-form" onSubmit={handleReviewSubmit}>
-//                         <input
-//                             type="text"
-//                             placeholder="Your name"
-//                             value={reviewForm.name}
-//                             onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
-//                             required
-//                         />
-//                         <textarea
-//                             rows="4"
-//                             placeholder="Your review"
-//                             value={reviewForm.comment}
-//                             onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-//                             required
-//                         />
-//                         <div className="star-rating">
-//                             {[1, 2, 3, 4, 5].map((star) => (
-//                                 <FaStar
-//                                     key={star}
-//                                     size={22}
-//                                     color={star <= reviewForm.rating ? "#FFD700" : "#ccc"}
-//                                     onClick={() => setReviewForm({ ...reviewForm, rating: star })}
-//                                     style={{ cursor: "pointer" }}
-//                                 />
-//                             ))}
-//                         </div>
-//                         <button type="submit" className="submit-btn">
-//                             Submit Review
-//                         </button>
-//                     </form>
-
-//                     <div className="reviews-list">
-//                         {reviews.length === 0 ? (
-//                             <p>No reviews yet.</p>
-//                         ) : (
-//                             reviews.map((rev) => (
-//                                 <div key={rev._id} className="review-card">
-//                                     <div className="review-header">
-//                                         <strong>{rev.name}</strong>
-//                                         <div>{renderStars(rev.rating)}</div>
-//                                     </div>
-//                                     <p>{rev.comment}</p>
-//                                     <small>{new Date(rev.createdAt).toLocaleDateString()}</small>
-//                                 </div>
-//                             ))
-//                         )}
-//                     </div>
-//                 </div>
-//             </div>
-//         </>
-//     );
-// };
-
-// export default ProductDetail;
-
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../api/api";
 import { FaStar, FaStarHalfAlt, FaRegStar, FaCheckCircle, FaShieldAlt, FaClock, FaHeadset, FaSync, FaLock, FaCheck } from "react-icons/fa";
 import { Helmet } from "react-helmet-async";
 import Breadcrumb from "../../common/Breadcrumb";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const renderStars = (rating, size = "text-base") => {
     const stars = [];
@@ -296,7 +31,6 @@ const ProductDetail = () => {
     const [billingPeriod, setBillingPeriod] = useState("monthly");
     const [quantity, setQuantity] = useState(1);
     const [mainImage, setMainImage] = useState("");
-    const [thumbnails, setThumbnails] = useState([]);
 
     const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
 
@@ -306,10 +40,8 @@ const ProductDetail = () => {
             const res = await api.get(`/products/slug/${fullSlug}`);
             setProduct(res.data);
 
-            // Initialize image gallery
-            const productImages = [res.data.imageUrl, res.data.imageUrl, res.data.imageUrl, res.data.imageUrl];
+            // Initialize image
             setMainImage(res.data.imageUrl);
-            setThumbnails(productImages);
 
             setPriceType("sharedMonthly");
             setCurrentPrice(res.data.priceSharedMonthly || 0);
@@ -418,7 +150,7 @@ const ProductDetail = () => {
 
         localStorage.setItem("checkoutItems", JSON.stringify(existing));
         console.log("Added to Cart:", cartItem);
-        alert("Added to cart! Proceed to checkout when ready.");
+        toast.success("Added to cart! Proceed to checkout when ready.");
     };
 
     const handleReviewSubmit = async (e) => {
@@ -496,15 +228,15 @@ const ProductDetail = () => {
                 <meta property="og:url" content={`${window.location.origin}/products/${product.slug}`} />
                 <meta property="og:type" content="product" />
                 <meta property="og:locale" content="en_US" />
-                
+
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={product.metaTitle || product.name} />
                 <meta name="twitter:description" content={product.metaDescription || product.seoDescription || product.description} />
                 <meta name="twitter:image" content={product.imageUrl} />
-                
+
                 <link rel="canonical" href={`${window.location.origin}/products/${product.slug}`} />
                 <link rel="preload" as="image" href={product.imageUrl} />
-                
+
                 <script type="application/ld+json">
                     {JSON.stringify({
                         "@context": "https://schema.org",
@@ -553,48 +285,28 @@ const ProductDetail = () => {
 
                 {/* Hero Section */}
                 <section className="max-w-7xl mx-auto px-4 py-12">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Left Column - Image Gallery */}
-                        <div className="space-y-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:auto-rows-fr">
+                        {/* Left Column - Image Only */}
+                        <div className="space-y-6">
                             {/* Main Image */}
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-gradient-to-t from-teal-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none z-10"></div>
-                                <div className="bg-[#1a1a1a] border border-gray-800 rounded-2xl p-6 overflow-hidden">
+                                <div className="bg-white border border-gray-800 rounded-2xl p-6 overflow-hidden flex items-center justify-center">
                                     <img
                                         src={mainImage}
                                         alt={product.name}
-                                        className="w-full h-[400px] object-contain transition-transform duration-500 group-hover:scale-105"
+                                        className="w-[300px] h-[300px] object-contain transition-transform duration-500 group-hover:scale-105"
                                     />
                                 </div>
                             </div>
-
-                            {/* Thumbnail Gallery */}
-                            <div className="grid grid-cols-4 gap-3">
-                                {thumbnails.map((img, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setMainImage(img)}
-                                        className={`bg-[#1a1a1a] border-2 ${
-                                            mainImage === img ? 'border-teal-500' : 'border-gray-800 hover:border-gray-700'
-                                        } rounded-lg p-2 transition-all duration-200 overflow-hidden`}
-                                    >
-                                        <img
-                                            src={img}
-                                            alt={`Thumbnail ${idx + 1}`}
-                                            className="w-full h-20 object-contain"
-                                        />
-                                    </button>
-                                ))}
-                            </div>
                         </div>
 
-                        {/* Right Column - Product Info */}
+                        {/* Middle Column - Options & Pricing */}
                         <div className="space-y-6">
-                            {/* Title & Badge */}
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <h1 className="text-3xl font-bold text-white">{product.name}</h1>
-                                    <span className="flex items-center gap-1 bg-teal-600/20 text-teal-400 px-3 py-1 rounded-full text-sm border border-teal-600/30">
+                                    <span className="flex items-center gap-1 bg-teal-600/20 text-teal-400 px-3 py-1 rounded-full text-sm border border-teal-600/30 cursor-pointer hover:bg-teal-600/30 transition-all duration-200">
                                         <FaCheckCircle className="text-xs" />
                                         Verified
                                     </span>
@@ -603,7 +315,6 @@ const ProductDetail = () => {
                                     {product.description.split('\n').slice(0, 2).join(' ')}
                                 </p>
                             </div>
-
                             {/* Access Type Toggle */}
                             <div>
                                 <label className="text-sm text-gray-400 mb-2 block">Access Type</label>
@@ -612,11 +323,10 @@ const ProductDetail = () => {
                                         <button
                                             key={type}
                                             onClick={() => handleAccessTypeChange(type)}
-                                            className={`flex-1 py-2.5 rounded-full font-medium transition-all duration-200 ${
-                                                accessType === type
+                                            className={`flex-1 py-2.5 rounded-full font-medium transition-all duration-200 ${accessType === type
                                                     ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-900/50'
                                                     : 'bg-[#1a1a1a] text-gray-400 border border-gray-800 hover:border-gray-700'
-                                            }`}
+                                                }`}
                                         >
                                             {type.charAt(0).toUpperCase() + type.slice(1)}
                                         </button>
@@ -629,11 +339,10 @@ const ProductDetail = () => {
                                 {/* Monthly Card */}
                                 <div
                                     onClick={() => handleBillingPeriodChange('monthly')}
-                                    className={`cursor-pointer p-5 rounded-xl border-2 transition-all duration-200 ${
-                                        billingPeriod === 'monthly'
+                                    className={`cursor-pointer p-5 rounded-xl border-2 transition-all duration-200 ${billingPeriod === 'monthly'
                                             ? 'border-teal-500 bg-teal-950/30'
                                             : 'border-gray-800 bg-[#1a1a1a] hover:border-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="text-sm text-gray-400 mb-1">Monthly</div>
                                     <div className="text-2xl font-bold text-white mb-3">
@@ -658,13 +367,12 @@ const ProductDetail = () => {
                                 {/* Yearly Card */}
                                 <div
                                     onClick={() => handleBillingPeriodChange('yearly')}
-                                    className={`cursor-pointer p-5 rounded-xl border-2 transition-all duration-200 relative ${
-                                        billingPeriod === 'yearly'
+                                    className={`cursor-pointer p-5 rounded-xl border-2 transition-all duration-200 relative ${billingPeriod === 'yearly'
                                             ? 'border-teal-500 bg-teal-950/30'
                                             : 'border-gray-800 bg-[#1a1a1a] hover:border-gray-700'
-                                    }`}
+                                        }`}
                                 >
-                                    
+
                                     <div className="text-sm text-gray-400 mb-1">Yearly</div>
                                     <div className="text-2xl font-bold text-white mb-3">
                                         Rs. {accessType === 'shared' ? product.priceSharedYearly : product.privatePriceYearly}
@@ -686,6 +394,11 @@ const ProductDetail = () => {
                                 </div>
                             </div>
 
+                            
+                        </div>
+
+                        {/* Right Column - Title, Rating, Price & Buttons */}
+                        <div className="space-y-6">
                             {/* Quantity Selector */}
                             <div>
                                 <label className="text-sm text-gray-400 mb-2 block">Quantity</label>
@@ -706,28 +419,6 @@ const ProductDetail = () => {
                                 </div>
                             </div>
 
-                            {/* Total Price */}
-                            <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-4 flex justify-between items-center">
-                                <span className="text-gray-400">Total Price:</span>
-                                <span className="text-3xl font-bold text-teal-400">Rs. {currentPrice * quantity}</span>
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="space-y-3">
-                                <button
-                                    onClick={handleBuyNow}
-                                    className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-teal-900/50 hover:shadow-teal-900/70"
-                                >
-                                    Buy Now
-                                </button>
-                                <button
-                                    onClick={handleAddToCart}
-                                    className="w-full bg-[#1a1a1a] border-2 border-gray-800 hover:border-teal-500 text-white font-semibold py-4 rounded-xl transition-all duration-200"
-                                >
-                                    Add to Cart
-                                </button>
-                            </div>
-
                             {/* Rating Display */}
                             <div className="flex items-center gap-3 pt-4 border-t border-gray-800">
                                 <div className="flex gap-1">
@@ -736,6 +427,28 @@ const ProductDetail = () => {
                                 <span className="text-gray-400 text-sm">
                                     {(product.avgRating || 0).toFixed(1)} ({product.totalReviews || 0} Reviews)
                                 </span>
+                            </div>
+
+                            {/* Total Price */}
+                            <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-4 flex justify-between items-center">
+                                <span className="text-gray-400">Total Price:</span>
+                                <span className="text-3xl font-bold text-teal-400">Rs. {currentPrice * quantity}</span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleBuyNow}
+                                    className="flex-1 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-teal-900/50 hover:shadow-teal-900/70"
+                                >
+                                    Buy Now
+                                </button>
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="flex-1 bg-[#1a1a1a] border-2 border-gray-800 hover:border-teal-500 text-white font-semibold py-4 rounded-xl transition-all duration-200"
+                                >
+                                    Add to Cart
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -860,8 +573,8 @@ const ProductDetail = () => {
                                 </div>
 
                                 <div>
-                                    <label className="text-sm text-gray-400 mb-2 block">Rating</label>
-                                    <div className="flex gap-2">
+                                    <label className="text-base text-gray-400 mb-2 block">Rating</label>
+                                    <div className="flex gap-1">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <button
                                                 key={star}
@@ -871,12 +584,11 @@ const ProductDetail = () => {
                                                 }
                                             >
                                                 <FaStar
-                                                    size={32}
-                                                    className={`cursor-pointer transition-colors ${
-                                                        star <= reviewForm.rating
+                                                    size={20}
+                                                    className={`cursor-pointer transition-colors ${star <= reviewForm.rating
                                                             ? "text-yellow-400"
                                                             : "text-gray-700 hover:text-gray-600"
-                                                    }`}
+                                                        }`}
                                                 />
                                             </button>
                                         ))}
