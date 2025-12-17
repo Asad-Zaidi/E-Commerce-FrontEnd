@@ -37,7 +37,7 @@ import { Link } from "react-router-dom";
 const Breadcrumb = ({ category, productName }) => {
     return (
         <nav
-            className="bg-gray-100 dark:bg-gray-00 border-b border-gray-200 dark:border-gray-600 py-3 mb-6"
+            className=" border-b border-gray-200 dark:border-gray-600 py-3 mb-6"
             aria-label="breadcrumb"
         >
             <ol className="flex flex-wrap items-center max-w-7xl mx-auto px-4 text-sm sm:text-base">

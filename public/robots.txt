@@ -7,7 +7,7 @@ Disallow: /admin/
 Disallow: /admin/login
 
 # Sitemap location
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://subscription-service-mu.vercel.app/sitemap.xml
 
 # Crawl delay (in seconds)
 Crawl-delay: 1

@@ -1,31 +1,62 @@
-
-import React, { useState } from 'react';
-import api from '../../../api/api';
-import '../../../styles/Contact.css';
-import { Helmet } from 'react-helmet-async';
-import {
-  FaLinkedin, FaTwitterSquare, FaFacebookSquare, FaInstagramSquare,
-  FaWhatsapp, FaTelegram, FaEnvelope, FaPhoneAlt
-} from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import SEO from "../../SEO.jsx";
+import seoData from "../../../seoData";
+import { FaWhatsapp, FaEnvelope, FaPhoneAlt, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaTelegram } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import api from "../../../api/api";
 
 const Contact = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [contactData, setContactData] = useState({
+    title: 'Get in Touch',
+    description: "We're here to help and answer any questions you might have. Reach out to us anytime.",
+    email: 'info@yourcompany.com',
+    phone: '+92 308 4401410',
+    socials: {
+      linkedin: 'https://linkedin.com/yourcompany',
+      twitter: 'https://twitter.com/yourcompany',
+      facebook: 'https://facebook.com/yourcompany',
+      instagram: 'https://instagram.com/yourcompany',
+      whatsapp: 'https://wa.me/15551234567',
+      telegram: 'https://t.me/yourcompany',
+    }
+  });
+
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const res = await api.get("/contact");
+        if (res.data) {
+          setContactData(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching contact data:", err);
+        toast.error("Failed to load contact information");
+      }
+    };
+    fetchContactData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+
+    // Honeypot
+    if (formData.get("company")) return;
+
     const data = Object.fromEntries(formData.entries());
 
     try {
       setLoading(true);
-      const res = await api.post('/messages', data); // ✅ Send message to backend
+      const res = await api.post("/messages", data);
       if (res.data.success) {
-        setShowPopup(true);
+        toast.success("Message sent successfully! We'll get back to you soon.");
         e.target.reset();
       }
     } catch (err) {
-      alert("Failed to send message. Try again later.");
+      toast.error("Failed to send message. Please try again later.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -35,104 +66,166 @@ const Contact = () => {
   const closePopup = () => setShowPopup(false);
 
   const socialLinks = [
-    { icon: <FaLinkedin />, url: 'https://linkedin.com/yourcompany', label: 'LinkedIn' },
-    { icon: <FaTwitterSquare />, url: 'https://twitter.com/yourcompany', label: 'Twitter' },
-    { icon: <FaFacebookSquare />, url: 'https://facebook.com/yourcompany', label: 'Facebook' },
-    { icon: <FaInstagramSquare />, url: 'https://instagram.com/yourcompany', label: 'Instagram' },
-    { icon: <FaWhatsapp />, url: 'https://wa.me/15551234567', label: 'WhatsApp' },
-    { icon: <FaTelegram />, url: 'https://t.me/yourcompany', label: 'Telegram' },
+    { icon: <FaLinkedin />, url: contactData.socials.linkedin, label: "LinkedIn" },
+    { icon: <FaTwitter />, url: contactData.socials.twitter, label: "Twitter" },
+    { icon: <FaFacebook />, url: contactData.socials.facebook, label: "Facebook" },
+    { icon: <FaInstagram />, url: contactData.socials.instagram, label: "Instagram" },
+    { icon: <FaWhatsapp />, url: contactData.socials.whatsapp, label: "WhatsApp" },
+    { icon: <FaTelegram />, url: contactData.socials.telegram, label: "Telegram" },
   ];
 
   const contactInfo = [
-    { icon: <FaEnvelope />, detail: 'info@yourcompany.com', type: 'mailto' },
-    { icon: <FaPhoneAlt />, detail: '+1 (555) 123-4567', type: 'tel' },
+    { icon: <FaEnvelope />, detail: contactData.email, type: "mailto" },
+    { icon: <FaPhoneAlt />, detail: contactData.phone, type: "tel" },
   ];
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
     <>
-      <Helmet>
-        <title>Contact Us | ServiceHub - Get in Touch</title>
-        <meta name="description" content="Contact ServiceHub for inquiries, support, or partnerships. We're here to help with any questions about our digital tools and services." />
-        <meta name="keywords" content="contact, support, customer service, inquiry, ServiceHub" />
-        <meta property="og:title" content="Contact Us | ServiceHub" />
-        <meta property="og:description" content="Get in touch with ServiceHub. Contact us for support, inquiries, or partnership opportunities." />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="en_US" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Contact Us | ServiceHub" />
-        <meta name="twitter:description" content="Contact ServiceHub for support and inquiries." />
-      </Helmet>
-      <div className={`contact-page-wrapper ${showPopup ? 'blurred' : ''}`}>
-        <div className="contact-container">
-          {/* Left Column: Contact Form */}
-          <div className="contact-form-side">
-            <h1>Get in Touch</h1>
-            <p>We're here to help and answer any question you might have. We look forward to hearing from you.</p>
+      <SEO {...seoData.contact} />
 
-            <form className="contact-form-page" onSubmit={handleSubmit}>
-              <div className="contact-form-group">
-                <input type="text" id="contact-name" name="name" placeholder=" " required />
-                <label htmlFor="contact-name">Name</label>
-              </div>
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+        className="min-h-screen bg-gray-900 text-gray-200 flex flex-col items-center justify-center px-4 py-12 relative"
+      >
+        <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl font-bold mb-4 text-center">
+          {contactData.title}
+        </motion.h1>
+        <motion.p variants={fadeUp} className="text-center mb-10 max-w-2xl">
+          {contactData.description}
+        </motion.p>
 
-              <div className="contact-form-group">
-                <input type="email" id="contact-email" name="email" placeholder=" " required />
-                <label htmlFor="contact-email">Email</label>
-              </div>
+        <div className="flex flex-col md:flex-row w-full max-w-6xl gap-8">
+          {/* Form */}
+          <motion.form
+            variants={fadeUp}
+            onSubmit={handleSubmit}
+            className="flex-1 bg-gray-800 p-8 rounded-xl shadow-lg space-y-6"
+          >
+            {/* Honeypot */}
+            <input type="text" name="company" autoComplete="off" tabIndex="-1" className="hidden" />
 
-              <div className="contact-form-group">
-                <textarea id="contact-message" name="message" rows="5" placeholder=" " required></textarea>
-                <label htmlFor="contact-message">Message</label>
-              </div>
+            <motion.div variants={fadeUp} className="relative">
+              <input
+                type="text"
+                name="name"
+                required
+                className="peer w-full p-3 rounded bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
+                placeholder=" "
+              />
+              <label className="absolute left-3 top-2 text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:text-green-400 text-sm transition-all">
+                Name
+              </label>
+            </motion.div>
 
-              <button type="submit" className="contact-submit-button" disabled={loading}>
-                {loading ? 'Sending...' : 'Send Message'}
-              </button>
-            </form>
-          </div>
+            <motion.div variants={fadeUp} className="relative">
+              <input
+                type="email"
+                name="email"
+                required
+                className="peer w-full p-3 rounded bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
+                placeholder=" "
+              />
+              <label className="absolute left-3 top-2 text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:text-green-400 text-sm transition-all">
+                Email
+              </label>
+            </motion.div>
 
-          {/* Right Column: Contact Info & Socials */}
-          <div className="contact-info-side">
-            <div className="contact-info-block">
-              <h2>Contact Information</h2>
-              {contactInfo.map((item, index) => (
-                <div className="info-item" key={index}>
-                  <span className="icon">{item.icon}</span>
-                  <p><a href={`${item.type}:${item.detail}`}>{item.detail}</a></p>
+            <motion.div variants={fadeUp} className="relative">
+              <textarea
+                name="message"
+                rows={5}
+                required
+                className="peer w-full p-3 rounded bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none"
+                placeholder=" "
+              />
+              <label className="absolute left-3 top-2 text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:text-green-400 text-sm transition-all">
+                Message
+              </label>
+            </motion.div>
+
+            <motion.button
+              variants={fadeUp}
+              type="submit"
+              disabled={loading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded font-semibold transition-all"
+            >
+              {loading ? "Sending..." : "Send Message"}
+            </motion.button>
+          </motion.form>
+
+          {/* Info + Socials */}
+          <motion.div variants={fadeUp} className="flex-1 flex flex-col gap-6">
+            <div className="bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
+              <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
+              {contactInfo.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-4">
+                  <span className="text-green-500 text-xl">{item.icon}</span>
+                  <a href={`${item.type}:${item.detail}`} className="hover:text-green-400 transition">
+                    {item.detail}
+                  </a>
                 </div>
               ))}
             </div>
 
-            <div className="social-block">
-              <h2>Connect With Us</h2>
-              <div className="social-links">
-                {socialLinks.map((link, index) => (
-                  <a key={index} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={link.label}>
+            <div className="bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
+              <h2 className="text-2xl font-semibold mb-4">Connect With Us</h2>
+              <div className="flex gap-4 text-2xl">
+                {socialLinks.map((link, idx) => (
+                  <a
+                    key={idx}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    className="hover:text-green-400 transition"
+                  >
                     {link.icon}
                   </a>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
 
-      {/* Popup */}
-      {showPopup && (
-        <div className="popup-overlay">
-          <div className="popup-message">
-            <div className="popup-tick">
-              <svg viewBox="0 0 60 60">
-                <circle className="tick-circle" cx="30" cy="30" r="25" fill="none" />
-                <path className="tick-mark" fill="none" d="M18 30 l10 10 l20 -20" />
+        {/* WhatsApp CTA */}
+        <a
+          href={`${contactData.socials.whatsapp}?text=Hello%20ServiceHub,%20I%20need%20assistance`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-full shadow-xl transition"
+        >
+          <FaWhatsapp className="text-xl" />
+          <span className="hidden md:block font-medium">Chat on WhatsApp</span>
+        </a>
+
+        {/* Popup */}
+        {showPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 p-8 rounded-xl text-center space-y-4">
+              <svg viewBox="0 0 60 60" className="mx-auto w-16 h-16">
+                <circle cx="30" cy="30" r="25" stroke="green" strokeWidth="3" fill="none" />
+                <path d="M18 30 l10 10 l20 -20" stroke="green" strokeWidth="3" fill="none" />
               </svg>
+              <p>Thank you for your message! We will be in touch shortly.</p>
+              <button
+                onClick={closePopup}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold"
+              >
+                Close
+              </button>
             </div>
-
-            <p>Thank you for your message! We will be in touch shortly.</p>
-            <button onClick={closePopup}>Close</button>
           </div>
-        </div>
-      )}
+        )}
+      </motion.div>
     </>
   );
 };

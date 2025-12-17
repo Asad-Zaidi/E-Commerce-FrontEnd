@@ -193,7 +193,6 @@
 
 //                         <h2 className="current-price">Rs. {currentPrice}</h2>
 
-//                         {/* ✅ Updated Buy Now button */}
 //                         <button className="buy-btn" onClick={handleBuyNow}>
 //                             Buy Now
 //                         </button>
@@ -267,31 +266,37 @@
 // export default ProductDetail;
 
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../api/api";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { FaStar, FaStarHalfAlt, FaRegStar, FaCheckCircle, FaShieldAlt, FaClock, FaHeadset, FaSync, FaLock, FaCheck } from "react-icons/fa";
 import { Helmet } from "react-helmet-async";
 import Breadcrumb from "../../common/Breadcrumb";
 
-const renderStars = (rating) => {
+const renderStars = (rating, size = "text-base") => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
-        if (rating >= i) stars.push(<FaStar key={i} className="text-yellow-400" />);
+        if (rating >= i) stars.push(<FaStar key={i} className={`text-yellow-400 ${size}`} />);
         else if (rating >= i - 0.5)
-            stars.push(<FaStarHalfAlt key={i} className="text-yellow-400" />);
-        else stars.push(<FaRegStar key={i} className="text-gray-300" />);
+            stars.push(<FaStarHalfAlt key={i} className={`text-yellow-400 ${size}`} />);
+        else stars.push(<FaRegStar key={i} className={`text-gray-600 ${size}`} />);
     }
     return stars;
 };
 
 const ProductDetail = () => {
     const { category, slug } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [priceType, setPriceType] = useState("sharedMonthly");
     const [currentPrice, setCurrentPrice] = useState(0);
+    const [accessType, setAccessType] = useState("shared");
+    const [billingPeriod, setBillingPeriod] = useState("monthly");
+    const [quantity, setQuantity] = useState(1);
+    const [mainImage, setMainImage] = useState("");
+    const [thumbnails, setThumbnails] = useState([]);
 
     const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
 
@@ -300,6 +305,11 @@ const ProductDetail = () => {
             const fullSlug = `${category}/${slug}`;
             const res = await api.get(`/products/slug/${fullSlug}`);
             setProduct(res.data);
+
+            // Initialize image gallery
+            const productImages = [res.data.imageUrl, res.data.imageUrl, res.data.imageUrl, res.data.imageUrl];
+            setMainImage(res.data.imageUrl);
+            setThumbnails(productImages);
 
             setPriceType("sharedMonthly");
             setCurrentPrice(res.data.priceSharedMonthly || 0);
@@ -347,18 +357,68 @@ const ProductDetail = () => {
         setCurrentPrice(priceMap[type] || 0);
     };
 
+    const handleAccessTypeChange = (type) => {
+        setAccessType(type);
+        const newPriceType = `${type}${billingPeriod.charAt(0).toUpperCase() + billingPeriod.slice(1)}`;
+        handlePriceChange(newPriceType);
+    };
+
+    const handleBillingPeriodChange = (period) => {
+        setBillingPeriod(period);
+        const newPriceType = `${accessType}${period.charAt(0).toUpperCase() + period.slice(1)}`;
+        handlePriceChange(newPriceType);
+    };
+
+    const handleQuantityChange = (delta) => {
+        setQuantity((prev) => Math.max(1, prev + delta));
+    };
+
     const handleBuyNow = () => {
         if (!product) return;
 
-        const orderDetails = {
+        const cartItem = {
             productId: product._id,
             productName: product.name,
             selectedPlan: priceType,
             price: currentPrice,
+            quantity: quantity,
+            accessType,
+            billingPeriod,
+            imageUrl: product.imageUrl,
         };
 
-        console.log("Order Details:", orderDetails);
-        alert("✅ Order details logged in console!");
+        localStorage.setItem("checkoutItems", JSON.stringify([cartItem]));
+        navigate("/checkout");
+    };
+
+    const handleAddToCart = () => {
+        if (!product) return;
+
+        const cartItem = {
+            productId: product._id,
+            productName: product.name,
+            selectedPlan: priceType,
+            price: currentPrice,
+            quantity: quantity,
+            accessType,
+            billingPeriod,
+            imageUrl: product.imageUrl,
+        };
+
+        const existing = JSON.parse(localStorage.getItem("checkoutItems") || "[]");
+        const idx = existing.findIndex(
+            (item) => item.productId === cartItem.productId && item.selectedPlan === cartItem.selectedPlan,
+        );
+
+        if (idx >= 0) {
+            existing[idx] = { ...existing[idx], quantity: existing[idx].quantity + cartItem.quantity };
+        } else {
+            existing.push(cartItem);
+        }
+
+        localStorage.setItem("checkoutItems", JSON.stringify(existing));
+        console.log("Added to Cart:", cartItem);
+        alert("Added to cart! Proceed to checkout when ready.");
     };
 
     const handleReviewSubmit = async (e) => {
@@ -385,9 +445,36 @@ const ProductDetail = () => {
     };
 
     if (loading)
-        return <p className="text-center py-20 text-gray-500 text-lg">Loading...</p>;
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+                <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                    <p className="mt-4 text-gray-400">Loading...</p>
+                </div>
+            </div>
+        );
     if (!product)
-        return <p className="text-center py-20 text-gray-500 text-lg">Product not found.</p>;
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+                <p className="text-gray-400 text-lg">Product not found.</p>
+            </div>
+        );
+
+    // Calculate rating breakdown
+    const ratingBreakdown = [5, 4, 3, 2, 1].map(star => {
+        const count = reviews.filter(r => r.rating === star).length;
+        const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+        return { star, count, percentage };
+    });
+
+    const features = [
+        { icon: FaCheckCircle, title: "Instant Activation", desc: "Get access immediately after purchase" },
+        { icon: FaShieldAlt, title: "Secure Access", desc: "Protected with enterprise-grade security" },
+        { icon: FaClock, title: "24/7 Availability", desc: "Access your subscription anytime" },
+        { icon: FaHeadset, title: "Premium Support", desc: "Dedicated customer support team" },
+        { icon: FaSync, title: "Auto-Renewal", desc: "Hassle-free automatic renewals" },
+        { icon: FaLock, title: "Privacy Protected", desc: "Your data is safe and encrypted" },
+    ];
 
     return (
         <>
@@ -410,23 +497,14 @@ const ProductDetail = () => {
                 <meta property="og:type" content="product" />
                 <meta property="og:locale" content="en_US" />
                 
-                {/* Twitter Card Meta Tags */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={product.metaTitle || product.name} />
                 <meta name="twitter:description" content={product.metaDescription || product.seoDescription || product.description} />
                 <meta name="twitter:image" content={product.imageUrl} />
-                <meta name="twitter:site" content="@yourhandle" />
                 
-                {/* Canonical URL to prevent duplicate content */}
                 <link rel="canonical" href={`${window.location.origin}/products/${product.slug}`} />
-                
-                {/* Preload Product Image for Performance */}
                 <link rel="preload" as="image" href={product.imageUrl} />
                 
-                {/* Prefetch Related Product Pages */}
-                <link rel="prefetch" href={`${window.location.origin}/products`} />
-                
-                {/* Structured Data (JSON-LD) for Product */}
                 <script type="application/ld+json">
                     {JSON.stringify({
                         "@context": "https://schema.org",
@@ -465,208 +543,392 @@ const ProductDetail = () => {
                         })
                     })}
                 </script>
-                
-                {/* BreadcrumbList Schema */}
-                <script type="application/ld+json">
-                    {JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "BreadcrumbList",
-                        "itemListElement": [
-                            {
-                                "@type": "ListItem",
-                                "position": 1,
-                                "name": "Home",
-                                "item": `${window.location.origin}`
-                            },
-                            {
-                                "@type": "ListItem",
-                                "position": 2,
-                                "name": "Products",
-                                "item": `${window.location.origin}/products`
-                            },
-                            ...(product.category ? [{
-                                "@type": "ListItem",
-                                "position": 3,
-                                "name": product.category,
-                                "item": `${window.location.origin}/products?category=${encodeURIComponent(product.category)}`
-                            }] : []),
-                            {
-                                "@type": "ListItem",
-                                "position": product.category ? 4 : 3,
-                                "name": product.name,
-                                "item": `${window.location.origin}/products/${product.slug}`
-                            }
-                        ]
-                    })}
-                </script>
             </Helmet>
 
-            {/* Breadcrumb Navigation */}
-            <Breadcrumb category={product.category} productName={product.name} slug={product.slug} />
-
-            <div className="max-w-7xl mx-auto px-4 py-10">
-                {/* Product Info */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {/* Image */}
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-slate-50 to-white p-4 shadow-xl ring-1 ring-slate-200 dark:from-slate-900 dark:to-slate-950 dark:ring-slate-800">
-                        <div className="aspect-square md:aspect-[4/3] w-full overflow-hidden rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center">
-                            <img
-                                src={product.imageUrl}
-                                alt={product.name}
-                                className="max-h-full max-w-full object-contain transition-transform duration-500 ease-out hover:scale-[1.02]"
-                            />
-                        </div>
-                        <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.08)]" />
-                    </div>
-
-                    {/* Info */}
-                    <div className="space-y-5">
-                        <h1 className="text-3xl font-bold">{product.name}</h1>
-                        <p className="text-gray-600">{product.description}</p>
-
-                        {/* Price Selector */}
-                        <div className="space-y-4">
-                            {["Private", "Shared"].map((type) => (
-                                <div key={type}>
-                                    <h4 className="font-semibold">{type}</h4>
-                                    <div className="flex gap-3 mt-2 flex-wrap">
-                                        {["Monthly", "Yearly"].map((period) => {
-                                            const key = `${type.toLowerCase()}${period}`;
-                                            return (
-                                                <button
-                                                    key={key}
-                                                    onClick={() => handlePriceChange(key)}
-                                                    className={`px-4 py-2 rounded-lg border ${
-                                                        priceType === key
-                                                            ? "bg-blue-600 text-white border-blue-600"
-                                                            : "hover:bg-gray-100 border-gray-300"
-                                                    }`}
-                                                >
-                                                    {period}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Current Price */}
-                        <h2 className="text-3xl font-bold text-green-600">
-                            Rs. {currentPrice}
-                        </h2>
-
-                        {/* Buy Now */}
-                        <button
-                            onClick={handleBuyNow}
-                            className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 text-lg font-semibold"
-                        >
-                            Buy Now
-                        </button>
-
-                        {/* Rating */}
-                        <div className="flex items-center gap-2">
-                            {renderStars(product.avgRating || 0)}
-                            <span className="text-sm text-gray-500">
-                                ({product.totalReviews || 0} Reviews)
-                            </span>
-                        </div>
-                    </div>
+            <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
+                {/* Breadcrumb */}
+                <div className="bg-[#111111] border-b border-gray-800">
+                    <Breadcrumb category={product.category} productName={product.name} slug={product.slug} />
                 </div>
 
-                {/* SEO Description Section */}
-                {product.seoDescription && (
-                    <div className="mt-16 max-w-full mx-auto">
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
-                            <h2 className="text-2xl font-bold mb-4 text-gray-800">Product Overview</h2>
-                            <div className="prose prose-lg text-gray-700 leading-relaxed">
-                                {product.seoDescription.split('\n\n').map((paragraph, idx) => (
-                                    <p key={idx} className="mb-3">{paragraph}</p>
+                {/* Hero Section */}
+                <section className="max-w-7xl mx-auto px-4 py-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Left Column - Image Gallery */}
+                        <div className="space-y-4">
+                            {/* Main Image */}
+                            <div className="relative group">
+                                <div className="absolute inset-0 bg-gradient-to-t from-teal-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none z-10"></div>
+                                <div className="bg-[#1a1a1a] border border-gray-800 rounded-2xl p-6 overflow-hidden">
+                                    <img
+                                        src={mainImage}
+                                        alt={product.name}
+                                        className="w-full h-[400px] object-contain transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Thumbnail Gallery */}
+                            <div className="grid grid-cols-4 gap-3">
+                                {thumbnails.map((img, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setMainImage(img)}
+                                        className={`bg-[#1a1a1a] border-2 ${
+                                            mainImage === img ? 'border-teal-500' : 'border-gray-800 hover:border-gray-700'
+                                        } rounded-lg p-2 transition-all duration-200 overflow-hidden`}
+                                    >
+                                        <img
+                                            src={img}
+                                            alt={`Thumbnail ${idx + 1}`}
+                                            className="w-full h-20 object-contain"
+                                        />
+                                    </button>
                                 ))}
                             </div>
                         </div>
-                    </div>
-                )}
 
-                {/* Reviews Section */}
-                <div className="mt-16">
-                    <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+                        {/* Right Column - Product Info */}
+                        <div className="space-y-6">
+                            {/* Title & Badge */}
+                            <div>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <h1 className="text-3xl font-bold text-white">{product.name}</h1>
+                                    <span className="flex items-center gap-1 bg-teal-600/20 text-teal-400 px-3 py-1 rounded-full text-sm border border-teal-600/30">
+                                        <FaCheckCircle className="text-xs" />
+                                        Verified
+                                    </span>
+                                </div>
+                                <p className="text-gray-400 text-sm leading-relaxed">
+                                    {product.description.split('\n').slice(0, 2).join(' ')}
+                                </p>
+                            </div>
 
-                    {/* Review Form */}
-                    <form
-                        onSubmit={handleReviewSubmit}
-                        className="bg-white p-6 rounded-xl shadow space-y-4 max-w-full"
-                    >
-                        <input
-                            type="text"
-                            placeholder="Your name"
-                            value={reviewForm.name}
-                            onChange={(e) =>
-                                setReviewForm({ ...reviewForm, name: e.target.value })
-                            }
-                            required
-                            className="w-full border rounded-lg px-4 py-2"
-                        />
+                            {/* Access Type Toggle */}
+                            <div>
+                                <label className="text-sm text-gray-400 mb-2 block">Access Type</label>
+                                <div className="flex gap-3">
+                                    {['shared', 'private'].map((type) => (
+                                        <button
+                                            key={type}
+                                            onClick={() => handleAccessTypeChange(type)}
+                                            className={`flex-1 py-2.5 rounded-full font-medium transition-all duration-200 ${
+                                                accessType === type
+                                                    ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg shadow-teal-900/50'
+                                                    : 'bg-[#1a1a1a] text-gray-400 border border-gray-800 hover:border-gray-700'
+                                            }`}
+                                        >
+                                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                        <textarea
-                            rows="4"
-                            placeholder="Your review"
-                            value={reviewForm.comment}
-                            onChange={(e) =>
-                                setReviewForm({ ...reviewForm, comment: e.target.value })
-                            }
-                            required
-                            className="w-full border rounded-lg px-4 py-2"
-                        />
-
-                        <div className="flex gap-1">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <FaStar
-                                    key={star}
-                                    size={22}
-                                    className={`cursor-pointer ${
-                                        star <= reviewForm.rating
-                                            ? "text-yellow-400"
-                                            : "text-gray-300"
+                            {/* Pricing Cards */}
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Monthly Card */}
+                                <div
+                                    onClick={() => handleBillingPeriodChange('monthly')}
+                                    className={`cursor-pointer p-5 rounded-xl border-2 transition-all duration-200 ${
+                                        billingPeriod === 'monthly'
+                                            ? 'border-teal-500 bg-teal-950/30'
+                                            : 'border-gray-800 bg-[#1a1a1a] hover:border-gray-700'
                                     }`}
-                                    onClick={() =>
-                                        setReviewForm({ ...reviewForm, rating: star })
-                                    }
-                                />
-                            ))}
+                                >
+                                    <div className="text-sm text-gray-400 mb-1">Monthly</div>
+                                    <div className="text-2xl font-bold text-white mb-3">
+                                        Rs. {accessType === 'shared' ? product.priceSharedMonthly : product.privatePriceMonthly}
+                                    </div>
+                                    <ul className="space-y-2 text-xs text-gray-400">
+                                        <li className="flex items-center gap-2">
+                                            <FaCheck className="text-teal-500 flex-shrink-0" />
+                                            <span>Full access</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <FaCheck className="text-teal-500 flex-shrink-0" />
+                                            <span>Cancel anytime</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <FaCheck className="text-teal-500 flex-shrink-0" />
+                                            <span>24/7 Support</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Yearly Card */}
+                                <div
+                                    onClick={() => handleBillingPeriodChange('yearly')}
+                                    className={`cursor-pointer p-5 rounded-xl border-2 transition-all duration-200 relative ${
+                                        billingPeriod === 'yearly'
+                                            ? 'border-teal-500 bg-teal-950/30'
+                                            : 'border-gray-800 bg-[#1a1a1a] hover:border-gray-700'
+                                    }`}
+                                >
+                                    
+                                    <div className="text-sm text-gray-400 mb-1">Yearly</div>
+                                    <div className="text-2xl font-bold text-white mb-3">
+                                        Rs. {accessType === 'shared' ? product.priceSharedYearly : product.privatePriceYearly}
+                                    </div>
+                                    <ul className="space-y-2 text-xs text-gray-400">
+                                        <li className="flex items-center gap-2">
+                                            <FaCheck className="text-teal-500 flex-shrink-0" />
+                                            <span>Full access</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <FaCheck className="text-teal-500 flex-shrink-0" />
+                                            <span>Best value</span>
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <FaCheck className="text-teal-500 flex-shrink-0" />
+                                            <span>Priority support</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Quantity Selector */}
+                            <div>
+                                <label className="text-sm text-gray-400 mb-2 block">Quantity</label>
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => handleQuantityChange(-1)}
+                                        className="w-10 h-10 bg-[#1a1a1a] border border-gray-800 hover:border-teal-500 rounded-lg flex items-center justify-center text-white transition-colors"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="text-2xl font-semibold text-white w-12 text-center">{quantity}</span>
+                                    <button
+                                        onClick={() => handleQuantityChange(1)}
+                                        className="w-10 h-10 bg-[#1a1a1a] border border-gray-800 hover:border-teal-500 rounded-lg flex items-center justify-center text-white transition-colors"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Total Price */}
+                            <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-4 flex justify-between items-center">
+                                <span className="text-gray-400">Total Price:</span>
+                                <span className="text-3xl font-bold text-teal-400">Rs. {currentPrice * quantity}</span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="space-y-3">
+                                <button
+                                    onClick={handleBuyNow}
+                                    className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-teal-900/50 hover:shadow-teal-900/70"
+                                >
+                                    Buy Now
+                                </button>
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="w-full bg-[#1a1a1a] border-2 border-gray-800 hover:border-teal-500 text-white font-semibold py-4 rounded-xl transition-all duration-200"
+                                >
+                                    Add to Cart
+                                </button>
+                            </div>
+
+                            {/* Rating Display */}
+                            <div className="flex items-center gap-3 pt-4 border-t border-gray-800">
+                                <div className="flex gap-1">
+                                    {renderStars(product.avgRating || 0)}
+                                </div>
+                                <span className="text-gray-400 text-sm">
+                                    {(product.avgRating || 0).toFixed(1)} ({product.totalReviews || 0} Reviews)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Product Details Section */}
+                <section className="bg-[#111111] border-y border-gray-800 py-16">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="flex items-center gap-4 mb-8">
+                            <h2 className="text-3xl font-bold text-white">Product Details</h2>
+                            <div className="flex-1 h-px bg-gradient-to-r from-gray-800 to-transparent"></div>
                         </div>
 
-                        <button
-                            type="submit"
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-                        >
-                            Submit Review
-                        </button>
-                    </form>
+                        {/* SEO Description */}
+                        {product.seoDescription && (
+                            <div className="mb-12 bg-gradient-to-br from-teal-950/20 to-cyan-950/20 border border-teal-900/30 rounded-2xl p-8">
+                                <h3 className="text-xl font-semibold text-teal-400 mb-4">Product Overview</h3>
+                                <div className="text-gray-300 leading-relaxed space-y-3">
+                                    {product.seoDescription.split('\n\n').map((paragraph, idx) => (
+                                        <p key={idx}>{paragraph}</p>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Feature Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {features.map((feature, idx) => {
+                                const Icon = feature.icon;
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="bg-[#1a1a1a] border border-gray-800 hover:border-teal-600/50 rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:shadow-teal-900/20 group"
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-3 bg-gradient-to-br from-teal-600 to-cyan-600 rounded-lg group-hover:scale-110 transition-transform duration-200">
+                                                <Icon className="text-white text-xl" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-white font-semibold mb-1">{feature.title}</h4>
+                                                <p className="text-gray-400 text-sm">{feature.desc}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Ratings & Reviews Section */}
+                <section className="max-w-7xl mx-auto px-4 py-16">
+                    <div className="flex items-center gap-4 mb-8">
+                        <h2 className="text-3xl font-bold text-white">Ratings & Reviews</h2>
+                        <div className="flex-1 h-px bg-gradient-to-r from-gray-800 to-transparent"></div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                        {/* Left - Overall Rating */}
+                        <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-8">
+                            <div className="text-center mb-6">
+                                <div className="text-6xl font-bold text-white mb-2">
+                                    {(product.avgRating || 0).toFixed(1)}
+                                </div>
+                                <div className="flex justify-center gap-1 mb-2">
+                                    {renderStars(product.avgRating || 0, "text-2xl")}
+                                </div>
+                                <div className="text-gray-400 text-sm">
+                                    Based on {product.totalReviews || 0} reviews
+                                </div>
+                            </div>
+
+                            {/* Rating Breakdown */}
+                            <div className="space-y-2">
+                                {ratingBreakdown.map(({ star, count, percentage }) => (
+                                    <div key={star} className="flex items-center gap-3">
+                                        <span className="text-sm text-gray-400 w-12">{star} star</span>
+                                        <div className="flex-1 h-2 bg-[#0a0a0a] rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-teal-600 to-cyan-600 transition-all duration-300"
+                                                style={{ width: `${percentage}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-sm text-gray-400 w-12 text-right">
+                                            {percentage.toFixed(0)}%
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Right - Review Form */}
+                        <div className="lg:col-span-2 bg-[#1a1a1a] border border-gray-800 rounded-xl p-8">
+                            <h3 className="text-xl font-semibold text-white mb-6">Write a Review</h3>
+                            <form onSubmit={handleReviewSubmit} className="space-y-4">
+                                <div>
+                                    <label className="text-sm text-gray-400 mb-2 block">Your Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter your name"
+                                        value={reviewForm.name}
+                                        onChange={(e) =>
+                                            setReviewForm({ ...reviewForm, name: e.target.value })
+                                        }
+                                        required
+                                        className="w-full bg-[#0a0a0a] border border-gray-800 focus:border-teal-500 rounded-lg px-4 py-3 text-white placeholder-gray-600 outline-none transition-colors"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm text-gray-400 mb-2 block">Your Review</label>
+                                    <textarea
+                                        rows="4"
+                                        placeholder="Share your experience with this product"
+                                        value={reviewForm.comment}
+                                        onChange={(e) =>
+                                            setReviewForm({ ...reviewForm, comment: e.target.value })
+                                        }
+                                        required
+                                        className="w-full bg-[#0a0a0a] border border-gray-800 focus:border-teal-500 rounded-lg px-4 py-3 text-white placeholder-gray-600 outline-none transition-colors resize-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm text-gray-400 mb-2 block">Rating</label>
+                                    <div className="flex gap-2">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <button
+                                                key={star}
+                                                type="button"
+                                                onClick={() =>
+                                                    setReviewForm({ ...reviewForm, rating: star })
+                                                }
+                                            >
+                                                <FaStar
+                                                    size={32}
+                                                    className={`cursor-pointer transition-colors ${
+                                                        star <= reviewForm.rating
+                                                            ? "text-yellow-400"
+                                                            : "text-gray-700 hover:text-gray-600"
+                                                    }`}
+                                                />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200"
+                                >
+                                    Submit Review
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
                     {/* Review List */}
-                    <div className="mt-10 space-y-4">
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-semibold text-white mb-4">Customer Reviews</h3>
                         {reviews.length === 0 ? (
-                            <p className="text-gray-500">No reviews yet.</p>
+                            <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-8 text-center">
+                                <p className="text-gray-400">No reviews yet. Be the first to review!</p>
+                            </div>
                         ) : (
-                            reviews.map((rev) => (
-                                <div
-                                    key={rev._id}
-                                    className="bg-white p-5 rounded-xl shadow"
-                                >
-                                    <div className="flex justify-between items-center mb-1">
-                                        <strong>{rev.name}</strong>
-                                        <div className="flex">{renderStars(rev.rating)}</div>
+                            <div className="space-y-4">
+                                {reviews.map((rev) => (
+                                    <div
+                                        key={rev._id}
+                                        className="bg-[#1a1a1a] border border-gray-800 hover:border-gray-700 rounded-xl p-6 transition-all duration-200"
+                                    >
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h4 className="text-white font-semibold">{rev.name}</h4>
+                                                <p className="text-gray-500 text-xs">
+                                                    {new Date(rev.createdAt).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
+                                                </p>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                {renderStars(rev.rating)}
+                                            </div>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed">{rev.comment}</p>
                                     </div>
-                                    <p className="text-gray-600">{rev.comment}</p>
-                                    <small className="text-gray-400">
-                                        {new Date(rev.createdAt).toLocaleDateString()}
-                                    </small>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         )}
                     </div>
-                </div>
+                </section>
             </div>
         </>
     );

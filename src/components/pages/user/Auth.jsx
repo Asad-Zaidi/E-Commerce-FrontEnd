@@ -51,6 +51,7 @@ function Auth() {
                         : "Create a new ServiceHub account to start exploring our digital tools and subscription services."
                     } 
                 />
+                <meta name="robots" content="noindex,nofollow" />
                 <meta property="og:title" content={`${isLogin ? "Login" : "Register"} | ServiceHub`} />
                 <meta property="og:type" content="website" />
                 <meta property="og:locale" content="en_US" />

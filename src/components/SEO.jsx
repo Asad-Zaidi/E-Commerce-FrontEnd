@@ -9,6 +9,7 @@ function SEO({ title, description, keywords, image, url }) {
             <title>{title}</title>
             <meta name="description" content={description} />
             <meta name="keywords" content={keywords} />
+            {url && <link rel="canonical" href={url} />}
 
             {/* Open Graph (Facebook, LinkedIn, WhatsApp) */}
             <meta property="og:title" content={title} />

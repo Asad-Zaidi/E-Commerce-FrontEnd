@@ -24,7 +24,7 @@ const AdminLayout = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex min-h-screen ">
             {/* Collapsible Sidebar */}
             <div className={`fixed left-0 top-0 h-screen bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 text-white shadow-2xl z-50 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'w-[70px]' : 'w-60'}`}>
                 <div className="flex justify-between items-center p-5 border-b border-white border-opacity-20">
@@ -107,7 +107,7 @@ const AdminLayout = () => {
             </div>
 
             {/* Main Content Area */}
-            <div className={`flex-1 p-3 transition-all duration-300 ${sidebarCollapsed ? 'ml-[70px]' : 'ml-60'}`}>
+            <div className={`flex-1  transition-all duration-300 ${sidebarCollapsed ? 'ml-[70px]' : 'ml-60'}`}>
                 <Outlet />
             </div>
         </div>

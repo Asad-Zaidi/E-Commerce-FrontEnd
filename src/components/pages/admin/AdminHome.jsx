@@ -1,32 +1,44 @@
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+import {
+    FiTrash2,
+    FiPlus,
+    FiX,
+    FiToggleLeft,
+    FiToggleRight,
+    FiImage
+} from "react-icons/fi";
 import api from "../../../api/api";
-import "../../../styles/AdminHome.css";
+
+const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0 }
+};
 
 const AdminHome = () => {
-    // States for each home section
     const [hero, setHero] = useState([]);
     const [features, setFeatures] = useState([]);
     const [testimonials, setTestimonials] = useState([]);
     const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [confirm, setConfirm] = useState(null);
 
-    // Fetch all home data
     const fetchHomeData = async () => {
         try {
             setLoading(true);
-            const [heroRes, featuresRes, testimonialsRes, bannersRes] = await Promise.all([
+            const [h, f, t, b] = await Promise.all([
                 api.get("/home/hero"),
                 api.get("/home/features"),
                 api.get("/home/testimonials"),
-                api.get("/banners/all"),
+                api.get("/banners/all")
             ]);
-
-            setHero(heroRes.data);
-            setFeatures(featuresRes.data);
-            setTestimonials(testimonialsRes.data);
-            setBanners(bannersRes.data);
-        } catch (err) {
-            console.error("Error fetching home data:", err);
+            setHero(h.data);
+            setFeatures(f.data);
+            setTestimonials(t.data);
+            setBanners(b.data);
+        } catch {
+            toast.error("Failed to load home data");
         } finally {
             setLoading(false);
         }
@@ -36,197 +48,279 @@ const AdminHome = () => {
         fetchHomeData();
     }, []);
 
-    // Generic Delete function
-    const handleDelete = async (endpoint, id) => {
-        if (!window.confirm("Are you sure you want to delete?")) return;
-        try {
-            await api.delete(`${endpoint}/${id}`);
-            fetchHomeData();
-        } catch (err) {
-            console.error("Delete error:", err);
-        }
+    const confirmDelete = (endpoint, id) => {
+        setConfirm({
+            message: "Are you sure you want to delete this item?",
+            action: async () => {
+                try {
+                    await api.delete(`${endpoint}/${id}`);
+                    toast.success("Item deleted successfully");
+                    fetchHomeData();
+                } catch {
+                    toast.error("Delete failed");
+                }
+                setConfirm(null);
+            }
+        });
     };
 
-    // Generic Toggle Status function
-    const handleToggle = async (endpoint, id) => {
+    const toggleStatus = async (endpoint, id) => {
         try {
             await api.put(`${endpoint}/${id}/toggle`);
+            toast.success("Status updated");
             fetchHomeData();
-        } catch (err) {
-            console.error("Toggle error:", err);
+        } catch {
+            toast.error("Failed to update status");
         }
     };
 
-    if (loading) return <p className="loading">Loading home sections...</p>;
+    if (loading) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 z-50">
+                <div className="h-12 w-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
-        <div className="admin-home">
-            <h2>Manage Home Page Sections</h2>
+        <div className="min-h-full bg-gray-900 text-gray-200 p-8 max-w-full">
+            <h2 className="text-2xl font-semibold mb-6">Manage Home Page</h2>
 
-            {/* Hero Section */}
-            <SectionWrapper title="Hero Section" endpoint="/home/hero" data={hero} fetch={fetchHomeData}>
-                {hero.map((item) => (
+            <Section title="Hero Section">
+                {hero.map(item => (
                     <Card
                         key={item._id}
                         item={item}
-                        onDelete={() => handleDelete("/home/hero", item._id)}
-                        onToggle={() => handleToggle("/home/hero", item._id)}
-                        showImage={true}
+                        image
+                        onDelete={() => confirmDelete("/home/hero", item._id)}
+                        onToggle={() => toggleStatus("/home/hero", item._id)}
                     />
                 ))}
-            </SectionWrapper>
+            </Section>
 
-            {/* Features Section */}
-            <SectionWrapper title="Features Section" endpoint="/home/features" data={features} fetch={fetchHomeData}>
-                {features.map((item) => (
+            <Section title="Features Section">
+                {features.map(item => (
                     <Card
                         key={item._id}
                         item={item}
-                        onDelete={() => handleDelete("/home/features", item._id)}
-                        onToggle={() => handleToggle("/home/features", item._id)}
-                        showImage={false}
+                        onDelete={() => confirmDelete("/home/features", item._id)}
+                        onToggle={() => toggleStatus("/home/features", item._id)}
                     />
                 ))}
-            </SectionWrapper>
+            </Section>
 
-            {/* Testimonials Section */}
-            <SectionWrapper
-                title="Testimonials Section"
-                endpoint="/home/testimonials"
-                data={testimonials}
-                fetch={fetchHomeData}
-            >
-                {testimonials.map((item) => (
+            <Section title="Testimonials Section">
+                {testimonials.map(item => (
                     <Card
                         key={item._id}
                         item={item}
-                        onDelete={() => handleDelete("/home/testimonials", item._id)}
-                        onToggle={() => handleToggle("/home/testimonials", item._id)}
-                        showImage={true}
+                        image
+                        onDelete={() => confirmDelete("/home/testimonials", item._id)}
+                        onToggle={() => toggleStatus("/home/testimonials", item._id)}
                     />
                 ))}
-            </SectionWrapper>
+            </Section>
 
-            {/* Banners Section */}
-            <SectionWrapper title="Banners Section" endpoint="/banners" data={banners} fetch={fetchHomeData}>
-                {banners.map((item) => (
+            <Section title="Banners Section">
+                {banners.map(item => (
                     <Card
                         key={item._id}
                         item={item}
-                        onDelete={() => handleDelete("/banners", item._id)}
-                        onToggle={() => handleToggle("/banners", item._id)}
-                        showImage={true}
+                        image
+                        onDelete={() => confirmDelete("/banners", item._id)}
+                        onToggle={() => toggleStatus("/banners", item._id)}
                     />
                 ))}
-            </SectionWrapper>
+            </Section>
+
+            {/* Confirmation Modal */}
+            <AnimatePresence>
+                {confirm && (
+                    <motion.div
+                        className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <motion.div
+                            className="bg-gray-800 rounded-xl p-6 w-full max-w-sm"
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                        >
+                            <p className="mb-6">{confirm.message}</p>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setConfirm(null)}
+                                    className="px-4 py-2 rounded bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirm.action}
+                                    className="px-4 py-2 rounded bg-red-600"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
 
-// Section Wrapper Component
-const SectionWrapper = ({ title, children }) => {
+/* ---------- Section Wrapper ---------- */
+
+const Section = ({ title, children }) => {
     const [showForm, setShowForm] = useState(false);
 
     return (
-        <div className="home-section">
-            <div className="section-header">
-                <h3>{title}</h3>
-                <button onClick={() => setShowForm(!showForm)}>
-                    {showForm ? "Close Form" : `Add New ${title.split(" ")[0]}`}
+        <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="mb-10"
+        >
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-medium">{title}</h3>
+                <button
+                    onClick={() => setShowForm(!showForm)}
+                    className="flex items-center gap-2 bg-purple-600 px-4 py-2 rounded"
+                >
+                    {showForm ? <FiX /> : <FiPlus />}
+                    {showForm ? "Close" : "Add New"}
                 </button>
             </div>
 
             {showForm && <HomeForm sectionTitle={title} />}
 
-            <div className="section-cards">{children}</div>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                {children}
+            </div>
+        </motion.div>
     );
 };
 
-// Single Card Component
-const Card = ({ item, onDelete, onToggle, showImage }) => (
-    <div className="home-card">
-        {showImage && item.imageUrl && <img src={item.imageUrl} alt={item.title || item.name} />}
-        <h4>{item.title || item.name}</h4>
-        {item.subtitle && <p>{item.subtitle}</p>}
-        {item.link && (
-            <a href={item.link} target="_blank" rel="noopener noreferrer">
-                {item.link}
-            </a>
+/* ---------- Card ---------- */
+
+const Card = ({ item, image, onDelete, onToggle }) => (
+    <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        className="bg-gray-800 rounded-xl p-4 shadow-lg hover:shadow-purple-900/30 transition"
+    >
+        {image && item.imageUrl && (
+            <img
+                src={item.imageUrl}
+                alt={item.title}
+                className="h-40 w-full object-cover rounded mb-3"
+            />
         )}
-        <div className="card-actions">
-            <button onClick={onToggle} className={item.isActive ? "active" : "inactive"}>
+
+        <h4 className="font-semibold">{item.title || item.name}</h4>
+        {item.subtitle && <p className="text-sm text-gray-400">{item.subtitle}</p>}
+
+        <div className="flex justify-between items-center mt-4">
+            <button
+                onClick={onToggle}
+                className={`flex items-center gap-1 px-3 py-1 rounded text-sm ${item.isActive ? "bg-green-600" : "bg-gray-600"
+                    }`}
+            >
+                {item.isActive ? <FiToggleRight /> : <FiToggleLeft />}
                 {item.isActive ? "Active" : "Inactive"}
             </button>
-            <button onClick={onDelete} className="delete-btn">
+
+            <button
+                onClick={onDelete}
+                className="flex items-center gap-1 text-red-400 hover:text-red-500"
+            >
+                <FiTrash2 />
                 Delete
             </button>
         </div>
-    </div>
+    </motion.div>
 );
 
-// Form to Add Home Section Item
+/* ---------- Form ---------- */
+
 const HomeForm = ({ sectionTitle }) => {
     const [form, setForm] = useState({ title: "", subtitle: "", link: "" });
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState("");
 
-    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const endpoint =
+        sectionTitle.includes("Hero")
+            ? "/home/hero"
+            : sectionTitle.includes("Features")
+                ? "/home/features"
+                : sectionTitle.includes("Testimonial")
+                    ? "/home/testimonials"
+                    : "/banners";
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setImage(file);
-        setPreview(URL.createObjectURL(file));
-    };
-
-    const handleSubmit = async (e) => {
+    const submit = async e => {
         e.preventDefault();
-        const endpoint =
-            sectionTitle.includes("Hero")
-                ? "/home/hero"
-                : sectionTitle.includes("Features")
-                    ? "/home/features"
-                    : sectionTitle.includes("Testimonial")
-                        ? "/home/testimonials"
-                        : "/banners";
-
-        const formData = new FormData();
-        Object.keys(form).forEach((key) => formData.append(key, form[key]));
-        if (image) formData.append("image", image);
+        const data = new FormData();
+        Object.entries(form).forEach(([k, v]) => data.append(k, v));
+        if (image) data.append("image", image);
 
         try {
-            await api.post(endpoint, formData, { headers: { "Content-Type": "multipart/form-data" } });
-            alert("✅ Added successfully!");
+            await api.post(endpoint, data);
+            toast.success("Item added successfully");
             setForm({ title: "", subtitle: "", link: "" });
             setImage(null);
             setPreview("");
-        } catch (err) {
-            console.error("Error adding section item:", err);
-            alert("❌ Failed to add item!");
+        } catch {
+            toast.error("Failed to add item");
         }
     };
 
     return (
-        <form className="home-form" onSubmit={handleSubmit}>
+        <form
+            onSubmit={submit}
+            className="bg-gray-800 p-4 rounded-xl grid gap-3"
+        >
             <input
-                type="text"
-                name="title"
-                value={form.title}
-                onChange={handleChange}
+                className="bg-gray-700 p-2 rounded"
                 placeholder="Title"
+                value={form.title}
+                onChange={e => setForm({ ...form, title: e.target.value })}
                 required
             />
             <input
-                type="text"
-                name="subtitle"
-                value={form.subtitle}
-                onChange={handleChange}
+                className="bg-gray-700 p-2 rounded"
                 placeholder="Subtitle"
+                value={form.subtitle}
+                onChange={e => setForm({ ...form, subtitle: e.target.value })}
             />
-            <input type="text" name="link" value={form.link} onChange={handleChange} placeholder="Link URL" />
-            <input type="file" onChange={handleImageChange} accept="image/*" />
-            {preview && <img src={preview} alt="Preview" className="preview-img" />}
-            <button type="submit">Add {sectionTitle.split(" ")[0]}</button>
+            <input
+                className="bg-gray-700 p-2 rounded"
+                placeholder="Link"
+                value={form.link}
+                onChange={e => setForm({ ...form, link: e.target.value })}
+            />
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <FiImage />
+                <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={e => {
+                        setImage(e.target.files[0]);
+                        setPreview(URL.createObjectURL(e.target.files[0]));
+                    }}
+                />
+                Upload Image
+            </label>
+
+            {preview && (
+                <img src={preview} alt="Preview" className="h-32 object-cover rounded" />
+            )}
+
+            <button className="bg-purple-600 py-2 rounded mt-2">
+                Add Item
+            </button>
         </form>
     );
 };
