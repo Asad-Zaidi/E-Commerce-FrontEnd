@@ -125,7 +125,7 @@ const BlogPost = () => {
                         <div className="mb-8 rounded-2xl overflow-hidden">
                             <img
                                 src={post.imageUrl}
-                                alt={post.title}
+                                alt={`${post.title} - ${post.category || 'Blog'} article`}
                                 className="w-full h-auto object-cover"
                             />
                         </div>
@@ -191,7 +191,7 @@ const BlogPost = () => {
                                             <div className="relative h-32 overflow-hidden">
                                                 <img
                                                     src={relatedPost.imageUrl}
-                                                    alt={relatedPost.title}
+                                                    alt={`${relatedPost.title} - Related ${relatedPost.category || 'blog'} article`}
                                                     loading="lazy"
                                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                                 />

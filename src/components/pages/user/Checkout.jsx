@@ -405,7 +405,7 @@ const Checkout = () => {
 									>
 										<img
 											src={item.imageUrl}
-											alt={item.productName}
+											alt={`${item.productName} - ${item.category} checkout`}
 											className="h-12 w-12 rounded-lg object-contain"
 										/>
 										<div className="flex-1">

@@ -124,7 +124,7 @@ const Blog = () => {
                                         <div className="relative h-48 overflow-hidden bg-[#0f0f0f]">
                                             <img
                                                 src={post.imageUrl}
-                                                alt={post.title}
+                                                alt={`${post.title} - ${post.category || 'Blog'} article about digital subscriptions`}
                                                 loading="lazy"
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             />

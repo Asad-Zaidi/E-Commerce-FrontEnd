@@ -310,7 +310,7 @@ const ProductDetail = () => {
                                 <div className="bg-white border border-gray-800 rounded-2xl p-6 overflow-hidden flex items-center justify-center">
                                     <img
                                         src={mainImage}
-                                        alt={product.name}
+                                        alt={`${product.name} - Premium ${product.category} subscription service - Product detailed view`}
                                         loading="lazy"
                                         className="w-[300px] h-[300px] object-contain transition-transform duration-500 group-hover:scale-105"
                                     />
@@ -677,7 +677,7 @@ const ProductDetail = () => {
                                     <div className="relative block h-48 overflow-hidden bg-[#0f0f0f]">
                                         <img
                                             src={relatedProduct.imageUrl}
-                                            alt={relatedProduct.name}
+                                            alt={`${relatedProduct.name} - Best ${relatedProduct.category} subscription service`}
                                             loading="lazy"
                                             className="w-full h-full object-contain p-4 bg-white transition-transform duration-500 group-hover:scale-105"
                                         />

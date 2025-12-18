@@ -234,7 +234,7 @@ const AdminDashboard = () => {
                                     className="border-b border-gray-700"
                                 >
                                     <td className="px-3 py-2">
-                                        <img src={p.imageUrl} alt={p.name} className="w-12 h-12 object-cover rounded" />
+                                        <img src={p.imageUrl} alt={`${p.name} - ${p.category} product admin`} className="w-12 h-12 object-cover rounded" />
                                     </td>
                                     <td className="px-3 py-2">{p.name}</td>
                                     <td className="px-3 py-2">{p.category}</td>

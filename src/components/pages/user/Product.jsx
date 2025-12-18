@@ -29,7 +29,17 @@ const Product = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
-  const slugify = (text) => text?.toLowerCase().replace(/[\s\W-]+/g, "-") ?? "";
+  const slugify = (text) => {
+    if (!text) return "";
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-") // spaces to hyphen
+      .replace(/[^\w-]/g, "") // remove non-word characters (keeps hyphen)
+      .replace(/-+/g, "-") // collapse multiple hyphens
+      .replace(/^-+|-+$/g, ""); // trim leading/trailing hyphens
+  };
 
   const categoryBadgeGradients = {
     "AI Tools": "from-teal-600 to-cyan-600",
@@ -235,7 +245,7 @@ const Product = () => {
                       {/* Product Image */}
                       <img
                         src={product.imageUrl}
-                        alt={product.name}
+                        alt={`${product.name} - Best ${product.category} subscription service online`}
                         loading="lazy"
                         className="w-full h-full object-contain p-4 bg-white transition-transform duration-500"
                       />
@@ -314,7 +324,7 @@ const Product = () => {
                     <div className="relative sm:w-48 md:w-64 h-50 sm:h-auto flex-shrink-0 bg-[#0f0f0f]">
                       <img
                         src={product.imageUrl}
-                        alt={product.name}
+                        alt={`${product.name} - ${product.category} digital subscription tool`}
                         loading="lazy"
                         className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                       />

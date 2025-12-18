@@ -178,7 +178,7 @@ const BannerForm = ({ onSuccess }) => {
             <input type="text" name="subtitle" placeholder="Subtitle" value={form.subtitle} onChange={handleChange} className="px-4 py-2 rounded-lg bg-gray-600 text-gray-200 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <input type="text" name="link" placeholder="Link URL" value={form.link} onChange={handleChange} className="px-4 py-2 rounded-lg bg-gray-600 text-gray-200 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <input type="file" onChange={handleImageChange} accept="image/*" className="text-gray-200" />
-            {preview && <img src={preview} alt="Preview" className="w-full h-40 object-cover rounded-lg" />}
+            {preview && <img src={preview} alt="Banner preview for admin" className="w-full h-40 object-cover rounded-lg" />}
             <button type="submit" className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg flex items-center justify-center">
                 {loading ? (
                     <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -81,7 +81,7 @@ const ProductCard = ({ product, badge }) => {
             >
                 {product.category}
             </Link>
-            <img src={product.imageUrl} alt={product.name} loading="lazy" />
+            <img src={product.imageUrl} alt={`${product.name} - Best ${product.category} subscription service`} loading="lazy" />
             <div className="product-info">
                 <h3>{product.name}</h3>
                 <p className="product-price">{product.priceSharedMonthly?.toFixed(2) || "N/A"} /month</p>

@@ -496,7 +496,7 @@ const AdminBlog = () => {
                                                     {post.imageUrl && (
                                                         <img
                                                             src={post.imageUrl}
-                                                            alt={post.title}
+                                                            alt={`${post.title} - Blog post thumbnail`}
                                                             className="w-12 h-12 rounded object-cover mr-3"
                                                         />
                                                     )}

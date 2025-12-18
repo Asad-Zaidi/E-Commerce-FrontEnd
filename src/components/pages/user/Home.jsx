@@ -154,7 +154,7 @@ export default function Home() {
                             <div key={b._id} className="relative">
                                 <img
                                     src={b.imageUrl}
-                                    alt={b.title}
+                                    alt={`${b.title} - Featured banner for digital subscriptions`}
                                     loading="lazy"
                                     className="w-full h-[450px] object-cover rounded-3xl"
                                 />
@@ -254,7 +254,7 @@ export default function Home() {
                                         >
                                             <img
                                                 src={p.imageUrl}
-                                                alt={p.name}
+                                                alt={`${p.name} - Best ${p.category} subscription service`}
                                                 loading="lazy"
                                                 className="h-40 w-full object-contain bg-white"
                                             />
