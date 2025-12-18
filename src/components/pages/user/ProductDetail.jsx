@@ -24,16 +24,13 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [priceType, setPriceType] = useState("sharedMonthly");
     const [currentPrice, setCurrentPrice] = useState(0);
     const [accessType, setAccessType] = useState("shared");
     const [billingPeriod, setBillingPeriod] = useState("monthly");
     const [quantity, setQuantity] = useState(1);
     const [mainImage, setMainImage] = useState("");
-
     const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
-
     const fetchProduct = useCallback(async () => {
         try {
             const fullSlug = `${category}/${slug}`;
@@ -53,7 +50,6 @@ const ProductDetail = () => {
             return null;
         }
     }, [category, slug]);
-
     const fetchReviews = useCallback(async (productId) => {
         if (!productId) return;
         try {

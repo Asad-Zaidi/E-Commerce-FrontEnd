@@ -11,6 +11,7 @@ import {
     FaBars,
     FaTimes,
     FaChartBar,
+    FaShoppingCart,
 } from "react-icons/fa";
 
 const AdminLayout = () => {
@@ -90,6 +91,14 @@ const AdminLayout = () => {
                     >
                         <FaImages className={`text-xl ${sidebarCollapsed ? '' : 'min-w-[20px]'}`} />
                         {!sidebarCollapsed && <span>Banners</span>}
+                    </Link>
+                    <Link
+                        to="/admin/orders"
+                        className={`w-full px-5 py-4 border-none bg-transparent text-white text-base font-medium cursor-pointer transition-all duration-300 flex items-center text-left ${sidebarCollapsed ? 'justify-center gap-0' : 'gap-4'} hover:bg-white hover:bg-opacity-10 ${location.pathname === '/admin/orders' ? 'bg-white bg-opacity-20 border-l-4 border-white' : ''}`}
+                        title="Orders"
+                    >
+                        <FaShoppingCart className={`text-xl ${sidebarCollapsed ? '' : 'min-w-[20px]'}`} />
+                        {!sidebarCollapsed && <span>Orders</span>}
                     </Link>
                 </nav>
 

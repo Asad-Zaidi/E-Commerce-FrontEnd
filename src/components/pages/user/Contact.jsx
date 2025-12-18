@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SEO from "../../SEO.jsx";
 import seoData from "../../../seoData";
 import { FaWhatsapp, FaEnvelope, FaPhoneAlt, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaTelegram } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import api from "../../../api/api";
+import { useForm, ValidationError } from "@formspree/react";
 
 const Contact = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [contactData, setContactData] = useState({
     title: 'Get in Touch',
     description: "We're here to help and answer any questions you might have. Reach out to us anytime.",
@@ -23,6 +23,10 @@ const Contact = () => {
       telegram: 'https://t.me/yourcompany',
     }
   });
+
+  const formId = process.env.REACT_APP_FORMSPREE_FORM_ID || "YOUR_FORMSPREE_FORM_ID";
+  const formRef = useRef(null);
+  const [formState, formSubmit] = useForm(formId);
 
   useEffect(() => {
     const fetchContactData = async () => {
@@ -41,27 +45,24 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const formEl = formRef.current;
+    if (!formEl) return;
 
-    // Honeypot
-    if (formData.get("company")) return;
+    const formData = new FormData(formEl);
+    if (formData.get("company")) return; // honeypot guard
 
-    const data = Object.fromEntries(formData.entries());
-
-    try {
-      setLoading(true);
-      const res = await api.post("/messages", data);
-      if (res.data.success) {
-        toast.success("Message sent successfully! We'll get back to you soon.");
-        e.target.reset();
-      }
-    } catch (err) {
-      toast.error("Failed to send message. Please try again later.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    await formSubmit(e);
   };
+
+  useEffect(() => {
+    if (formState.succeeded) {
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      formRef.current?.reset();
+    }
+    if (formState.errors?.length) {
+      toast.error("Failed to send message. Please try again later.");
+    }
+  }, [formState.succeeded, formState.errors]);
 
   const closePopup = () => setShowPopup(false);
 
@@ -104,6 +105,7 @@ const Contact = () => {
         <div className="flex flex-col md:flex-row w-full max-w-6xl gap-8">
           {/* Form */}
           <motion.form
+            ref={formRef}
             variants={fadeUp}
             onSubmit={handleSubmit}
             className="flex-1 bg-gray-800 p-8 rounded-xl shadow-lg space-y-6"
@@ -122,6 +124,7 @@ const Contact = () => {
               <label className="absolute left-3 top-2 text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:text-green-400 text-sm transition-all">
                 Name
               </label>
+              <ValidationError prefix="Name" field="name" errors={formState.errors} />
             </motion.div>
 
             <motion.div variants={fadeUp} className="relative">
@@ -135,6 +138,7 @@ const Contact = () => {
               <label className="absolute left-3 top-2 text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:text-green-400 text-sm transition-all">
                 Email
               </label>
+              <ValidationError prefix="Email" field="email" errors={formState.errors} />
             </motion.div>
 
             <motion.div variants={fadeUp} className="relative">
@@ -148,17 +152,18 @@ const Contact = () => {
               <label className="absolute left-3 top-2 text-gray-400 peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-focus:top-0 peer-focus:text-green-400 text-sm transition-all">
                 Message
               </label>
+              <ValidationError prefix="Message" field="message" errors={formState.errors} />
             </motion.div>
 
             <motion.button
               variants={fadeUp}
               type="submit"
-              disabled={loading}
+              disabled={formState.submitting}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded font-semibold transition-all"
             >
-              {loading ? "Sending..." : "Send Message"}
+              {formState.submitting ? "Sending..." : "Send Message"}
             </motion.button>
           </motion.form>
 

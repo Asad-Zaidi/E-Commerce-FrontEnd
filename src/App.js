@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
+import { UserProvider } from "./context/UserContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/theme.css";
@@ -14,6 +15,9 @@ import Checkout from "./components/pages/user/Checkout";
 import About from "./components/pages/user/About";
 import Contact from "./components/pages/user/Contact";
 import Auth from "./components/pages/user/Auth";
+import Login from "./components/pages/user/Login";
+import Signup from "./components/pages/user/Signup";
+import Profile from "./components/pages/user/Profile";
 
 import AdminLayout from "./components/pages/admin/AdminLayout";
 import AdminLogin from "./components/pages/admin/AdminLogin";
@@ -25,6 +29,7 @@ import RequireAdmin from "./components/pages/admin/RequireAdmin";
 import AdminContact from "./components/pages/admin/AdminContact";
 import AdminBanners from "./components/pages/admin/AdminBanners";
 import AdminHome from "./components/pages/admin/AdminHome";
+import AdminOrders from "./components/pages/admin/AdminOrders";
 
 import { setAuthToken } from "./api/api";
 
@@ -52,7 +57,10 @@ function AppContent() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Auth />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
 
           {/* 🧑‍💼 Admin Login (no sidebar) */}
@@ -74,6 +82,7 @@ function AppContent() {
             <Route path="products/new" element={<ProductForm />} />
             <Route path="products/edit/:id" element={<ProductForm />} />
             <Route path="contact" element={<AdminContact />} />
+            <Route path="orders" element={<AdminOrders />} />
             <Route
               path="banners"
               element={
@@ -98,19 +107,21 @@ function App() {
   return (
     <Router>
       <ThemeProvider>
-        <AppContent />
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={true}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
+        <UserProvider>
+          <AppContent />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        </UserProvider>
       </ThemeProvider>
     </Router>
   );

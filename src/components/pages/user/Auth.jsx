@@ -14,7 +14,6 @@ function Auth() {
         email: "",
         password: "",
         confirmPassword: "",
-        role: "",
     });
 
     const handleChange = (e) => {
@@ -31,7 +30,7 @@ function Auth() {
 
         if (isLogin) {
             console.log("Logging in:", formData);
-            alert(`Login successful as ${formData.role || "User"}`);
+            alert("Login successful!");
             navigate("/");
         } else {
             console.log("Registering:", formData);
@@ -123,22 +122,6 @@ function Auth() {
                         <p className="forgot-password" onClick={() => alert("Feature coming soon!")}>
                             Forgot Password?
                         </p>
-                    )}
-
-                    {!isLogin && (
-                        <div className="form-group floating-label">
-                            <select
-                                name="role"
-                                value={formData.role}
-                                onChange={handleChange}
-                                required
-                            >
-                                <option value="" disabled hidden></option>
-                                <option value="customer">Customer</option>
-                                <option value="vendor">Vendor</option>
-                            </select>
-                            <label>Select Role</label>
-                        </div>
                     )}
 
                     <button type="submit" className="auth-btn">

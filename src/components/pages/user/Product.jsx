@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../api/api";
 import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar, FaFilter, FaTh, FaList } from "react-icons/fa";
 import SEO from "../../SEO.jsx";
@@ -18,16 +18,15 @@ const renderStars = (rating) => {
 
 const Product = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get("category") || "All";
-
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
   const slugify = (text) => text?.toLowerCase().replace(/[\s\W-]+/g, "-") ?? "";
 
   const categoryBadgeGradients = {
@@ -69,14 +68,15 @@ const Product = () => {
 
   const handleBuyNow = (product) => {
     if (!product) return;
-    const details = {
+    const checkoutDetails = {
       productId: product._id,
       productName: product.name,
       price: product.priceSharedMonthly || 0,
       plan: "sharedMonthly",
+      category: product.category,
+      imageUrl: product.imageUrl,
     };
-    console.log("Buy Now:", details);
-    alert("✅ Order details logged in console!");
+    navigate("/checkout", { state: { product: checkoutDetails } });
   };
 
   return (
@@ -204,9 +204,9 @@ const Product = () => {
               {filteredProducts.map(product => (
                 viewMode === "grid" ? (
                   /* Grid Card */
-                  <Link
+                  <div
                     key={product._id}
-                    to={`/products/${slugify(product.category)}/${slugify(product.name)}`}
+                    onClick={() => navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`)}
                     className="group bg-[#111111] rounded-2xl shadow-sm hover:shadow-2xl border border-gray-800 hover:border-teal-600/40 overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-teal-900/20 flex flex-col cursor-pointer"
                   >
                     <div className="relative block h-60 overflow-hidden bg-[#0f0f0f]">
@@ -271,22 +271,21 @@ const Product = () => {
                           >
                             Buy Now
                           </button>
-                          <Link
-                            onClick={(e) => e.stopPropagation()}
-                            to={`/products/${slugify(product.category)}/${slugify(product.name)}`}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`); }}
                             className="w-full text-center text-sm border border-teal-600/60 text-teal-300 hover:text-white hover:bg-teal-600/20 font-medium py-2.5 rounded-lg transition-all duration-200"
                           >
                             View Details
-                          </Link>
+                          </button>
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ) : (
                   /* List Card */
-                  <Link
+                  <div
                     key={product._id}
-                    to={`/products/${slugify(product.category)}/${slugify(product.name)}`}
+                    onClick={() => navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`)}
                     className="group bg-[#111111] rounded-2xl shadow-sm hover:shadow-2xl border border-gray-800 hover:border-teal-600/40 overflow-hidden transition-all duration-300 flex flex-col sm:flex-row cursor-pointer"
                   >
                     <div className="relative sm:w-48 md:w-64 h-50 sm:h-auto flex-shrink-0 bg-[#0f0f0f]">
@@ -343,17 +342,16 @@ const Product = () => {
                           >
                             Buy Now
                           </button>
-                          <Link
-                            onClick={(e) => e.stopPropagation()}
-                            to={`/products/${slugify(product.category)}/${slugify(product.name)}`}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`); }}
                             className="inline-flex items-center gap-2 border border-teal-600/60 text-teal-300 hover:text-white hover:bg-teal-600/20 px-6 py-3 rounded-full font-medium transition-all duration-300"
                           >
                             View Details
-                          </Link>
+                          </button>
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 )
               ))}
             </div>

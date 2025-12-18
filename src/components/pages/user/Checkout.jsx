@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { FaArrowLeft, FaMobileAlt, FaShieldAlt, FaCheckCircle, FaTrash, FaWallet } from "react-icons/fa";
+import api from "../../../api/api";
 
 const WHATSAPP_NUMBER = "923084401410"; // Replace with your business WhatsApp number in international format
 const WALLET_NUMBER = "0308-4401410"; // Replace with your Easypaisa/JazzCash number
@@ -17,8 +18,7 @@ const Checkout = () => {
 	const [items, setItems] = useState([]);
 	const [contact, setContact] = useState({ name: "", email: "", phone: "" });
 	const [billing, setBilling] = useState({ company: "", country: "Pakistan", city: "", address: "" });
-	const [paymentMethod, setPaymentMethod] = useState("card");
-	const [cardDetails] = useState({ name: "", number: "", expiry: "", cvc: "" });
+	const [paymentMethod, setPaymentMethod] = useState("wallet");
 	const [note, setNote] = useState("");
 	const [coupon, setCoupon] = useState("");
 	const [couponMeta, setCouponMeta] = useState({ code: null, discount: 0 });
@@ -82,13 +82,6 @@ const Checkout = () => {
 			setStatus({ state: "error", message: "Please fill in all required fields." });
 			return;
 		}
-		if (
-			paymentMethod === "card" &&
-			(!cardDetails.name.trim() || !cardDetails.number.trim() || !cardDetails.expiry.trim() || !cardDetails.cvc.trim())
-		) {
-			setStatus({ state: "error", message: "Please enter your card details." });
-			return;
-		}
 
 		setSubmitting(true);
 		setStatus({ state: "idle", message: "" });
@@ -104,6 +97,27 @@ const Checkout = () => {
 		};
 
 		try {
+			// Save order to database
+			const orderPayload = {
+				customerName: contact.name,
+				customerEmail: contact.email,
+				customerPhone: contact.phone,
+				company: billing.company,
+				country: billing.country,
+				city: billing.city,
+				address: billing.address,
+				items,
+				subtotal: totals.subtotal,
+				discount: totals.discount,
+				processingFee: totals.processingFee,
+				total: totals.total,
+				paymentMethod,
+				couponCode: couponMeta.code,
+				note,
+			};
+
+			await api.post("/orders", orderPayload);
+
 			const lines = [
 				`New checkout from ${contact.name}`,
 				`Phone: ${contact.phone}`,
@@ -391,7 +405,7 @@ const Checkout = () => {
 										<img
 											src={item.imageUrl}
 											alt={item.productName}
-											className="h-12 w-12 rounded-lg object-cover"
+											className="h-12 w-12 rounded-lg object-contain"
 										/>
 										<div className="flex-1">
 											<p className="text-sm font-semibold text-white">{item.productName}</p>
