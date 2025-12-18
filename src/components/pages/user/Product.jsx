@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../../api/api";
-import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar, FaFilter, FaTh, FaList } from "react-icons/fa";
+import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar, FaFilter, FaTh, FaList, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import SEO from "../../SEO.jsx";
 import Breadcrumb from "../../common/Breadcrumb";
-// import {Helmet} from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
 
 const renderStars = (rating) => {
   const stars = [];
@@ -27,6 +27,8 @@ const Product = () => {
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
   const slugify = (text) => text?.toLowerCase().replace(/[\s\W-]+/g, "-") ?? "";
 
   const categoryBadgeGradients = {
@@ -66,6 +68,22 @@ const Product = () => {
       );
     });
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchTerm]);
+
   const handleBuyNow = (product) => {
     if (!product) return;
     const checkoutDetails = {
@@ -88,11 +106,14 @@ const Product = () => {
         image=""
         url={`${window.location.origin}/products`}
       />
-      {/* <Helmet>
-        <title>Products - Social Media Services</title>
-        <meta name="description" content="Browse our range of powerful digital tools and flexible subscription plans tailored to your business and your needs." />
-        <meta name="keywords" content="products, digital tools, subscriptions, services, SaaS, software" />
-      </Helmet> */}
+      <Helmet>
+        {currentPage > 1 && (
+          <link rel="prev" href={`${window.location.origin}/products?page=${currentPage - 1}${selectedCategory !== 'All' ? `&category=${selectedCategory}` : ''}`} />
+        )}
+        {currentPage < totalPages && (
+          <link rel="next" href={`${window.location.origin}/products?page=${currentPage + 1}${selectedCategory !== 'All' ? `&category=${selectedCategory}` : ''}`} />
+        )}
+      </Helmet>
       {/* Breadcrumb */}
       <div className="bg-[#0a0a0a] border-b border-gray-800">
         <Breadcrumb category={products.category} productName={products.name} slug={products.slug} />
@@ -197,11 +218,12 @@ const Product = () => {
               <p className="text-gray-400">Try adjusting your search or filter criteria</p>
             </div>
           ) : (
+            <>
             <div className={viewMode === "grid"
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
               : "flex flex-col gap-4"
             }>
-              {filteredProducts.map(product => (
+              {currentProducts.map(product => (
                 viewMode === "grid" ? (
                   /* Grid Card */
                   <div
@@ -214,6 +236,7 @@ const Product = () => {
                       <img
                         src={product.imageUrl}
                         alt={product.name}
+                        loading="lazy"
                         className="w-full h-full object-contain p-4 bg-white transition-transform duration-500"
                       />
                       {/* Category Badge */}
@@ -292,6 +315,7 @@ const Product = () => {
                       <img
                         src={product.imageUrl}
                         alt={product.name}
+                        loading="lazy"
                         className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                       />
                       <span className={`absolute top-3 left-3 bg-gradient-to-r ${categoryBadgeGradients[product.category] || 'from-teal-600 to-cyan-600'} text-white/95 text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
@@ -355,6 +379,66 @@ const Product = () => {
                 )
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-12">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`p-2 rounded-lg transition-all ${
+                    currentPage === 1
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : 'text-teal-400 hover:bg-[#111111] border border-gray-800'
+                  }`}
+                >
+                  <FaChevronLeft />
+                </button>
+                
+                {[...Array(totalPages)].map((_, index) => {
+                  const pageNumber = index + 1;
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                  ) {
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={`px-4 py-2 rounded-lg transition-all ${
+                          currentPage === pageNumber
+                            ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white'
+                            : 'text-gray-400 hover:bg-[#111111] border border-gray-800'
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  } else if (
+                    pageNumber === currentPage - 2 ||
+                    pageNumber === currentPage + 2
+                  ) {
+                    return <span key={pageNumber} className="text-gray-600">...</span>;
+                  }
+                  return null;
+                })}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`p-2 rounded-lg transition-all ${
+                    currentPage === totalPages
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : 'text-teal-400 hover:bg-[#111111] border border-gray-800'
+                  }`}
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
+            )}
+            </>
           )}
         </div>
       </div>

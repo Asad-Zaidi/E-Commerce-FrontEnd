@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
     FaHome,
     FaBox,
@@ -12,7 +13,8 @@ import {
     FaTimes,
     FaChartBar,
     FaShoppingCart,
-} from "react-icons/fa";
+    } from "react-icons/fa";
+import { FaBlog } from "react-icons/fa6";
 
 const AdminLayout = () => {
     const navigate = useNavigate();
@@ -25,7 +27,14 @@ const AdminLayout = () => {
     };
 
     return (
-        <div className="flex min-h-screen ">
+        <>
+            {/* Meta robots tags to prevent admin pages from being indexed */}
+            <Helmet>
+                <meta name="robots" content="noindex, nofollow" />
+                <meta name="googlebot" content="noindex, nofollow" />
+            </Helmet>
+            
+            <div className="flex min-h-screen ">
             {/* Collapsible Sidebar */}
             <div className={`fixed left-0 top-0 h-screen bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 text-white shadow-2xl z-50 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'w-[70px]' : 'w-60'}`}>
                 <div className="flex justify-between items-center p-5 border-b border-white border-opacity-20">
@@ -75,6 +84,14 @@ const AdminLayout = () => {
                         <FaListAlt className={`text-xl ${sidebarCollapsed ? '' : 'min-w-[20px]'}`} />
                         {!sidebarCollapsed && <span>Categories</span>}
                     </Link>
+                    <Link
+                        to="/admin/blog"
+                        className={`w-full px-5 py-4 border-none bg-transparent text-white text-base font-medium cursor-pointer transition-all duration-300 flex items-center text-left ${sidebarCollapsed ? 'justify-center gap-0' : 'gap-4'} hover:bg-white hover:bg-opacity-10 ${location.pathname === '/admin/blog' ? 'bg-white bg-opacity-20 border-l-4 border-white' : ''}`}
+                        title="Blogs"
+                    >
+                        <FaBlog className={`text-xl ${sidebarCollapsed ? '' : 'min-w-[20px]'}`} />
+                        {!sidebarCollapsed && <span>Blogs</span>}
+                    </Link>
 
                     <Link
                         to="/admin/contact"
@@ -120,6 +137,7 @@ const AdminLayout = () => {
                 <Outlet />
             </div>
         </div>
+        </>
     );
 };
 

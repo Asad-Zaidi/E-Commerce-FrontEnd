@@ -32,6 +32,7 @@ const Checkout = () => {
 
 	useEffect(() => {
 		localStorage.setItem("checkoutItems", JSON.stringify(items));
+		window.dispatchEvent(new Event('cartUpdated'));
 	}, [items]);
 
 	const totals = useMemo(() => {

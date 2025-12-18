@@ -119,7 +119,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaSignOutAlt, FaShoppingCart } from "react-icons/fa";
 // import ThemeToggle from "../../common/ThemeToggle";
 import { useUser } from "../../../context/UserContext";
 
@@ -128,6 +128,7 @@ function Header() {
     const { isAuthenticated, user, logout } = useUser();
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [cartItemCount, setCartItemCount] = useState(0);
     const menuRef = useRef(null);
     const profileRef = useRef(null);
 
@@ -159,6 +160,27 @@ function Header() {
     useEffect(() => {
         document.body.style.overflow = menuOpen ? "hidden" : "auto";
     }, [menuOpen]);
+
+    // Update cart count from localStorage
+    useEffect(() => {
+        const updateCartCount = () => {
+            const items = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
+            const totalCount = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            setCartItemCount(totalCount);
+        };
+
+        updateCartCount();
+        
+        // Listen for storage changes
+        window.addEventListener('storage', updateCartCount);
+        // Listen for custom cart update event
+        window.addEventListener('cartUpdated', updateCartCount);
+        
+        return () => {
+            window.removeEventListener('storage', updateCartCount);
+            window.removeEventListener('cartUpdated', updateCartCount);
+        };
+    }, []);
 
     const handleLogout = () => {
         logout();
@@ -195,6 +217,9 @@ function Header() {
                         <NavLink to="/products" className={navLinkClass}>
                             Products
                         </NavLink>
+                        <NavLink to="/blog" className={navLinkClass}>
+                            Blog
+                        </NavLink>
                         <NavLink to="/about" className={navLinkClass}>
                             About
                         </NavLink>
@@ -205,7 +230,19 @@ function Header() {
 
                     {/* Desktop Right Actions */}
                     <div className="hidden md:flex items-center gap-4">
-                        
+                        {/* Cart Button */}
+                        <button
+                            onClick={() => navigate('/checkout')}
+                            className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                            aria-label="Shopping Cart"
+                        >
+                            <FaShoppingCart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                            {cartItemCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-teal-600 to-cyan-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                    {cartItemCount > 9 ? '9+' : cartItemCount}
+                                </span>
+                            )}
+                        </button>
 
                         {isAuthenticated ? (
                             // Profile Dropdown for Logged In Users
@@ -292,6 +329,9 @@ function Header() {
                         <NavLink to="/products" onClick={closeMenu} className={navLinkClass}>
                             Products
                         </NavLink>
+                        <NavLink to="/blog" onClick={closeMenu} className={navLinkClass}>
+                            Blog
+                        </NavLink>
                         <NavLink to="/about" onClick={closeMenu} className={navLinkClass}>
                             About
                         </NavLink>
@@ -300,7 +340,24 @@ function Header() {
                         </NavLink>
 
                         <div className="pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
-                            
+                            {/* Cart Button */}
+                            <button
+                                onClick={() => {
+                                    navigate('/checkout');
+                                    closeMenu();
+                                }}
+                                className="flex items-center justify-between py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <FaShoppingCart className="w-4 h-4" />
+                                    <span>Shopping Cart</span>
+                                </div>
+                                {cartItemCount > 0 && (
+                                    <span className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                        {cartItemCount > 9 ? '9+' : cartItemCount}
+                                    </span>
+                                )}
+                            </button>
 
                             {isAuthenticated ? (
                                 <>

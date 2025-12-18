@@ -31,6 +31,7 @@ const ProductDetail = () => {
     const [quantity, setQuantity] = useState(1);
     const [mainImage, setMainImage] = useState("");
     const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
+    const [relatedProducts, setRelatedProducts] = useState([]);
     const fetchProduct = useCallback(async () => {
         try {
             const fullSlug = `${category}/${slug}`;
@@ -70,6 +71,23 @@ const ProductDetail = () => {
         };
         load();
     }, [fetchProduct, fetchReviews]);
+
+    // Fetch related products based on category
+    useEffect(() => {
+        const fetchRelatedProducts = async () => {
+            if (!product) return;
+            try {
+                const res = await api.get(`/products`);
+                const related = res.data
+                    .filter(p => p.category === product.category && p._id !== product._id)
+                    .slice(0, 4); // Limit to 4 related products
+                setRelatedProducts(related);
+            } catch (err) {
+                console.error("Error fetching related products:", err);
+            }
+        };
+        fetchRelatedProducts();
+    }, [product]);
 
     const handlePriceChange = (type) => {
         setPriceType(type);
@@ -116,6 +134,7 @@ const ProductDetail = () => {
         };
 
         localStorage.setItem("checkoutItems", JSON.stringify([cartItem]));
+        window.dispatchEvent(new Event('cartUpdated'));
         navigate("/checkout");
     };
 
@@ -145,6 +164,7 @@ const ProductDetail = () => {
         }
 
         localStorage.setItem("checkoutItems", JSON.stringify(existing));
+        window.dispatchEvent(new Event('cartUpdated'));
         console.log("Added to Cart:", cartItem);
         toast.success("Added to cart! Proceed to checkout when ready.");
     };
@@ -291,6 +311,7 @@ const ProductDetail = () => {
                                     <img
                                         src={mainImage}
                                         alt={product.name}
+                                        loading="lazy"
                                         className="w-[300px] h-[300px] object-contain transition-transform duration-500 group-hover:scale-105"
                                     />
                                 </div>
@@ -637,6 +658,73 @@ const ProductDetail = () => {
                         )}
                     </div>
                 </section>
+
+                {/* Related Products Section */}
+                {relatedProducts.length > 0 && (
+                    <section className="max-w-7xl mx-auto px-4 py-12">
+                        <div className="mb-8">
+                            <h2 className="text-3xl font-bold text-white mb-2">Related Products</h2>
+                            <p className="text-gray-400">Discover similar products in {product.category}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {relatedProducts.map((relatedProduct) => (
+                                <div
+                                    key={relatedProduct._id}
+                                    onClick={() => navigate(`/products/${relatedProduct.slug}`)}
+                                    className="group bg-[#111111] rounded-2xl shadow-sm hover:shadow-2xl border border-gray-800 hover:border-teal-600/40 overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-teal-900/20 flex flex-col cursor-pointer"
+                                >
+                                    <div className="relative block h-48 overflow-hidden bg-[#0f0f0f]">
+                                        <img
+                                            src={relatedProduct.imageUrl}
+                                            alt={relatedProduct.name}
+                                            loading="lazy"
+                                            className="w-full h-full object-contain p-4 bg-white transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <span className="absolute top-3 left-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white/95 text-xs font-medium px-3 py-1 rounded-full shadow-sm">
+                                            {relatedProduct.category}
+                                        </span>
+                                    </div>
+
+                                    <div className="p-4 flex flex-col flex-1">
+                                        <h3 className="text-lg font-semibold text-white line-clamp-2 mb-2">
+                                            {relatedProduct.name}
+                                        </h3>
+
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="flex items-center text-sm">
+                                                {renderStars(relatedProduct.avgRating || 0, "text-sm")}
+                                            </div>
+                                            <span className="text-xs text-gray-500">
+                                                ({relatedProduct.totalReviews || 0})
+                                            </span>
+                                        </div>
+
+                                        <div className="mt-auto">
+                                            <div className="flex items-baseline justify-between mb-3">
+                                                <div>
+                                                    <span className="text-xs text-gray-500 block">Starting from</span>
+                                                    <span className="text-xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                                                        Rs. {relatedProduct.priceSharedMonthly || 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/products/${relatedProduct.slug}`);
+                                                }}
+                                                className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white text-sm font-medium py-2 rounded-lg transition-all duration-200"
+                                            >
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
             </div>
         </>
     );

@@ -33,14 +33,61 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const Breadcrumb = ({ category, productName }) => {
+    // Build breadcrumb items for schema
+    const breadcrumbItems = [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": `${window.location.origin}/`
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Products",
+            "item": `${window.location.origin}/products`
+        }
+    ];
+
+    if (category) {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": category,
+            "item": `${window.location.origin}/products?category=${encodeURIComponent(category)}`
+        });
+    }
+
+    if (productName) {
+        breadcrumbItems.push({
+            "@type": "ListItem",
+            "position": breadcrumbItems.length + 1,
+            "name": productName,
+            "item": window.location.href
+        });
+    }
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbItems
+    };
+
     return (
-        <nav
-            className=" dark:border-gray-600 py-3 "
-            aria-label="breadcrumb"
-        >
-            <ol className="flex flex-wrap items-center max-w-7xl mx-auto px-4 text-xs sm:text-sm">
+        <>
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(breadcrumbSchema)}
+                </script>
+            </Helmet>
+            <nav
+                className=" dark:border-gray-600 py-3 "
+                aria-label="breadcrumb"
+            >
+                <ol className="flex flex-wrap items-center max-w-7xl mx-auto px-4 text-xs sm:text-sm">
                 {/* Home */}
                 <li className="flex items-center">
                     <Link
@@ -86,6 +133,7 @@ const Breadcrumb = ({ category, productName }) => {
                 )}
             </ol>
         </nav>
+        </>
     );
 };
 

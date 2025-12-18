@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/theme.css";
 import "./styles/darkMode.css";
+import WebSiteSchema from "./components/SEO/WebSiteSchema";
 
 import Header from "./components/pages/user/Header";
 import Footer from "./components/pages/user/Footer";
@@ -18,6 +19,8 @@ import Auth from "./components/pages/user/Auth";
 import Login from "./components/pages/user/Login";
 import Signup from "./components/pages/user/Signup";
 import Profile from "./components/pages/user/Profile";
+import Blog from "./components/pages/user/Blog";
+import BlogPost from "./components/pages/user/BlogPost";
 
 import AdminLayout from "./components/pages/admin/AdminLayout";
 import AdminLogin from "./components/pages/admin/AdminLogin";
@@ -30,6 +33,7 @@ import AdminContact from "./components/pages/admin/AdminContact";
 import AdminBanners from "./components/pages/admin/AdminBanners";
 import AdminHome from "./components/pages/admin/AdminHome";
 import AdminOrders from "./components/pages/admin/AdminOrders";
+import AdminBlog from "./components/pages/admin/AdminBlog";
 
 import { setAuthToken } from "./api/api";
 
@@ -44,6 +48,9 @@ function AppContent() {
 
   return (
     <>
+      {/* Global WebSite Schema */}
+      <WebSiteSchema />
+      
       {/* 🧭 Show Header only on Public Pages */}
       {!isAdminRoute && <Header />}
 
@@ -62,6 +69,8 @@ function AppContent() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
 
           {/* 🧑‍💼 Admin Login (no sidebar) */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -83,6 +92,7 @@ function AppContent() {
             <Route path="products/edit/:id" element={<ProductForm />} />
             <Route path="contact" element={<AdminContact />} />
             <Route path="orders" element={<AdminOrders />} />
+            <Route path="blog" element={<AdminBlog />} />
             <Route
               path="banners"
               element={

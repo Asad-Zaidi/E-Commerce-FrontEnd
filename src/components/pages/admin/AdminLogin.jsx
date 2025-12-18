@@ -4,6 +4,7 @@ import api, { setAuthToken } from "../../../api/api";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet-async";
 import {
     FiLock,
     FiMail,
@@ -68,7 +69,14 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+        <>
+            <Helmet>
+                <meta name="robots" content="noindex, nofollow" />
+                <meta name="googlebot" content="noindex, nofollow" />
+                <title>Admin Login - ServiceHub</title>
+            </Helmet>
+            
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
             {/* Login Card */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -151,5 +159,6 @@ export default function AdminLogin() {
                 </div>
             )}
         </div>
+        </>
     );
 }
