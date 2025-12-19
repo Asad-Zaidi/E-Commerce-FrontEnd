@@ -266,66 +266,7 @@ const Checkout = () => {
 							</section>
 
 							<section className="grid gap-4 md:grid-cols-1">
-								{/* <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4">
-									<div className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-										<FaCreditCard className="text-indigo-400" /> Card
-									</div>
-									<p className="text-xs text-slate-400">Pay securely with debit/credit cards.</p>
-									<input
-										type="radio"
-										name="payment"
-										checked={paymentMethod === "card"}
-										onChange={() => setPaymentMethod("card")}
-										className="h-4 w-4 border-slate-700 bg-slate-950 text-indigo-500"
-									/>
-									{paymentMethod === "card" && (
-										<div className="mt-3 space-y-3 rounded-xl border border-indigo-500/40 bg-indigo-500/5 p-3">
-											<div className="grid gap-3 md:grid-cols-2">
-												<div className="space-y-1">
-													<label className="text-xs font-semibold text-slate-200">Name on card</label>
-													<input
-														value={cardDetails.name}
-														onChange={(e) => setCardDetails({ ...cardDetails, name: e.target.value })}
-														placeholder="Alex Johnson"
-														className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-													/>
-												</div>
-												<div className="space-y-1">
-													<label className="text-xs font-semibold text-slate-200">Card number</label>
-													<input
-														value={cardDetails.number}
-														onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value })}
-														placeholder="4242 4242 4242 4242"
-														className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-													/>
-												</div>
-											</div>
-											<div className="grid gap-3 md:grid-cols-2">
-												<div className="space-y-1">
-													<label className="text-xs font-semibold text-slate-200">Expiry (MM/YY)</label>
-													<input
-														value={cardDetails.expiry}
-														onChange={(e) => setCardDetails({ ...cardDetails, expiry: e.target.value })}
-														placeholder="12/28"
-														className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-													/>
-												</div>
-												<div className="space-y-1">
-													<label className="text-xs font-semibold text-slate-200">CVC</label>
-													<input
-														value={cardDetails.cvc}
-														onChange={(e) => setCardDetails({ ...cardDetails, cvc: e.target.value })}
-														placeholder="123"
-														className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-													/>
-												</div>
-											</div>
-											<p className="text-[11px] text-slate-400">
-												Card details are kept on this page only; we will confirm via WhatsApp before processing.
-											</p>
-										</div>
-									)}
-								</div> */}
+								
 								<div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4">
 									<div className="flex items-center gap-2 text-sm font-semibold text-slate-200">
 										<FaMobileAlt className="text-emerald-400" /> Wallet

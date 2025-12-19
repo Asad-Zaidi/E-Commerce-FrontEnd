@@ -5,6 +5,7 @@ import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar, FaFilter, FaTh, FaList, FaC
 import SEO from "../../SEO.jsx";
 import Breadcrumb from "../../common/Breadcrumb";
 import { Helmet } from "react-helmet-async";
+import Loader from "../../Loader";
 
 const renderStars = (rating) => {
   const stars = [];
@@ -28,6 +29,7 @@ const Product = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const productsPerPage = 12;
   const slugify = (text) => {
     if (!text) return "";
@@ -50,8 +52,9 @@ const Product = () => {
     Development: "from-indigo-600 to-cyan-600",
   };
 
-  const fetchProductsAndCategories = async () => {
+  const fetchProductsAndCategories = async (showLoader = false) => {
     try {
+      if (showLoader) setIsLoading(true);
       const res = await api.get("/products");
       setProducts(res.data);
 
@@ -60,12 +63,16 @@ const Product = () => {
       setCategories(categoryNames);
     } catch (err) {
       console.error("Error fetching products or categories:", err);
+    } finally {
+      if (showLoader) setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProductsAndCategories();
-    const interval = setInterval(fetchProductsAndCategories, 10000);
+    // Initial fetch with loader
+    fetchProductsAndCategories(true);
+    // Silent background refreshes without overlay
+    const interval = setInterval(() => fetchProductsAndCategories(false), 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -109,6 +116,7 @@ const Product = () => {
 
   return (
     <>
+      {isLoading && <Loader />}
       <SEO
         title="Products | ServiceHub"
         description="Browse our powerful digital tools and flexible subscription plans tailored to your needs."

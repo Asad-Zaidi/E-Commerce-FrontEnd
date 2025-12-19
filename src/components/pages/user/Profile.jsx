@@ -29,18 +29,18 @@ const Profile = () => {
     }
   }, [user]);
 
-  // Fetch user orders
+  // Initial fetch and polling setup
   useEffect(() => {
+    // Fetch user orders
     const fetchOrders = async () => {
       try {
-        setLoading(true);
         const res = await api.get('/orders');
         // Filter orders for current user
         const userOrders = res.data.filter(order => order.customerEmail === user.email);
         setOrders(userOrders);
+        setLoading(false);
       } catch (err) {
         console.error('Error fetching orders:', err);
-      } finally {
         setLoading(false);
       }
     };
@@ -48,6 +48,15 @@ const Profile = () => {
     if (user) {
       fetchOrders();
     }
+
+    // Set up polling for order updates every 10 seconds
+    const pollInterval = setInterval(() => {
+      if (user) {
+        fetchOrders();
+      }
+    }, 10000);
+
+    return () => clearInterval(pollInterval);
   }, [user]);
 
   const handleEditChange = (e) => {
@@ -278,13 +287,49 @@ const Profile = () => {
                             <div className="border-t border-slate-600/50 bg-slate-800/20 px-6 py-6 space-y-6">
                               {/* Completion Message */}
                               {order.status === 'completed' && (
-                                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                                <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-4 shadow-lg">
                                   <div className="flex items-start gap-3">
-                                    <FaCheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                                    <FaCheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0 animate-bounce" />
+                                    <div className="flex-1">
+                                      <p className="text-green-400 font-bold mb-2 text-lg">🎉 Order Completed Successfully!</p>
+                                      <p className="text-green-300/90 text-sm leading-relaxed">
+                                        Your order has been completed. <span className="font-bold text-green-300">Check your email for access to: </span>
+                                        <span className="font-semibold text-teal-300 mt-1 block">
+                                          {order.items.map(item => item.productName).join(', ')} credentials and access details
+                                        </span>
+                                      </p>
+                                      <p className="text-green-300/80 text-xs mt-3 flex items-center gap-1">
+                                        <span>📧</span> If not found in inbox, check your spam/promotions folder
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Confirmed Message */}
+                              {order.status === 'confirmed' && (
+                                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                                  <div className="flex items-start gap-3">
+                                    <FaCheckCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                                     <div>
-                                      <p className="text-green-400 font-semibold mb-1">Order Completed! 🎉</p>
-                                      <p className="text-green-300/90 text-sm">
-                                        Your order has been completed. Please check your <span className="font-semibold">email</span> or <span className="font-semibold">WhatsApp</span> for your product credentials and access information.
+                                      <p className="text-blue-400 font-semibold mb-1">Order Confirmed ✓</p>
+                                      <p className="text-blue-300/90 text-sm">
+                                        Your order has been confirmed. You'll receive your credentials soon.
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Pending Message */}
+                              {order.status === 'pending' && (
+                                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                                  <div className="flex items-start gap-3">
+                                    <FaClock className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                                    <div>
+                                      <p className="text-yellow-400 font-semibold mb-1">Order Pending</p>
+                                      <p className="text-yellow-300/90 text-sm">
+                                        Your order is being processed. Admin will confirm it shortly.
                                       </p>
                                     </div>
                                   </div>

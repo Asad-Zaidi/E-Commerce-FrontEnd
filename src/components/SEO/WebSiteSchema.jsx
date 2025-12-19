@@ -1,11 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 
-/**
- * WebSite Schema Component
- * Adds WebSite structured data for site search box in Google
- * Place this in your App.js or main layout component
- */
 const WebSiteSchema = () => {
     const websiteData = {
         "@context": "https://schema.org",

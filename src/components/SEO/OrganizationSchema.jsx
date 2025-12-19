@@ -22,17 +22,17 @@ const OrganizationSchema = () => {
         ],
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Your Street Address",
-            "addressLocality": "Your City",
-            "addressRegion": "Your Region",
-            "postalCode": "Your Postal Code",
+            "streetAddress": "Village Kamas",
+            "addressLocality": "Lahore",
+            "addressRegion": "Punjab",
+            "postalCode": "55150",
             "addressCountry": "PK"
         },
         "contactPoint": {
             "@type": "ContactPoint",
             "contactType": "Customer Service",
             "email": "support@yourdomain.com",
-            "telephone": "+92-xxx-xxxxxx"
+            "telephone": "+92-308-4401410"
         }
     };
 
