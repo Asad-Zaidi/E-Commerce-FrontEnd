@@ -162,7 +162,6 @@ const ProductForm = () => {
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -248,6 +247,7 @@ const ProductForm = () => {
                             name="description"
                             rows="3"
                             value={formData.description}
+                            placeholder="Short summary about product in 10 to 20 words"
                             onChange={handleChange}
                             required
                             className="w-full border rounded-lg px-4 py-2 bg-gray-700 text-gray-200 focus:ring-2 focus:ring-blue-500"
@@ -258,6 +258,7 @@ const ProductForm = () => {
                             name="seoDescription"
                             rows="4"
                             value={formData.seoDescription}
+                            placeholder="SEO optimized detailed description."
                             onChange={handleChange}
                             disabled={seoLoading}
                             className="w-full border rounded-lg px-4 py-2 bg-gray-700 text-gray-200 focus:ring-2 focus:ring-blue-500"

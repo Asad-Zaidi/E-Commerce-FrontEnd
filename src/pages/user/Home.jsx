@@ -39,6 +39,8 @@ const SkeletonCard = () => (
     </div>
 );
 
+const isExternalLink = (link) => /^https?:\/\//i.test(link);
+
 /* ---------------- Component ---------------- */
 export default function Home() {
     const [banners, setBanners] = useState([]);
@@ -151,23 +153,72 @@ export default function Home() {
 
                         <Slider ref={bannerRef} {...sliderSettings}>
                             {banners.map((b) => (
-                            <div key={b._id} className="relative">
-                                <img
-                                    src={b.imageUrl}
-                                    alt={`${b.title} - Featured banner for digital subscriptions`}
-                                    loading="lazy"
-                                    className="w-full h-[450px] object-cover rounded-3xl"
-                                />
-                                <div className="absolute inset-0 bg-black/40 rounded-3xl flex items-center">
-                                    <div className="px-8 max-w-xl">
-                                        <h1 className="text-4xl font-bold text-white mb-3">
-                                            {b.title}
-                                        </h1>
-                                        <p className="text-white/90 mb-6">{b.subtitle}</p>
-                                        
-                                    </div>
+                                <div key={b._id} className="relative">
+                                    {b.link ? (
+                                        isExternalLink(b.link) ? (
+                                            <a
+                                                href={b.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="block"
+                                                aria-label={`Open ${b.title} banner`}
+                                            >
+                                                <img
+                                                    src={b.imageUrl}
+                                                    alt={`${b.title} - Featured banner for digital subscriptions`}
+                                                    loading="lazy"
+                                                    className="w-full h-[450px] object-cover rounded-3xl"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 rounded-3xl flex items-center">
+                                                    <div className="px-8 max-w-xl">
+                                                        <h1 className="text-4xl font-bold text-white mb-3">
+                                                            {b.title}
+                                                        </h1>
+                                                        <p className="text-white/90 mb-6">{b.subtitle}</p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        ) : (
+                                            <Link
+                                                to={b.link}
+                                                className="block"
+                                                aria-label={`View ${b.title} product`}
+                                            >
+                                                <img
+                                                    src={b.imageUrl}
+                                                    alt={`${b.title} - Featured banner for digital subscriptions`}
+                                                    loading="lazy"
+                                                    className="w-full h-[450px] object-cover rounded-3xl"
+                                                />
+                                                <div className="absolute inset-0 bg-black/40 rounded-3xl flex items-center">
+                                                    <div className="px-8 max-w-xl">
+                                                        <h1 className="text-4xl font-bold text-white mb-3">
+                                                            {b.title}
+                                                        </h1>
+                                                        <p className="text-white/90 mb-6">{b.subtitle}</p>
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        )
+                                    ) : (
+                                        <>
+                                            <img
+                                                src={b.imageUrl}
+                                                alt={`${b.title} - Featured banner for digital subscriptions`}
+                                                loading="lazy"
+                                                className="w-full h-[450px] object-cover rounded-3xl"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 rounded-3xl flex items-center">
+                                                <div className="px-8 max-w-xl">
+                                                    <h1 className="text-4xl font-bold text-white mb-3">
+                                                        {b.title}
+                                                    </h1>
+                                                    <p className="text-white/90 mb-6">{b.subtitle}</p>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                            </div>
                         ))}
                         </Slider>
                     </div>

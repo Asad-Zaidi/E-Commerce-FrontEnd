@@ -6,6 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiTrash2, FiCheckCircle, FiXCircle, FiPlus } from "react-icons/fi";
 // ToastContainer is rendered globally in App.js; no configure call needed.
 
+const slugify = (value) =>
+    value
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^\w-]/g, "")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
 const AdminBanners = () => {
     const [banners, setBanners] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,7 +23,6 @@ const AdminBanners = () => {
     const fetchBanners = async () => {
         try {
             setLoading(true);
-            console.log('Fetching banners with token:', api.defaults.headers.common['Authorization']);
             const res = await api.get("/banners/all");
             setBanners(res.data);
         } catch (err) {
@@ -99,9 +106,13 @@ const AdminBanners = () => {
                                 <img src={b.imageUrl} alt={b.title} className="w-full h-40 object-cover rounded-lg mb-3" />
                                 <h3 className="font-semibold text-lg">{b.title}</h3>
                                 <p className="text-gray-300">{b.subtitle}</p>
-                                <a href={b.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 truncate w-full text-center">
-                                    {b.link}
-                                </a>
+                                {b.link ? (
+                                    <a href={b.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 truncate w-full text-center">
+                                        {b.link}
+                                    </a>
+                                ) : (
+                                    <span className="text-gray-400 text-sm">No link</span>
+                                )}
                                 <div className="mt-3 flex gap-3">
                                     <button
                                         onClick={() => toggleStatus(b._id)}
@@ -131,6 +142,8 @@ const BannerForm = ({ onSuccess }) => {
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState("");
     const [loading, setLoading] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [selectedProductId, setSelectedProductId] = useState("");
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -140,10 +153,43 @@ const BannerForm = ({ onSuccess }) => {
         setPreview(URL.createObjectURL(file));
     };
 
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await api.get("/products");
+                setProducts(res.data || []);
+            } catch (err) {
+                console.error("Error loading products:", err);
+                toast.error("Failed to load products");
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const handleProductChange = (e) => {
+        const productId = e.target.value;
+        setSelectedProductId(productId);
+        const product = products.find((p) => p._id === productId);
+        if (!product) {
+            setForm((prev) => ({ ...prev, link: "" }));
+            return;
+        }
+        const productSlug = product.slug
+            ? product.slug
+            : `${slugify(product.category || "")}/${slugify(product.name || "")}`;
+        const link = `/products/${productSlug}`;
+        setForm((prev) => ({ ...prev, link }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.title || !image) {
             toast.warn("Please provide title and image");
+            return;
+        }
+
+        if (!selectedProductId) {
+            toast.warn("Please select a product");
             return;
         }
 
@@ -156,6 +202,7 @@ const BannerForm = ({ onSuccess }) => {
             await api.post("/banners", formData, { headers: { "Content-Type": "multipart/form-data" } });
             toast.success("Banner added successfully");
             setForm({ title: "", subtitle: "", link: "" });
+            setSelectedProductId("");
             setImage(null);
             setPreview("");
             onSuccess();
@@ -177,7 +224,25 @@ const BannerForm = ({ onSuccess }) => {
         >
             <input type="text" name="title" placeholder="Banner Title" value={form.title} onChange={handleChange} className="px-4 py-2 rounded-lg bg-gray-600 text-gray-200 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
             <input type="text" name="subtitle" placeholder="Subtitle" value={form.subtitle} onChange={handleChange} className="px-4 py-2 rounded-lg bg-gray-600 text-gray-200 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <input type="text" name="link" placeholder="Link URL" value={form.link} onChange={handleChange} className="px-4 py-2 rounded-lg bg-gray-600 text-gray-200 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <select
+                name="product"
+                value={selectedProductId}
+                onChange={handleProductChange}
+                className="px-4 py-2 rounded-lg bg-gray-600 text-gray-200 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+            >
+                <option value="">Select product</option>
+                {products.map((p) => (
+                    <option key={p._id} value={p._id}>
+                        {p.name} ({p.category})
+                    </option>
+                ))}
+            </select>
+            {form.link && (
+                <div className="text-xs text-gray-300">
+                    Generated link: <span className="text-blue-300">{form.link}</span>
+                </div>
+            )}
             <input type="file" onChange={handleImageChange} accept="image/*" className="text-gray-200" />
             {preview && <img src={preview} alt="Banner preview for admin" className="w-full h-40 object-cover rounded-lg" />}
             <button type="submit" className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg flex items-center justify-center">
