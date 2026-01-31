@@ -1,16 +1,17 @@
 import axios from "axios";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "https://eserviceshub-backend.vercel.app/";
+const API_BASE = process.env.REACT_APP_API_BASE;
+// const API_BASE = "http://localhost:5000";
 
 console.log("API Base URL:", API_BASE);
 
 const api = axios.create({
-    baseURL: API_BASE + "/api",
+    baseURL: `${API_BASE}/api`,
     withCredentials: false,
     headers: {
         "Content-Type": "application/json",
     },
-})
+});
 
 export const setAuthToken = (token) => {
     if (token) {
