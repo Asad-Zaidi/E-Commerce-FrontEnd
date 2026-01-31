@@ -62,12 +62,7 @@ const Auth = () => {
     if (isLogin) {
       // Login flow
       if (!formData.email || !formData.password) {
-        toast.warning(
-          <span className="flex items-center gap-2">
-            <FiAlertCircle />
-            Please fill in all fields
-          </span>
-        );
+        setError('Please fill in all fields');
         setIsSubmitting(false);
         return;
       }
@@ -75,13 +70,6 @@ const Auth = () => {
       const result = await login(formData.email, formData.password);
 
       if (result.success) {
-        toast.success(
-          <span className="flex items-center gap-2">
-            <FiLogIn />
-            Login successful!
-          </span>
-        );
-
         // Redirect based on user role
         if (result.user?.role === 'admin') {
           setTimeout(() => navigate('/admin/dashboard'), 800);
@@ -90,34 +78,17 @@ const Auth = () => {
         }
       } else {
         setError(result.message);
-        toast.error(
-          <span className="flex items-center gap-2">
-            <FiAlertCircle />
-            {result.message}
-          </span>
-        );
       }
     } else {
       // Signup flow
       if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-        toast.warning(
-          <span className="flex items-center gap-2">
-            <FiAlertCircle />
-            Please fill in all fields
-          </span>
-        );
+        setError('Please fill in all fields');
         setIsSubmitting(false);
         return;
       }
 
       if (formData.password !== formData.confirmPassword) {
         setError('Passwords do not match');
-        toast.error(
-          <span className="flex items-center gap-2">
-            <FiAlertCircle />
-            Passwords do not match
-          </span>
-        );
         setIsSubmitting(false);
         return;
       }
@@ -132,19 +103,12 @@ const Auth = () => {
       if (result.success) {
         toast.success(
           <span className="flex items-center gap-2">
-            <FiUserPlus />
             Account created successfully!
           </span>
         );
         setTimeout(() => navigate('/profile'), 800);
       } else {
         setError(result.message);
-        toast.error(
-          <span className="flex items-center gap-2">
-            <FiAlertCircle />
-            {result.message}
-          </span>
-        );
       }
     }
 
@@ -218,23 +182,6 @@ const Auth = () => {
               </AnimatePresence>
             </div>
 
-            {/* Error Alert */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
-                >
-                  <p className="text-red-400 text-sm font-medium flex items-center gap-2">
-                    <FiAlertCircle />
-                    {error}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name Field - Only for Signup */}
@@ -302,6 +249,19 @@ const Auth = () => {
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+                <AnimatePresence>
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      className="mt-2 text-red-400 text-sm font-medium flex items-center gap-2"
+                    >
+                      <FiAlertCircle />
+                      {error}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Confirm Password Field - Only for Signup */}
@@ -368,8 +328,6 @@ const Auth = () => {
                 }
               </motion.button>
             </form>
-
-
 
             {/* Divider */}
             <div className="relative my-6">

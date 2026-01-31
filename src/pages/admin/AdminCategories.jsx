@@ -4,12 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Confetti from "react-confetti";
-import {
-    FiAlertTriangle,
-    FiCheckCircle,
-    FiTrash2,
-    FiXCircle,
-} from "react-icons/fi";
 
 // Lightweight local replacement for react-use's useWindowSize
 const useWindowSizeLocal = () => {
@@ -63,7 +57,6 @@ const AdminCategories = () => {
         if (!newCategory.trim()) {
             toast.warn(
                 <span className="flex items-center gap-2">
-                    <FiAlertTriangle />
                     Please enter a category name.
                 </span>
             );
@@ -78,7 +71,6 @@ const AdminCategories = () => {
 
             toast.success(
                 <span className="flex items-center gap-2">
-                    <FiCheckCircle />
                     {res.data.message}
                 </span>
             );
@@ -93,7 +85,6 @@ const AdminCategories = () => {
             console.error(err);
             toast.error(
                 <span className="flex items-center gap-2">
-                    <FiXCircle />
                     Error adding category. It may already exist.
                 </span>
             );
@@ -110,7 +101,6 @@ const AdminCategories = () => {
 
             toast.success(
                 <span className="flex items-center gap-2">
-                    <FiTrash2 />
                     Category deleted successfully.
                 </span>
             );
@@ -120,7 +110,6 @@ const AdminCategories = () => {
             console.error(err);
             toast.error(
                 <span className="flex items-center gap-2">
-                    <FiXCircle />
                     Failed to delete category.
                 </span>
             );
