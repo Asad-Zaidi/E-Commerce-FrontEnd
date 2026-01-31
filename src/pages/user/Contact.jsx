@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import SEO from "../../SEO.jsx";
-import seoData from "../../../seoData";
+import SEO from "../../components/SEO.jsx";
+import seoData from "../../seoData";
 import { FaWhatsapp, FaEnvelope, FaPhoneAlt, FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaTelegram } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { useForm, ValidationError } from "@formspree/react";
 
 const Contact = () => {

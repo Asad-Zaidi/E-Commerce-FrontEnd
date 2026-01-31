@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ const AdminBanners = () => {
     const fetchBanners = async () => {
         try {
             setLoading(true);
+            console.log('Fetching banners with token:', api.defaults.headers.common['Authorization']);
             const res = await api.get("/banners/all");
             setBanners(res.data);
         } catch (err) {

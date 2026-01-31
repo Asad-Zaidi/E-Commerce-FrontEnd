@@ -8,8 +8,8 @@ import {
     FaLinkedinIn,
     FaWhatsapp
 } from "react-icons/fa";
-import logo from "../../../assets/logo.png";
-import api from "../../../api/api";
+import logo from "../../assets/logo.png";
+import api from "../../api/api";
 
 const fadeUp = {
     hidden: { opacity: 0, y: 20 },

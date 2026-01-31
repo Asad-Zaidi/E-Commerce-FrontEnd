@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import aboutImg from "../../../assets/logo.png";
+import aboutImg from "../../assets/logo.png";
 import {
   FaGem,
   FaLock,

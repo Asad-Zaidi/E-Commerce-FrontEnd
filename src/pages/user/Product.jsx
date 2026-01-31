@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar, FaFilter, FaTh, FaList, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import SEO from "../../SEO.jsx";
-import Breadcrumb from "../../common/Breadcrumb";
+import SEO from "../../components/SEO.jsx";
+import Breadcrumb from "../../components/common/Breadcrumb";
 import { Helmet } from "react-helmet-async";
-import Loader from "../../Loader";
+import Loader from "../../components/Loader";
 
 const renderStars = (rating) => {
   const stars = [];

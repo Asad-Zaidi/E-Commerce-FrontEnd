@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../../context/UserContext';
-import api from '../../../api/api';
+import { useUser } from '../../context/UserContext';
+import api from '../../api/api';
 import { FaUser, FaEnvelope, FaMapMarkerAlt, FaCreditCard, FaHistory, FaSignOutAlt, FaEdit, FaSave, FaTimes, FaBox, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const Profile = () => {

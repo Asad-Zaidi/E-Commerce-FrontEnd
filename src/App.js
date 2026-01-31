@@ -7,33 +7,30 @@ import "./styles/theme.css";
 import "./styles/darkMode.css";
 import WebSiteSchema from "./components/SEO/WebSiteSchema";
 
-import Header from "./components/pages/user/Header";
-import Footer from "./components/pages/user/Footer";
-import Home from "./components/pages/user/Home";
-import Product from "./components/pages/user/Product";
-import ProductDetail from "./components/pages/user/ProductDetail";
-import Checkout from "./components/pages/user/Checkout";
-import About from "./components/pages/user/About";
-import Contact from "./components/pages/user/Contact";
-import Auth from "./components/pages/user/Auth";
-import Login from "./components/pages/user/Login";
-import Signup from "./components/pages/user/Signup";
-import Profile from "./components/pages/user/Profile";
-import Blog from "./components/pages/user/Blog";
-import BlogPost from "./components/pages/user/BlogPost";
+import Header from "./pages/user/Header";
+import Footer from "./pages/user/Footer";
+import Home from "./pages/user/Home";
+import Product from "./pages/user/Product";
+import ProductDetail from "./pages/user/ProductDetail";
+import Checkout from "./pages/user/Checkout";
+import About from "./pages/user/About";
+import Contact from "./pages/user/Contact";
+import Auth from "./pages/auth/Auth";
+import Profile from "./pages/user/Profile";
+import Blog from "./pages/user/Blog";
+import BlogPost from "./pages/user/BlogPost";
 
-import AdminLayout from "./components/pages/admin/AdminLayout";
-import AdminLogin from "./components/pages/admin/AdminLogin";
-import AdminDashboard from "./components/pages/admin/AdminDashboard";
-import ProductList from "./components/pages/admin/ProductList";
-import ProductForm from "./components/pages/admin/ProductForm";
-import AdminCategories from "./components/pages/admin/AdminCategories";
-import RequireAdmin from "./components/pages/admin/RequireAdmin";
-import AdminContact from "./components/pages/admin/AdminContact";
-import AdminBanners from "./components/pages/admin/AdminBanners";
-import AdminHome from "./components/pages/admin/AdminHome";
-import AdminOrders from "./components/pages/admin/AdminOrders";
-import AdminBlog from "./components/pages/admin/AdminBlog";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProductList from "./pages/admin/ProductList";
+import ProductForm from "./pages/admin/ProductForm";
+import AdminCategories from "./pages/admin/AdminCategories";
+import RequireAdmin from "./pages/admin/RequireAdmin";
+import AdminContact from "./pages/admin/AdminContact";
+import AdminBanners from "./pages/admin/AdminBanners";
+import AdminHome from "./pages/admin/AdminHome";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminBlog from "./pages/admin/AdminBlog";
 
 import { setAuthToken } from "./api/api";
 
@@ -64,16 +61,15 @@ function AppContent() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/login" element={<Auth />} />
+          <Route path="/signup" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
 
-          {/* 🧑‍💼 Admin Login (no sidebar) */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+          {/* 🧑‍💼 Admin Login - uses same Auth component */}
+          <Route path="/admin/login" element={<Auth />} />
 
           {/* 🧑‍💻 Admin Layout (with sidebar) */}
           <Route

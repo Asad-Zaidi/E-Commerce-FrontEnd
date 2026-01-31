@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { FaStar, FaStarHalfAlt, FaRegStar, FaCheckCircle, FaShieldAlt, FaClock, FaHeadset, FaSync, FaLock, FaCheck } from "react-icons/fa";
 import { Helmet } from "react-helmet-async";
-import Breadcrumb from "../../common/Breadcrumb";
+import Breadcrumb from "../../components/common/Breadcrumb";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

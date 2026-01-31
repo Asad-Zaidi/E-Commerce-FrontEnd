@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaLinkedin, FaTwitter, FaFacebook, FaInstagram, FaWhatsapp, FaTelegram, FaSave } from "react-icons/fa";
 import { toast } from "react-toastify";
-import api from "../../../api/api";
+import api from "../../api/api";
 
 const AdminContact = () => {
     const [loading, setLoading] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { toast } from "react-toastify";
 import { IoSparkles } from "react-icons/io5";
 import { TiArrowSortedUp, TiPin, TiBook, TiShoppingCart, TiCompass, TiTimes } from "react-icons/ti";

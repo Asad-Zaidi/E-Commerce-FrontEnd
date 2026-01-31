@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { toast } from "react-toastify";
 import { FaPlus, FaEdit, FaTrash, FaEye, FaEyeSlash, FaSave, FaTimes, FaMagic } from "react-icons/fa";
-import AIGeneratingAnimation from "../../AIGeneratingAnimation";
+import AIGeneratingAnimation from "../../components/AIGeneratingAnimation";
 
 const AdminBlog = () => {
     const [posts, setPosts] = useState([]);

@@ -66,12 +66,16 @@ export const UserProvider = ({ children }) => {
       const { token: newToken, user: userData } = res.data;
       
       localStorage.setItem('userToken', newToken);
+      // Also store as adminToken if user is admin for backward compatibility
+      if (userData.role === 'admin') {
+        localStorage.setItem('adminToken', newToken);
+      }
       setToken(newToken);
       setUser(userData);
       setIsAuthenticated(true);
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       
-      return { success: true, message: 'Logged in successfully!' };
+      return { success: true, message: 'Logged in successfully!', user: userData };
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed';
       return { success: false, message };
@@ -82,6 +86,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('userToken');
+    localStorage.removeItem('adminToken'); // Also clear admin token
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);

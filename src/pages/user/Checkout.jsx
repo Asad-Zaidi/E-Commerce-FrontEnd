@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { FaArrowLeft, FaMobileAlt, FaShieldAlt, FaCheckCircle, FaTrash, FaWallet } from "react-icons/fa";
-import api from "../../../api/api";
+import api from "../../api/api";
 
 const WHATSAPP_NUMBER = "923084401410"; // Replace with your business WhatsApp number in international format
 const WALLET_NUMBER = "0308-4401410"; // Replace with your Easypaisa/JazzCash number

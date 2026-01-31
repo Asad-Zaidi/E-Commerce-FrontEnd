@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import api from "../../../api/api";
+import api from "../../api/api";
 import Slider from "react-slick";
 import { motion } from "framer-motion";
-import OrganizationSchema from "../../SEO/OrganizationSchema";
-import SEO from "../../SEO.jsx";
-import seoData from "../../../seoData";
+import OrganizationSchema from "../../components/SEO/OrganizationSchema";
+import SEO from "../../components/SEO.jsx";
+import seoData from "../../seoData";
 import {
     FaChevronLeft,
     FaChevronRight,

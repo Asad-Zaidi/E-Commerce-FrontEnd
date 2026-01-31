@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import { FaUser, FaSignOutAlt, FaShoppingCart } from "react-icons/fa";
 // import ThemeToggle from "../../common/ThemeToggle";
-import { useUser } from "../../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 
 function Header() {
     const navigate = useNavigate();

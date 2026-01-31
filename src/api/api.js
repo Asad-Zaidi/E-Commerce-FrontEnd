@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 // const API_BASE = "https://edm-website-backend.vercel.app";
@@ -17,8 +16,13 @@ const api = axios.create({
 console.log("API Base URL:", API_BASE);
 
 export const setAuthToken = (token) => {
-    if (token) api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    else delete api.defaults.headers.common["Authorization"];
+    if (token) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        console.log('Setting Auth Token:', token);
+    }
+    else {
+        delete api.defaults.headers.common["Authorization"];
+    }
 };
 
 export default api;

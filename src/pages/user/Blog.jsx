@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/api";
+import api from "../../api/api";
 import { Helmet } from "react-helmet-async";
 import { FaSearch, FaCalendar, FaEye, FaArrowRight } from "react-icons/fa";
 
