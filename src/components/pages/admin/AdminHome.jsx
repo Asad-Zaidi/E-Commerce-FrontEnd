@@ -30,7 +30,7 @@ const AdminHome = () => {
         try {
             setGenerating(true);
             const res = await api.post("/home/generate-intro", {
-                businessName: intro.title || "EDM",
+                businessName: intro.title || "Service Hub",
                 focus: intro.subtitle || "electronics and digital media",
             });
 
