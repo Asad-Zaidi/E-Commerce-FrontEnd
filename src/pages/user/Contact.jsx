@@ -85,6 +85,10 @@ const Contact = () => {
     visible: { opacity: 1, y: 0 },
   };
 
+  const message = encodeURIComponent(
+    "Hello ServiceHub, I need assistance"
+  );
+
   return (
     <>
       <SEO {...seoData.contact} />
@@ -93,16 +97,48 @@ const Contact = () => {
         initial="hidden"
         animate="visible"
         variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-        className="min-h-screen bg-gray-900 text-gray-200 flex flex-col items-center justify-center px-4 py-12 relative"
+        className="min-h-[calc(100vh-65px)] bg-gray-900 text-gray-200 flex flex-col items-center justify-center px-6 py-6"
       >
-        <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl font-bold mb-4 text-center">
-          {contactData.title}
-        </motion.h1>
-        <motion.p variants={fadeUp} className="text-center mb-10 max-w-2xl">
-          {contactData.description}
-        </motion.p>
-
         <div className="flex flex-col md:flex-row w-full max-w-6xl gap-8">
+          {/* Info + Socials */}
+          <motion.div variants={fadeUp} className="flex-1 flex flex-col gap-2">
+            <motion.h1 variants={fadeUp} className="text-3xl md:text-4xl font-bold mb-4 text-center">
+              {contactData.title}
+            </motion.h1>
+            <motion.p variants={fadeUp} className="text-center mb-10 max-w-2xl">
+              {contactData.description}
+            </motion.p>
+            <div className="bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
+              <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
+              {contactInfo.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-4">
+                  <span className="text-green-500 text-xl">{item.icon}</span>
+                  <a href={`${item.type}:${item.detail}`} className="hover:text-green-400 transition">
+                    {item.detail}
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
+              <h2 className="text-2xl font-semibold mb-4">Connect With Us</h2>
+              <div className="flex gap-4 text-2xl">
+                {socialLinks.map((link, idx) => (
+                  <a
+                    key={idx}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    className="hover:text-green-400 transition"
+                  >
+                    {link.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
           {/* Form */}
           <motion.form
             ref={formRef}
@@ -166,50 +202,25 @@ const Contact = () => {
               {formState.submitting ? "Sending..." : "Send Message"}
             </motion.button>
           </motion.form>
-
-          {/* Info + Socials */}
-          <motion.div variants={fadeUp} className="flex-1 flex flex-col gap-6">
-            <div className="bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
-              <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
-              {contactInfo.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-4">
-                  <span className="text-green-500 text-xl">{item.icon}</span>
-                  <a href={`${item.type}:${item.detail}`} className="hover:text-green-400 transition">
-                    {item.detail}
-                  </a>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
-              <h2 className="text-2xl font-semibold mb-4">Connect With Us</h2>
-              <div className="flex gap-4 text-2xl">
-                {socialLinks.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={link.label}
-                    className="hover:text-green-400 transition"
-                  >
-                    {link.icon}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </motion.div>
         </div>
 
         {/* WhatsApp CTA */}
         <a
-          href={`${contactData.socials.whatsapp}?text=Hello%20ServiceHub,%20I%20need%20assistance`}
+          href={`${contactData.socials.whatsapp}?text=${message}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-full shadow-xl transition"
+          aria-label="Chat with us on WhatsApp"
+          className="group fixed bottom-6 right-6 z-50 flex items-center bg-green-600 hover:bg-green-700 text-white rounded-full shadow-xl transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] h-12 w-12 hover:w-auto hover:pr-5"
         >
-          <FaWhatsapp className="text-xl" />
-          <span className="hidden md:block font-medium">Chat on WhatsApp</span>
+          {/* Icon container (always visible) */}
+          <div className="flex items-center justify-center w-12 h-12 flex-shrink-0">
+            <FaWhatsapp className="text-xl" />
+          </div>
+
+          {/* Expanding text */}
+          <span className="inline-block max-w-0 opacity-0 scale-x-0 origin-left group-hover:max-w-[200px] group-hover:opacity-100 group-hover:scale-x-100 font-medium whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.8,0,0.2,1)] overflow-hidden">
+            Chat on WhatsApp
+          </span>
         </a>
 
         {/* Popup */}
