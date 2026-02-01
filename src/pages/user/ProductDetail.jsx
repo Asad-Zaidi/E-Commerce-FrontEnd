@@ -32,6 +32,7 @@ const ProductDetail = () => {
     const [mainImage, setMainImage] = useState("");
     const [reviewForm, setReviewForm] = useState({ name: "", comment: "", rating: 0 });
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const fetchProduct = useCallback(async () => {
         try {
             const fullSlug = `${category}/${slug}`;
@@ -319,7 +320,7 @@ const ProductDetail = () => {
                         </div>
 
                         {/* Middle Column - Options & Pricing */}
-                        <div className="space-y-6">
+                        <div className="space-y-3">
                             <div>
                                 <div className="flex items-center gap-3 mb-2">
                                     <h1 className="text-3xl font-bold text-white">{product.name}</h1>
@@ -328,13 +329,23 @@ const ProductDetail = () => {
                                         Verified
                                     </span>
                                 </div>
-                                <p className="text-gray-400 text-sm leading-relaxed">
-                                    {product.description.split('\n').slice(0, 2).join(' ')}
-                                </p>
+                                <div>
+                                    <div className={`text-gray-300 text-sm leading-relaxed ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+                                        {product.description}
+                                    </div>
+                                    {product.description && product.description.length > 150 && (
+                                        <button
+                                            onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                                            className="text-teal-400 hover:text-teal-300 font-medium text-sm"
+                                        >
+                                            {isDescriptionExpanded ? 'Show less' : 'Show more...'}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                             {/* Access Type Toggle */}
                             <div>
-                                <label className="text-sm text-gray-400 mb-2 block">Access Type</label>
+                                <label className="text-md text-gray-200 font-bold mb-2 block">Access Type:</label>
                                 <div className="flex gap-3">
                                     {['shared', 'private'].map((type) => (
                                         <button
