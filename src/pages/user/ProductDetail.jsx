@@ -5,6 +5,7 @@ import { FaStar, FaStarHalfAlt, FaRegStar, FaCheckCircle, FaShieldAlt, FaClock, 
 import { Helmet } from "react-helmet-async";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import { toast } from "react-toastify";
+import { useUser } from "../../context/UserContext";
 import "react-toastify/dist/ReactToastify.css";
 
 const renderStars = (rating, size = "text-base") => {
@@ -21,6 +22,7 @@ const renderStars = (rating, size = "text-base") => {
 const ProductDetail = () => {
     const { category, slug } = useParams();
     const navigate = useNavigate();
+    const { isAuthenticated } = useUser();
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -120,7 +122,7 @@ const ProductDetail = () => {
         setQuantity((prev) => Math.max(1, prev + delta));
     };
 
-    const handleBuyNow = () => {
+    const handleBuyNow = async () => {
         if (!product) return;
 
         const cartItem = {
@@ -136,10 +138,20 @@ const ProductDetail = () => {
 
         localStorage.setItem("checkoutItems", JSON.stringify([cartItem]));
         window.dispatchEvent(new Event('cartUpdated'));
+        
+        // Sync to backend if authenticated
+        if (isAuthenticated) {
+            try {
+                await api.put('/auth/cart', { cart: [cartItem] });
+            } catch (err) {
+                console.error('Error syncing cart:', err);
+            }
+        }
+        
         navigate("/checkout");
     };
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!product) return;
 
         const cartItem = {
@@ -166,6 +178,16 @@ const ProductDetail = () => {
 
         localStorage.setItem("checkoutItems", JSON.stringify(existing));
         window.dispatchEvent(new Event('cartUpdated'));
+        
+        // Sync to backend if authenticated
+        if (isAuthenticated) {
+            try {
+                await api.put('/auth/cart', { cart: existing });
+            } catch (err) {
+                console.error('Error syncing cart:', err);
+            }
+        }
+        
         console.log("Added to Cart:", cartItem);
         toast.success("Added to cart! Proceed to checkout when ready.");
     };

@@ -2,18 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import api from '../../api/api';
-import { FaUser, FaEnvelope, FaMapMarkerAlt, FaCreditCard, FaHistory, FaSignOutAlt, FaEdit, FaSave, FaTimes, FaBox, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { FaUser, FaEnvelope, FaMapMarkerAlt, FaCreditCard, FaHistory, FaSignOutAlt, FaEdit, FaSave, FaTimes, FaBox, FaClock, FaCheckCircle, FaTimesCircle, FaKey, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, logout, isAuthenticated, updateProfile: contextUpdateProfile, loading: contextLoading } = useUser();
-  
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [updateMessage, setUpdateMessage] = useState('');
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -76,8 +88,54 @@ const Profile = () => {
   };
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
     logout();
     navigate('/login');
+  };
+
+  const handlePasswordInputChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const resetPasswordForm = () => {
+    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  };
+
+  const submitPasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwordSubmitting) return;
+
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    if (currentPassword === newPassword) {
+      toast.error('New password must be different from current password');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    try {
+      setPasswordSubmitting(true);
+      await api.put('/auth/change-password', { currentPassword, newPassword, confirmPassword });
+      toast.success('Password updated successfully');
+      resetPasswordForm();
+      setShowChangePassword(false);
+    } catch (err) {
+      const message = err.response?.data?.message || 'Failed to update password';
+      toast.error(message);
+    } finally {
+      setPasswordSubmitting(false);
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -106,29 +164,29 @@ const Profile = () => {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gradient-to-r from-teal-600 to-cyan-600 py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-2">My Profile</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">My Profile</h1>
           <p className="text-teal-100">Manage your account and view order history</p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Sidebar - Account Info */}
           <div className="lg:col-span-1">
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-xl">
               {/* Update Message */}
               {updateMessage && (
-                <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${
-                  updateMessage.includes('successfully')
+                <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${updateMessage.includes('successfully')
                     ? 'bg-green-500/10 text-green-400 border border-green-500/30'
                     : 'bg-red-500/10 text-red-400 border border-red-500/30'
-                }`}>
+                  }`}>
                   {updateMessage}
                 </div>
               )}
@@ -169,7 +227,7 @@ const Profile = () => {
                     <button
                       onClick={handleUpdateProfile}
                       disabled={contextLoading}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 px-2 py-1 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white rounded-lg font-sm transition-colors"
                     >
                       <FaSave className="w-4 h-4" /> Save
                     </button>
@@ -182,12 +240,20 @@ const Profile = () => {
                   </div>
                 </div>
               ) : (
-                <button
-                  onClick={() => setEditing(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium mb-4 transition-colors"
-                >
-                  <FaEdit className="w-4 h-4" /> Edit Profile
-                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                  <button
+                    onClick={() => setEditing(true)}
+                    className="w-full flex items-center justify-center gap-2 px-2 py-1.5 text-xs bg-teal-600 hover:bg-teal-700 text-white rounded-md font-medium transition-colors"
+                  >
+                    <FaEdit className="w-4 h-4" /> Edit Profile
+                  </button>
+                  <button
+                    onClick={() => setShowChangePassword(true)}
+                    className="w-full flex items-center justify-center gap-2 px-2 py-1.5 text-xs bg-slate-700/40 hover:bg-slate-700/60 text-slate-200 border border-slate-600/40 rounded-md font-medium transition-colors"
+                  >
+                    <FaKey className="w-4 h-4" /> Change Password
+                  </button>
+                </div>
               )}
 
               {/* Account Details */}
@@ -366,10 +432,6 @@ const Profile = () => {
                                     <span className="text-green-400">-Rs. {order.discount.toLocaleString('en-PK')}</span>
                                   </div>
                                 )}
-                                <div className="flex justify-between text-sm">
-                                  <span className="text-gray-400">Processing Fee:</span>
-                                  <span className="text-white">Rs. {order.processingFee.toLocaleString('en-PK')}</span>
-                                </div>
                                 <div className="border-t border-slate-600 pt-2 flex justify-between font-semibold">
                                   <span className="text-gray-300">Total:</span>
                                   <span className="text-teal-400 text-lg">Rs. {order.total.toLocaleString('en-PK')}</span>
@@ -381,6 +443,7 @@ const Profile = () => {
                                 <h4 className="text-teal-400 font-semibold mb-2 flex items-center gap-2">
                                   <FaMapMarkerAlt className="w-4 h-4" /> Delivery Address
                                 </h4>
+                                <p className="text-white font-medium">{user.email}</p>
                                 <p className="text-gray-300">{order.address}</p>
                                 <p className="text-gray-400 text-sm">{order.city}, {order.country}</p>
                               </div>
@@ -412,6 +475,133 @@ const Profile = () => {
         </div>
       </div>
     </div>
+    {showChangePassword && (
+      <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-slate-900 text-white rounded-2xl shadow-2xl p-6 border border-slate-700/60">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Change Password</h3>
+            <button
+              onClick={() => {
+                setShowChangePassword(false);
+                resetPasswordForm();
+              }}
+              className="text-gray-400 hover:text-white transition"
+              aria-label="Close"
+            >
+              <FaTimes />
+            </button>
+          </div>
+
+          <form onSubmit={submitPasswordChange} className="space-y-4">
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Current Password</label>
+              <div className="relative">
+                <input
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  name="currentPassword"
+                  value={passwordForm.currentPassword}
+                  onChange={handlePasswordInputChange}
+                  className="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(prev => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                  aria-label={showCurrentPassword ? 'Hide current password' : 'Show current password'}
+                >
+                  {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">New Password</label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  name="newPassword"
+                  value={passwordForm.newPassword}
+                  onChange={handlePasswordInputChange}
+                  className="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(prev => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                  aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                >
+                  {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">Confirm New Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={passwordForm.confirmPassword}
+                  onChange={handlePasswordInputChange}
+                  className="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(prev => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                  aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowChangePassword(false);
+                  resetPasswordForm();
+                }}
+                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={passwordSubmitting}
+                className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 transition text-sm font-medium disabled:opacity-50"
+              >
+                {passwordSubmitting ? 'Saving...' : 'Update Password'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+    {showLogoutConfirm && (
+      <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm bg-slate-900 text-white rounded-2xl shadow-2xl p-6 border border-slate-700/60">
+          <h3 className="text-lg font-semibold mb-2">Confirm Logout</h3>
+          <p className="text-sm text-gray-300 mb-6">Are you sure you want to log out?</p>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowLogoutConfirm(false)}
+              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={confirmLogout}
+              className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition text-sm font-medium"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 

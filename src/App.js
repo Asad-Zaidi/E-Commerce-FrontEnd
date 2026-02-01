@@ -12,6 +12,7 @@ import Footer from "./pages/user/Footer";
 import Home from "./pages/user/Home";
 import Product from "./pages/user/Product";
 import ProductDetail from "./pages/user/ProductDetail";
+import Cart from "./pages/user/Cart";
 import Checkout from "./pages/user/Checkout";
 import About from "./pages/user/About";
 import Contact from "./pages/user/Contact";
@@ -58,6 +59,7 @@ function AppContent() {
           <Route path="/home" element={<Home />} />
           <Route path="/products" element={<Product />} />
           <Route path="/products/:category/:slug" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

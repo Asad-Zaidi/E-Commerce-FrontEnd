@@ -238,22 +238,16 @@ const AdminOrders = () => {
                         <span className="text-gray-500">Phone:</span> {order.customerPhone}
                       </p>
                     </div>
-                    <div>
-                      <h4 className="text-teal-400 font-semibold mb-2 text-sm">
-                        BILLING ADDRESS
-                      </h4>
-                      <p className="text-gray-300 text-sm mb-1">
-                        <span className="text-gray-500">City:</span> {order.city}
-                      </p>
-                      <p className="text-gray-300 text-sm mb-1">
-                        <span className="text-gray-500">Address:</span> {order.address}
-                      </p>
-                      {order.company && (
+                    {order.company && (
+                      <div>
+                        <h4 className="text-teal-400 font-semibold mb-2 text-sm">
+                          COMPANY
+                        </h4>
                         <p className="text-gray-300 text-sm">
                           <span className="text-gray-500">Company:</span> {order.company}
                         </p>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Order Items */}
@@ -304,12 +298,6 @@ const AdminOrders = () => {
                         </span>
                       </div>
                     )}
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Processing Fee:</span>
-                      <span className="text-gray-300">
-                        Rs. {order.processingFee.toLocaleString("en-PK")}
-                      </span>
-                    </div>
                     <div className="border-t border-gray-700 pt-2 flex justify-between items-center">
                       <span className="text-teal-400 font-semibold">Total:</span>
                       <span className="text-white font-bold text-lg">
@@ -329,11 +317,6 @@ const AdminOrders = () => {
                           ? "Easypaisa / JazzCash"
                           : "Card"}
                       </p>
-                      {order.couponCode && (
-                        <p className="text-gray-300 text-sm mt-2">
-                          <span className="text-gray-500">Coupon:</span> {order.couponCode}
-                        </p>
-                      )}
                     </div>
                     {order.note && (
                       <div>

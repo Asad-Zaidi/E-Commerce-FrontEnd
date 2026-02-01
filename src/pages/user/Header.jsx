@@ -114,7 +114,7 @@ function Header() {
                     <div className="hidden md:flex items-center gap-4">
                         {/* Cart Button */}
                         <button
-                            onClick={() => navigate('/checkout')}
+                            onClick={() => navigate('/cart')}
                             className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                             aria-label="Shopping Cart"
                         >
@@ -225,7 +225,7 @@ function Header() {
                             {/* Cart Button */}
                             <button
                                 onClick={() => {
-                                    navigate('/checkout');
+                                    navigate('/cart');
                                     closeMenu();
                                 }}
                                 className="flex items-center justify-between py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"

@@ -75,6 +75,34 @@ export const UserProvider = ({ children }) => {
       setIsAuthenticated(true);
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       
+      // Load cart from backend and merge with local cart
+      try {
+        const cartRes = await api.get('/auth/cart');
+        const backendCart = cartRes.data.cart || [];
+        const localCart = JSON.parse(localStorage.getItem("checkoutItems") || "[]");
+        
+        // Merge carts (local cart takes priority for new items)
+        const mergedCart = [...backendCart];
+        localCart.forEach(localItem => {
+          const existingIndex = mergedCart.findIndex(item => item.productId === localItem.productId);
+          if (existingIndex >= 0) {
+            mergedCart[existingIndex].quantity = localItem.quantity;
+          } else {
+            mergedCart.push(localItem);
+          }
+        });
+        
+        // Update localStorage and backend with merged cart
+        localStorage.setItem("checkoutItems", JSON.stringify(mergedCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+        
+        if (mergedCart.length > 0 && JSON.stringify(backendCart) !== JSON.stringify(mergedCart)) {
+          await api.put('/auth/cart', { cart: mergedCart });
+        }
+      } catch (cartErr) {
+        console.error('Error loading cart:', cartErr);
+      }
+      
       return { success: true, message: 'Logged in successfully!', user: userData };
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed';
@@ -85,12 +113,23 @@ export const UserProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear cart from backend before logout
+    if (isAuthenticated) {
+      try {
+        api.delete('/auth/cart').catch(err => console.error('Error clearing cart on logout:', err));
+      } catch (err) {
+        console.error('Error clearing cart:', err);
+      }
+    }
+    
     localStorage.removeItem('userToken');
     localStorage.removeItem('adminToken'); // Also clear admin token
+    localStorage.removeItem('checkoutItems'); // Clear local cart on logout
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
     delete api.defaults.headers.common['Authorization'];
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   const updateProfile = async (name, email) => {

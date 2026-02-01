@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { FaArrowLeft, FaMobileAlt, FaShieldAlt, FaCheckCircle, FaTrash, FaWallet } from "react-icons/fa";
+import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
 
 const WHATSAPP_NUMBER = "923084401410"; // Replace with your business WhatsApp number in international format
@@ -14,13 +15,13 @@ const defaultItems = [];
 
 const Checkout = () => {
 	const navigate = useNavigate();
+	const { isAuthenticated } = useUser();
 
 	const [items, setItems] = useState([]);
 	const [contact, setContact] = useState({ name: "", email: "", phone: "" });
-	const [billing, setBilling] = useState({ company: "", country: "Pakistan", city: "", address: "" });
-	const [paymentMethod, setPaymentMethod] = useState("wallet");
+	const [billing, setBilling] = useState({ company: "" });
+	const paymentMethod = "wallet"; // Fixed payment method
 	const [note, setNote] = useState("");
-	const [coupon, setCoupon] = useState("");
 	const [couponMeta, setCouponMeta] = useState({ code: null, discount: 0 });
 	const [status, setStatus] = useState({ state: "idle", message: "" });
 	const [submitting, setSubmitting] = useState(false);
@@ -33,15 +34,26 @@ const Checkout = () => {
 	useEffect(() => {
 		localStorage.setItem("checkoutItems", JSON.stringify(items));
 		window.dispatchEvent(new Event('cartUpdated'));
-	}, [items]);
+		
+		// Sync to backend if authenticated
+		if (isAuthenticated && items.length >= 0) {
+			const syncCart = async () => {
+				try {
+					await api.put('/auth/cart', { cart: items });
+				} catch (err) {
+					console.error('Error syncing cart:', err);
+				}
+			};
+			syncCart();
+		}
+	}, [items, isAuthenticated]);
 
 	const totals = useMemo(() => {
 		const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
-		const discount = couponMeta.discount ? Math.round(subtotal * couponMeta.discount) : 0;
-		const processingFee = subtotal ? Math.max(99, Math.round(subtotal * 0.02)) : 0;
-		const total = Math.max(0, subtotal - discount + processingFee);
-		return { subtotal, discount, processingFee, total };
-	}, [items, couponMeta]);
+		const discount = 0;
+		const total = Math.max(0, subtotal - discount);
+		return { subtotal, discount, total };
+	}, [items]);
 
 	const updateQuantity = (productId, delta) => {
 		setItems((prev) =>
@@ -57,21 +69,6 @@ const Checkout = () => {
 		setItems((prev) => prev.filter((item) => item.productId !== productId));
 	};
 
-	const applyCoupon = () => {
-		const code = coupon.trim().toUpperCase();
-		if (!code) return;
-
-		if (["SAVE10", "WELCOME10"].includes(code)) {
-			setCouponMeta({ code, discount: 0.1 });
-			setStatus({ state: "success", message: "Coupon applied. 10% off your subtotal." });
-		} else if (code === "VIP20") {
-			setCouponMeta({ code, discount: 0.2 });
-			setStatus({ state: "success", message: "VIP applied. 20% off your subtotal." });
-		} else {
-			setCouponMeta({ code: null, discount: 0 });
-			setStatus({ state: "error", message: "Invalid coupon code." });
-		}
-	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -79,7 +76,7 @@ const Checkout = () => {
 			setStatus({ state: "error", message: "Your cart is empty." });
 			return;
 		}
-		if (!contact.name || !contact.email || !contact.phone || !billing.city || !billing.address) {
+		if (!contact.name || !contact.email || !contact.phone) {
 			setStatus({ state: "error", message: "Please fill in all required fields." });
 			return;
 		}
@@ -104,16 +101,11 @@ const Checkout = () => {
 				customerEmail: contact.email,
 				customerPhone: contact.phone,
 				company: billing.company,
-				country: billing.country,
-				city: billing.city,
-				address: billing.address,
 				items,
 				subtotal: totals.subtotal,
 				discount: totals.discount,
-				processingFee: totals.processingFee,
 				total: totals.total,
 				paymentMethod,
-				couponCode: couponMeta.code,
 				note,
 			};
 
@@ -123,21 +115,17 @@ const Checkout = () => {
 				`New checkout from ${contact.name}`,
 				`Phone: ${contact.phone}`,
 				`Email: ${contact.email}`,
-				`City: ${billing.city}`,
-				`Address: ${billing.address}`,
 				contact.company ? `Company: ${contact.company}` : null,
 				"",
 				"Items:",
 				...items.map(
 					(item) =>
-						`- ${item.productName} (${item.selectedPlan || "plan"}, ${item.accessType || "shared"}, ${
-							item.billingPeriod || "monthly"
+						`- ${item.productName} (${item.selectedPlan || "plan"}, ${item.accessType || "shared"}, ${item.billingPeriod || "monthly"
 						}) x${item.quantity} = Rs. ${(item.price || 0) * (item.quantity || 1)}`,
 				),
 				"",
 				`Subtotal: Rs. ${totals.subtotal}`,
 				`Discount: Rs. ${totals.discount}`,
-				`Processing: Rs. ${totals.processingFee}`,
 				`Total: Rs. ${totals.total}`,
 				`Payment: ${paymentMethod}`,
 				note ? `Note: ${note}` : null,
@@ -150,13 +138,24 @@ const Checkout = () => {
 			// Simulate a server call while keeping UI responsive.
 			await new Promise((resolve) => setTimeout(resolve, 400));
 			console.log("Checkout submitted", payload);
+			
+			// Clear cart from localStorage
 			localStorage.removeItem("checkoutItems");
+			
+			// Clear cart from backend if authenticated
+			if (isAuthenticated) {
+				try {
+					await api.delete('/auth/cart');
+				} catch (err) {
+					console.error('Error clearing backend cart:', err);
+				}
+			}
+			
 			setItems([]);
 			setStatus({ state: "success", message: "Redirected to WhatsApp with your order details." });
 			setContact({ name: "", email: "", phone: "" });
-			setBilling({ company: "", country: "Pakistan", city: "", address: "" });
+			setBilling({ company: "" });
 			setNote("");
-			setCoupon("");
 			setCouponMeta({ code: null, discount: 0 });
 		} catch (err) {
 			setStatus({ state: "error", message: "Something went wrong. Please try again." });
@@ -236,57 +235,20 @@ const Checkout = () => {
 								</div>
 							</section>
 
-							<section className="grid gap-4 md:grid-cols-2">
-								<div className="space-y-2">
-									<label className="text-sm font-semibold text-slate-200">Country *</label>
-									<input
-										value={billing.country}
-										onChange={(e) => setBilling({ ...billing, country: e.target.value })}
-										className="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-									/>
-								</div>
-								<div className="space-y-2">
-									<label className="text-sm font-semibold text-slate-200">City *</label>
-									<input
-										value={billing.city}
-										onChange={(e) => setBilling({ ...billing, city: e.target.value })}
-										placeholder="Lahore"
-										className="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-									/>
-								</div>
-								<div className="md:col-span-2 space-y-2">
-									<label className="text-sm font-semibold text-slate-200">Address *</label>
-									<input
-										value={billing.address}
-										onChange={(e) => setBilling({ ...billing, address: e.target.value })}
-										placeholder="Street, building, suite"
-										className="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-									/>
-								</div>
-							</section>
-
 							<section className="grid gap-4 md:grid-cols-1">
-								
-								<div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950 p-4">
+								<div className="space-y-2 rounded-2xl border border-slate-800 bg-slate-950 p-4">
 									<div className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-										<FaMobileAlt className="text-emerald-400" /> Wallet
+										<FaMobileAlt className="text-emerald-400" /> Pay Via Mobile Wallet or Any Bank Account
 									</div>
-									<p className="text-xs text-slate-400">Instant confirmations via Easypaisa or JazzCash.</p>
-									<input
-										// type="radio"
-										name="payment"
-										checked={paymentMethod === "wallet"}
-										onChange={() => setPaymentMethod("wallet")}
-										className="h-4 w-4 border-slate-700 bg-slate-950 text-indigo-500"
-									/>
+
 									{paymentMethod === "wallet" && (
 										<div className="flex items-start gap-2 rounded-lg border border-emerald-600/40 bg-emerald-500/10 p-3 text-xs text-emerald-100">
 											<FaWallet className="mt-0.5" />
 											<div className="space-y-1">
-												<div className="font-semibold text-emerald-100">Pay to Easypaisa / JazzCash</div>
+												<div className="font-semibold text-emerald-100">Pay to Easypaisa / JazzCash / NayaPay / SadaPay</div>
 												<div className="text-emerald-50">Wallet: {WALLET_NUMBER}</div>
 												<div className="text-emerald-50">Name: {WALLET_NAME}</div>
-												<div className="text-slate-200 font-semibold">Note: Share payment slip on WhatsApp after sending.</div>
+												<div className="text-slate-200 font-semibold">Note: Share payment slip on WhatsApp or Email after transaction.</div>
 											</div>
 										</div>
 									)}
@@ -306,11 +268,10 @@ const Checkout = () => {
 
 							{status.state !== "idle" && (
 								<div
-									className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold ${
-										status.state === "success"
-											? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200"
-											: "border-rose-500/40 bg-rose-500/10 text-rose-100"
-									}`}
+									className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold ${status.state === "success"
+										? "border-emerald-500/40 bg-emerald-500/10 text-emerald-200"
+										: "border-rose-500/40 bg-rose-500/10 text-rose-100"
+										}`}
 								>
 									<FaCheckCircle /> {status.message}
 								</div>
@@ -394,40 +355,13 @@ const Checkout = () => {
 								)}
 							</div>
 
-							<div className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-								<div className="flex items-center gap-2">
-									<input
-										value={coupon}
-										onChange={(e) => setCoupon(e.target.value)}
-										placeholder="Coupon code"
-										className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
-									/>
-									<button
-										type="button"
-										onClick={applyCoupon}
-										className="rounded-lg bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-900 transition hover:bg-white"
-									>
-										Apply
-									</button>
-								</div>
-								{couponMeta.code && (
-									<p className="text-xs text-emerald-300">Applied: {couponMeta.code}</p>
-								)}
-							</div>
 
 							<div className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/60 p-4 text-sm text-slate-200">
 								<div className="flex items-center justify-between">
 									<span>Subtotal</span>
 									<span>{formatPKR(totals.subtotal)}</span>
 								</div>
-								<div className="flex items-center justify-between text-emerald-300">
-									<span>Discount</span>
-									<span>- {formatPKR(totals.discount)}</span>
-								</div>
-								<div className="flex items-center justify-between">
-									<span>Processing</span>
-									<span>{formatPKR(totals.processingFee)}</span>
-								</div>
+
 								<div className="h-px bg-slate-800" />
 								<div className="flex items-center justify-between text-base font-bold text-white">
 									<span>Total</span>
