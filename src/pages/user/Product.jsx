@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import { FaSearch, FaStar, FaStarHalfAlt, FaRegStar, FaFilter, FaTh, FaList, FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -30,6 +30,9 @@ const Product = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const suggestionRef = useRef(null);
   const productsPerPage = 12;
   const slugify = (text) => {
     if (!text) return "";
@@ -85,6 +88,20 @@ const Product = () => {
       );
     });
 
+  const suggestions = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return [];
+    return products
+      .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
+      .filter((p) => {
+        return (
+          p.name?.toLowerCase().includes(term) ||
+          (p.description || "").toLowerCase().includes(term)
+        );
+      })
+      .slice(0, 6);
+  }, [products, searchTerm, selectedCategory]);
+
   // Pagination calculations
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -100,6 +117,17 @@ const Product = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, searchTerm]);
+
+  useEffect(() => {
+    if (!isSuggestionOpen) return;
+    const handleOutsideClick = (event) => {
+      if (suggestionRef.current && !suggestionRef.current.contains(event.target)) {
+        setIsSuggestionOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isSuggestionOpen]);
 
   const handleBuyNow = (product) => {
     if (!product) return;
@@ -139,23 +167,47 @@ const Product = () => {
 
       {/* Hero / Search */}
       <div className="bg-[#0a0a0a] border-b border-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight">
               Explore Digital Subscriptions
             </h1>
-            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-6">
               Find trusted access to top AI, entertainment, and productivity tools.
             </p>
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto relative">
-              <div className="relative group">
+              <div className="relative group" ref={suggestionRef}>
                 <input
                   type="text"
                   placeholder="Search products by name or description..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && console.log("Searching for:", searchTerm)}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setIsSuggestionOpen(true);
+                    setHighlightedIndex(-1);
+                  }}
+                  onFocus={() => searchTerm && setIsSuggestionOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setIsSuggestionOpen(true);
+                      setHighlightedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+                    } else if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                    } else if (e.key === "Enter") {
+                      if (isSuggestionOpen && highlightedIndex >= 0 && suggestions[highlightedIndex]) {
+                        const selected = suggestions[highlightedIndex];
+                        navigate(`/products/${slugify(selected.category)}/${slugify(selected.name)}`);
+                        setIsSuggestionOpen(false);
+                      } else {
+                        console.log("Searching for:", searchTerm);
+                      }
+                    } else if (e.key === "Escape") {
+                      setIsSuggestionOpen(false);
+                    }
+                  }}
                   className="w-full rounded-full py-4 pl-6 pr-14 text-gray-100 bg-white/5 border border-gray-800 backdrop-blur-sm focus:outline-none focus:ring-4 focus:ring-teal-600/30 shadow-2xl text-sm transition-all duration-300 placeholder:text-gray-500"
                 />
                 <button
@@ -164,6 +216,56 @@ const Product = () => {
                 >
                   <FaSearch className="w-5 h-5" />
                 </button>
+
+                {isSuggestionOpen && searchTerm.trim() && (
+                  <div className="absolute z-50 mt-3 w-full bg-[#0f0f0f] border border-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+                    {suggestions.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-gray-400">No matches found</div>
+                    ) : (
+                      <ul className="max-h-80 overflow-auto">
+                        {suggestions.map((product, index) => (
+                          <li key={product._id}>
+                            <button
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => {
+                                navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`);
+                                setIsSuggestionOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-3 flex items-center justify-between gap-4 transition-colors ${
+                                index === highlightedIndex
+                                  ? "bg-white/10"
+                                  : "hover:bg-white/5"
+                              }`}
+                            >
+                              <div className="flex flex-col">
+                                <span className="text-sm text-gray-100">
+                                  {searchTerm ? (
+                                    <>
+                                      {product.name
+                                        .split(new RegExp(`(${searchTerm})`, "gi"))
+                                        .map((part, i) =>
+                                          part.toLowerCase() === searchTerm.toLowerCase() ? (
+                                            <mark key={i} className="bg-emerald-500/20 text-teal-300 px-1 rounded">{part}</mark>
+                                          ) : (
+                                            part
+                                          )
+                                        )}
+                                    </>
+                                  ) : (
+                                    product.name
+                                  )}
+                                </span>
+                                <span className="text-xs text-gray-500">{product.category}</span>
+                              </div>
+                              <span className="text-xs text-gray-400">Rs. {product.priceSharedMonthly || 0}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -247,21 +349,25 @@ const Product = () => {
                   <div
                     key={product._id}
                     onClick={() => navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`)}
-                    className="group bg-[#111111] rounded-2xl shadow-sm hover:shadow-2xl border border-gray-800 hover:border-teal-600/40 overflow-hidden transition-all duration-300 transform hover:-translate-y-1 hover:shadow-teal-900/20 flex flex-col cursor-pointer"
+                    className="group bg-[#111111] rounded-2xl shadow-sm hover:shadow-2xl border border-gray-800 hover:border-teal-600/40 overflow-hidden transition-all duration-300 transform hover:shadow-teal-900/20 flex flex-col cursor-pointer"
                   >
-                    <div className="relative block h-60 overflow-hidden bg-[#0f0f0f]">
+                    <div className="relative block h-54 overflow-hidden bg-[#0f0f0f]">
+                      {/* Blurred Background Image */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center blur-lg scale-110"
+                        style={{ backgroundImage: `url(${product.imageUrl})` }}
+                      />
                       {/* Product Image */}
                       <img
                         src={product.imageUrl}
                         alt={`${product.name} - Best ${product.category} subscription service online`}
                         loading="lazy"
-                        className="w-full h-full object-contain p-4 bg-white transition-transform duration-500"
+                        className="relative w-full h-52 object-contain transition-transform duration-500 z-10"
                       />
                       {/* Category Badge */}
-                      <span className={`absolute top-3 left-3 bg-gradient-to-r ${categoryBadgeGradients[product.category] || 'from-teal-600 to-cyan-600'} text-white/95 text-xs font-medium px-3 py-1 rounded-full shadow-sm hover:bg-gradient-to-t hover:from-teal-500 hover:to-cyan-500 transition-all duration-300`}>
+                      <span className={`absolute top-3 left-3 bg-gradient-to-r ${categoryBadgeGradients[product.category] || 'from-teal-600 to-cyan-600'} text-white/95 text-xs font-medium px-3 py-1 rounded-full shadow-sm hover:bg-gradient-to-t hover:from-teal-500 hover:to-cyan-500 transition-all duration-300 z-20`}>
                         {product.category}
                       </span>
-
                     </div>
 
                     <div className="p-5 flex flex-col flex-1">
@@ -329,14 +435,19 @@ const Product = () => {
                     onClick={() => navigate(`/products/${slugify(product.category)}/${slugify(product.name)}`)}
                     className="group bg-[#111111] rounded-2xl shadow-sm hover:shadow-2xl border border-gray-800 hover:border-teal-600/40 overflow-hidden transition-all duration-300 flex flex-col sm:flex-row cursor-pointer"
                   >
-                    <div className="relative sm:w-48 md:w-64 h-50 sm:h-auto flex-shrink-0 bg-[#0f0f0f]">
+                    <div className="relative sm:w-48 md:w-64 h-50 sm:h-auto flex-shrink-0 bg-[#0f0f0f] overflow-hidden">
+                      {/* Blurred Background Image */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center blur-xl scale-110"
+                        style={{ backgroundImage: `url(${product.imageUrl})` }}
+                      />
                       <img
                         src={product.imageUrl}
                         alt={`${product.name} - ${product.category} digital subscription tool`}
                         loading="lazy"
-                        className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                        className="relative w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 z-10"
                       />
-                      <span className={`absolute top-3 left-3 bg-gradient-to-r ${categoryBadgeGradients[product.category] || 'from-teal-600 to-cyan-600'} text-white/95 text-xs font-medium px-3 py-1 rounded-full shadow-sm`}>
+                      <span className={`absolute top-3 left-3 bg-gradient-to-r ${categoryBadgeGradients[product.category] || 'from-teal-600 to-cyan-600'} text-white/95 text-xs font-medium px-3 py-1 rounded-full shadow-sm z-20`}>
                         {product.category}
                       </span>
                     </div>
