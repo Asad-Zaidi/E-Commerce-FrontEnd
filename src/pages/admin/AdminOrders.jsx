@@ -113,7 +113,7 @@ const AdminOrders = () => {
               <p className="text-gray-400 text-sm">Total Orders</p>
               <p className="text-3xl font-bold text-white mt-2">{stats.totalOrders}</p>
             </div>
-            <FaBox className="text-4xl text-teal-500 opacity-30" />
+            <FaBox className="text-4xl text-teal-600 opacity-60" />
           </div>
         </div>
         <div className="bg-[#111111] border border-gray-800 rounded-lg p-6 shadow-lg">
@@ -124,7 +124,7 @@ const AdminOrders = () => {
                 Rs. {stats.totalRevenue.toLocaleString("en-PK")}
               </p>
             </div>
-            <div className="text-4xl text-green-500 opacity-30">₨</div>
+            <div className="text-4xl font-semibold text-green-600 opacity-60">Rs.</div>
           </div>
         </div>
         <div className="bg-[#111111] border border-gray-800 rounded-lg p-6 shadow-lg">
@@ -133,7 +133,7 @@ const AdminOrders = () => {
               <p className="text-gray-400 text-sm">Pending Orders</p>
               <p className="text-3xl font-bold text-white mt-2">{stats.pendingOrders}</p>
             </div>
-            <FaClock className="text-4xl text-yellow-500 opacity-30" />
+            <FaClock className="text-4xl text-yellow-600 opacity-80" />
           </div>
         </div>
         <div className="bg-[#111111] border border-gray-800 rounded-lg p-6 shadow-lg">
@@ -142,7 +142,7 @@ const AdminOrders = () => {
               <p className="text-gray-400 text-sm">Completed Orders</p>
               <p className="text-3xl font-bold text-white mt-2">{stats.completedOrders}</p>
             </div>
-            <FaCheckCircle className="text-4xl text-green-500 opacity-30" />
+            <FaCheckCircle className="text-4xl text-green-600 opacity-60" />
           </div>
         </div>
       </div>
