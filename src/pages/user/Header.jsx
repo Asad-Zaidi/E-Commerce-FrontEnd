@@ -112,19 +112,21 @@ function Header() {
 
                     {/* Desktop Right Actions */}
                     <div className="hidden md:flex items-center gap-4">
-                        {/* Cart Button */}
-                        <button
-                            onClick={() => navigate('/cart')}
-                            className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                            aria-label="Shopping Cart"
-                        >
-                            <FaShoppingCart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                            {cartItemCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-teal-600 to-cyan-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                                    {cartItemCount > 9 ? '9+' : cartItemCount}
-                                </span>
-                            )}
-                        </button>
+                        {isAuthenticated && (
+                            /* Cart Button */
+                            <button
+                                onClick={() => navigate('/cart')}
+                                className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                                aria-label="Shopping Cart"
+                            >
+                                <FaShoppingCart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                                {cartItemCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-gradient-to-r from-teal-600 to-cyan-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                        {cartItemCount > 9 ? '9+' : cartItemCount}
+                                    </span>
+                                )}
+                            </button>
+                        )}
 
                         {isAuthenticated ? (
                             // Profile Dropdown for Logged In Users
@@ -221,25 +223,27 @@ function Header() {
                             Contact
                         </NavLink>
 
-                        <div className="pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
-                            {/* Cart Button */}
-                            <button
-                                onClick={() => {
-                                    navigate('/cart');
-                                    closeMenu();
-                                }}
-                                className="flex items-center justify-between py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <FaShoppingCart className="w-4 h-4" />
-                                    <span>Shopping Cart</span>
-                                </div>
-                                {cartItemCount > 0 && (
-                                    <span className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-                                        {cartItemCount > 9 ? '9+' : cartItemCount}
-                                    </span>
+                            <div className="pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
+                                {isAuthenticated && (
+                                    /* Cart Button */
+                                    <button
+                                        onClick={() => {
+                                            navigate('/cart');
+                                            closeMenu();
+                                        }}
+                                        className="flex items-center justify-between py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <FaShoppingCart className="w-4 h-4" />
+                                            <span>Shopping Cart</span>
+                                        </div>
+                                        {cartItemCount > 0 && (
+                                            <span className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                                {cartItemCount > 9 ? '9+' : cartItemCount}
+                                            </span>
+                                        )}
+                                    </button>
                                 )}
-                            </button>
 
                             {isAuthenticated ? (
                                 <>

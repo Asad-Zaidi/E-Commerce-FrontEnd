@@ -1,36 +1,3 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
-// import "../../styles/Breadcrumb.css";
-
-// const Breadcrumb = ({ category, productName, slug }) => {
-//     return (
-//         <nav className="breadcrumb-container" aria-label="breadcrumb">
-//             <ol className="breadcrumb-list">
-//                 <li className="breadcrumb-item">
-//                     <Link to="/">Home</Link>
-//                 </li>
-//                 <li className="breadcrumb-item">
-//                     <Link to="/products">Products</Link>
-//                 </li>
-//                 {category && (
-//                     <li className="breadcrumb-item">
-//                         <Link to={`/products?category=${encodeURIComponent(category)}`}>
-//                             {category}
-//                         </Link>
-//                     </li>
-//                 )}
-//                 {productName && (
-//                     <li className="breadcrumb-item active" aria-current="page">
-//                         {productName}
-//                     </li>
-//                 )}
-//             </ol>
-//         </nav>
-//     );
-// };
-
-// export default Breadcrumb;
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";

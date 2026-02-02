@@ -152,6 +152,12 @@ const ProductDetail = () => {
     };
 
     const handleAddToCart = async () => {
+        if (!isAuthenticated) {
+            toast.info("Please log in to add items to your cart.");
+            navigate('/login');
+            return;
+        }
+
         if (!product) return;
 
         const cartItem = {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import { FaTrash, FaCheckCircle, FaClock, FaBox, FaChevronDown } from "react-icons/fa";
-import "../../styles/AdminOrders.css";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);

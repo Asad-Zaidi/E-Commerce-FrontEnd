@@ -13,6 +13,13 @@ const Cart = () => {
 	const [items, setItems] = useState([]);
 	const [loading, setLoading] = useState(true);
 
+	// Redirect if not authenticated (hide cart for logged-out users)
+	useEffect(() => {
+		if (!loading && !isAuthenticated) {
+			navigate('/login');
+		}
+	}, [isAuthenticated, navigate, loading]);
+
 	// Utility function to deduplicate cart items
 	const deduplicateCart = (cart) => {
 		const uniqueCart = [];
@@ -155,6 +162,10 @@ const Cart = () => {
 
 	const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0);
 	const total = subtotal;
+
+	if (!loading && !isAuthenticated) {
+		return null;
+	}
 
 	return (
 		<>
@@ -308,7 +319,7 @@ const Cart = () => {
 										onClick={() => navigate('/checkout')}
 										className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition flex items-center justify-center gap-2"
 									>
-										Proceed to Checkout
+										Checkout
 										<FaArrowRight />
 									</button>
 

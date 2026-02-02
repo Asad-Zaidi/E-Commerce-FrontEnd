@@ -3,8 +3,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./styles/theme.css";
-import "./styles/darkMode.css";
+
 import WebSiteSchema from "./components/SEO/WebSiteSchema";
 
 import Header from "./pages/user/Header";

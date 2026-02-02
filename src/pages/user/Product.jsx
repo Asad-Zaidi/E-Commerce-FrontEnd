@@ -6,6 +6,8 @@ import SEO from "../../components/SEO.jsx";
 import Breadcrumb from "../../components/common/Breadcrumb";
 import { Helmet } from "react-helmet-async";
 import Loader from "../../components/Loader";
+import { useUser } from "../../context/UserContext";
+import { toast } from "react-toastify";
 
 const renderStars = (rating) => {
   const stars = [];
@@ -20,6 +22,7 @@ const renderStars = (rating) => {
 const Product = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useUser();
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get("category") || "All";
   const [searchTerm, setSearchTerm] = useState("");
@@ -129,16 +132,36 @@ const Product = () => {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [isSuggestionOpen]);
 
-  const handleBuyNow = (product) => {
+  const handleBuyNow = async (product) => {
     if (!product) return;
+
+    if (!isAuthenticated) {
+      toast.info("Please log in to continue.");
+      navigate("/login");
+      return;
+    }
+
     const checkoutDetails = {
       productId: product._id,
       productName: product.name,
+      selectedPlan: "sharedMonthly",
       price: product.priceSharedMonthly || 0,
-      plan: "sharedMonthly",
+      quantity: 1,
+      accessType: "shared",
+      billingPeriod: "monthly",
       category: product.category,
       imageUrl: product.imageUrl,
     };
+
+    localStorage.setItem("checkoutItems", JSON.stringify([checkoutDetails]));
+    window.dispatchEvent(new Event('cartUpdated'));
+
+    try {
+      await api.put('/auth/cart', { cart: [checkoutDetails] });
+    } catch (err) {
+      console.error('Error syncing cart:', err);
+    }
+
     navigate("/checkout", { state: { product: checkoutDetails } });
   };
 
