@@ -16,6 +16,7 @@ import Checkout from "./pages/user/Checkout";
 import About from "./pages/user/About";
 import Contact from "./pages/user/Contact";
 import Auth from "./pages/auth/Auth";
+import AuthRoutes from "./pages/auth/AuthRoutes";
 import Profile from "./pages/user/Profile";
 import Blog from "./pages/user/Blog";
 import BlogPost from "./pages/user/BlogPost";
@@ -47,7 +48,7 @@ function AppContent() {
     <>
       {/* Global WebSite Schema */}
       <WebSiteSchema />
-      
+
       {/* 🧭 Show Header only on Public Pages */}
       {!isAdminRoute && <Header />}
 
@@ -68,6 +69,7 @@ function AppContent() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/auth/*" element={<AuthRoutes />} />
 
           {/* 🧑‍💼 Admin Login - uses same Auth component */}
           <Route path="/admin/login" element={<Auth />} />
@@ -90,15 +92,8 @@ function AppContent() {
             <Route path="contact" element={<AdminContact />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="blog" element={<AdminBlog />} />
-            <Route
-              path="banners"
-              element={
-                <RequireAdmin>
-                  <AdminBanners />
-                </RequireAdmin>
-              }
-            />
-            <Route path="/admin/categories" element={<AdminCategories />} />
+            <Route path="banners" element={<AdminBanners />} />
+            <Route path="categories" element={<AdminCategories />} />
           </Route>
 
         </Routes>

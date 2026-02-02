@@ -307,7 +307,7 @@ const Auth = () => {
                     />
                     <span className="text-gray-400">Remember me</span>
                   </label>
-                  <Link to="#" className="text-teal-400 hover:text-teal-300 transition-colors">
+                  <Link to="/auth/forgot-password" className="text-teal-400 hover:text-teal-300 transition-colors">
                     Forgot password?
                   </Link>
                 </div>

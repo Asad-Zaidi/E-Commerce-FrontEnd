@@ -22,4 +22,17 @@ export const setAuthToken = (token) => {
     }
 };
 
+// Forgot Password API Functions
+export const apiForgotPassword = (data) => {
+    return api.post('/auth/forgot-password', data);
+};
+
+export const apiVerifyOtp = (data) => {
+    return api.post('/auth/verify-otp', data);
+};
+
+export const apiResetPassword = (data) => {
+    return api.put('/auth/reset-password', data);
+};
+
 export default api;
